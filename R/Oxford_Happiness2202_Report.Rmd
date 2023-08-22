@@ -1,0 +1,273 @@
+---
+title: "Oxford Happiness Questionnaire"
+author: "coop711"
+date: "2022-10-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(pander)
+panderOptions("table.split.table", Inf)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+옥스포드 행복 설문지 실험결과를 분석한다. 이 실험에는 두 가지 목적이 있다.
+첫째는 있는 그대로 옥스포드 행복 설문지로 측정하는 여러분의 행복 수준은 어느 정도인지,
+둘째는 영문판으로 응답할 때와 국문판으로 응답할 때 어떤 차이가 있는지, 특히 응답에 소요되는 시간을 측정해 보았다. 
+
+<!--
+## Data
+-->
+
+```{r, echo = FALSE, message = FALSE}
+library(readxl)
+library(magrittr)
+options(width = 180)
+load("./red_and_black_220909_data.RData")
+oxford <- "../data/oxford_happiness221010.xlsx" %>%
+  read_excel(range = "A2:BM976",
+             col_names = FALSE)
+names(oxford) <- c("Time1", "email", "Dept", "id", "Name", "Time2", "Group", paste0("Q", 1:29, "_R"), paste0("Q", 1:29, "_B"))
+oxford <- oxford[-2]
+class(oxford$id) <- "character"
+b <- format(as.POSIXct(oxford$Time2, format = "%Y-%m-%d %H:%M:%S"), format = "%H:%M:%S")
+a <- format(as.POSIXct(oxford$Time1, format = "%Y-%m-%d %H:%M:%S"), format = "%H:%M:%S")
+oxford$Duration <- difftime(as.POSIXct(a, format = "%H:%M:%S"), as.POSIXct(b, format = "%H:%M:%S"))
+oxford %<>% cbind(mapply(function(x, y){ifelse(is.na(x), y, x)}, oxford[7:35], oxford[36:64], 
+                         USE.NAMES = FALSE))
+names(oxford)[66:94] <- paste0("Q", 1:29)
+oxford$Group %<>% 
+  factor(levels = c("Red", "Black"))
+```
+
+```{r, echo = FALSE, eval= FALSE}
+oxford$Q1 <- ifelse(is.na(oxford$Q1_R), oxford$Q1_B, oxford$Q1_R)
+oxford$Q2 <- ifelse(is.na(oxford$Q2_R), oxford$Q2_B, oxford$Q2_R)
+oxford$Q3 <- ifelse(is.na(oxford$Q3_R), oxford$Q3_B, oxford$Q3_R)
+oxford$Q4 <- ifelse(is.na(oxford$Q4_R), oxford$Q4_B, oxford$Q4_R)
+oxford$Q5 <- ifelse(is.na(oxford$Q5_R), oxford$Q5_B, oxford$Q5_R)
+oxford$Q6 <- ifelse(is.na(oxford$Q6_R), oxford$Q6_B, oxford$Q6_R)
+oxford$Q7 <- ifelse(is.na(oxford$Q7_R), oxford$Q7_B, oxford$Q7_R)
+oxford$Q8 <- ifelse(is.na(oxford$Q8_R), oxford$Q8_B, oxford$Q8_R)
+oxford$Q9 <- ifelse(is.na(oxford$Q9_R), oxford$Q9_B, oxford$Q9_R)
+oxford$Q10 <- ifelse(is.na(oxford$Q10_R), oxford$Q10_B, oxford$Q10_R)
+oxford$Q11 <- ifelse(is.na(oxford$Q11_R), oxford$Q11_B, oxford$Q11_R)
+oxford$Q12 <- ifelse(is.na(oxford$Q12_R), oxford$Q12_B, oxford$Q12_R)
+oxford$Q13 <- ifelse(is.na(oxford$Q13_R), oxford$Q13_B, oxford$Q13_R)
+oxford$Q14 <- ifelse(is.na(oxford$Q14_R), oxford$Q14_B, oxford$Q14_R)
+oxford$Q15 <- ifelse(is.na(oxford$Q15_R), oxford$Q15_B, oxford$Q15_R)
+oxford$Q16 <- ifelse(is.na(oxford$Q16_R), oxford$Q16_B, oxford$Q16_R)
+oxford$Q17 <- ifelse(is.na(oxford$Q17_R), oxford$Q17_B, oxford$Q17_R)
+oxford$Q18 <- ifelse(is.na(oxford$Q18_R), oxford$Q18_B, oxford$Q18_R)
+oxford$Q19 <- ifelse(is.na(oxford$Q19_R), oxford$Q19_B, oxford$Q19_R)
+oxford$Q20 <- ifelse(is.na(oxford$Q20_R), oxford$Q20_B, oxford$Q20_R)
+oxford$Q21 <- ifelse(is.na(oxford$Q21_R), oxford$Q21_B, oxford$Q21_R)
+oxford$Q22 <- ifelse(is.na(oxford$Q22_R), oxford$Q22_B, oxford$Q22_R)
+oxford$Q23 <- ifelse(is.na(oxford$Q23_R), oxford$Q23_B, oxford$Q23_R)
+oxford$Q24 <- ifelse(is.na(oxford$Q24_R), oxford$Q24_B, oxford$Q24_R)
+oxford$Q25 <- ifelse(is.na(oxford$Q25_R), oxford$Q25_B, oxford$Q25_R)
+oxford$Q26 <- ifelse(is.na(oxford$Q26_R), oxford$Q26_B, oxford$Q26_R)
+oxford$Q27 <- ifelse(is.na(oxford$Q27_R), oxford$Q27_B, oxford$Q27_R)
+oxford$Q28 <- ifelse(is.na(oxford$Q28_R), oxford$Q28_B, oxford$Q28_R)
+oxford$Q29 <- ifelse(is.na(oxford$Q29_R), oxford$Q29_B, oxford$Q29_R)
+```
+
+```{r, echo = FALSE, results =  'hide'}
+#> (역) 또는 (R) 항목은 7에서 뺀 점수로 
+oxford[, paste0("Q", c(1, 5, 6, 10, 13, 14, 24, 27:29))] %<>% 
+  `-` (7, .)
+oxford$Scores <- oxford[ , 66:94] %>% 
+#  apply(MARGIN = 1, FUN = function(x) sum(x) / 29) 
+  apply(MARGIN = 1, FUN = {. %>% sum %>% `/`(29)})
+# oxford$Diff <- round(oxford$Scores_M - oxford$Scores, digits = 3)
+# oxford$Diff <- oxford %$% 
+#   `-`(Scores_M, Scores) %>% 
+#   round(digits = 3)
+oxford$Duration <- ifelse(oxford$Duration <= 0 | oxford$Duration >= 3600, NA, oxford$Duration)
+oxford$Duration_m <- as.numeric(oxford$Duration) %/% 60
+oxford$Duration_s <- as.numeric(oxford$Duration) %% 60
+oxford$Duration_2 <- paste0(oxford$Duration_m, "분", oxford$Duration_s, "초")
+oxford_labels <- c("행복하지 않다", "다소 행복하지 않다", "그저 그렇다",
+                   "꽤 행복하다", "매우 행복하다")
+oxford$Levels <- oxford$Scores %>% 
+  cut(breaks = 1:6, right = FALSE) %>%
+  factor(levels = levels(.), labels = oxford_labels)
+oxford$Duration_2[oxford$Levels %>% is.na] <- NA
+col_names <- c("학번", "컴퓨터점수", "행복 수준", "소요 시간", "질문지 유형")
+#> 주석표시 지우고 실행
+oxford[, c("id", "Scores", "Levels", "Duration_2", "Group")] %>% 
+  format(digits = 3, nsmall = 2) %>%
+  kable(align = c("c", "c", "r", "r", "c"), col.names = col_names)
+#> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
+oxford[oxford$id %in% setdiff(oxford$id, class_roll$id), c("id", "Name", "Dept")]
+oxford$days <- as.numeric(difftime("2022-10-24 09:00:00", oxford$Time1, units = 'days'))
+oxford$hours <- as.numeric(difftime("2022-10-24 09:00:00", oxford$Time1, units = 'hours'))
+```
+
+## Red, Black을 잘못 표시한 사람들
+
+랜덤화출석부에 있는 Red, Black 과 실제 구글설문에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과는 여기서도 작동하고 있는 걸 알 수 있습니다. Red를 Black 이라고 한 사람의 수효(4명)과 Black을 Red 라고 한 사람의 수효(3명)이 비슷합니다 group 을 잘못 기억하고 있는 사람들의 수효조차 Red, Black 에 비슷하게 나뉘었습니다. 굳이 학번까지 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
+
+```{r, wrong group, echo = FALSE}
+oxford$group2 <- class_roll$group[match(oxford$id, class_roll$id)]
+wrong_group <- which(oxford$Group != oxford$group2)
+# class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
+#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander
+oxford[wrong_group, c("id", "group2", "Group")] %>%
+  `colnames<-`(c("학번", "랜덤화출석부", "옥스포드행복설문지")) %>%
+  pander(row.names = FALSE)
+wrong_tbl <- table("랜덤화출석부" = oxford$group2, 
+                   "옥스포드행복설문지" = oxford$Group)
+wrong_tbl %>%
+  pander(row.names = c("Red(랜덤화출석부)", "Black(랜덤화출석부)"), 
+         col.names = c("Red(옥스포드행복설문지)", "Black(옥스포드행복설문지)"))
+```
+
+## 행복 점수 비교
+
+국문 설문지와 영문 설문지의 행복점수를 비교한다. 행복점수 단계별로 비교했을 때나 기초통계로 비교했을 때나 국문 설문지로 작성한 그룹 (Red)의 행복점수가 높게 나온다. 이는 통계적으로 매우 매우 유의한 수준이다. 
+
+### `summary()`
+
+```{r, echo = FALSE}
+oxford$Group %<>% factor(levels = c("Red", "Black"), 
+                         labels = c("국문", "영문"))
+oxford$Scores %>% 
+  tapply(INDEX = oxford$Group, FUN = summary) %>%
+  pander
+```
+
+### `table()`
+
+```{r, echo = FALSE}
+oxford_tbl <- oxford$Levels %>% 
+  table(oxford$Group, ., useNA = "ifany") %>% 
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.)) 
+oxford_tbl %>% 
+  pander
+oxford_tbl %>% 
+  `[`(-3, -c(1, 6)) %>% 
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### 백분율(%)
+
+```{r, echo = FALSE}
+oxford_tbl[3, -6] %>%  
+  prop.table %>% 
+  `*`(100) %>% 
+  c("계" = sum(.)) %>%
+  format(digits = 1, nsmall = 1) %>% 
+  pander
+```
+
+<!--
+### `boxplot()`
+
+```{r, echo = FALSE}
+par(family = "HCR Dotum LVT")
+boxplot(Scores ~ Group, data = oxford)
+```
+-->
+
+### `geom_boxplot()`
+
+```{r, echo = FALSE, message = FALSE}
+library(tidyverse)
+library(ggplot2)
+library(extrafont)
+# source("theme_kr.R")
+ggplot(data = oxford, 
+       mapping = aes(x = Group, y = Scores)) +
+  geom_boxplot(outlier.shape = 1, na.rm = TRUE) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+#  theme_kr +
+  scale_x_discrete(name = "질문지 유형") +
+  scale_y_continuous(name = "행복 점수")
+```
+
+### `t.test()` on means
+
+```{r, echo = FALSE}
+t.test(Scores ~ Group, data = oxford, var.equal = FALSE, alternative = "greater") %>% 
+  pander
+```
+
+## 소요시간 비교
+
+초 단위로 측정한 소요시간에서는 오전, 오후를 잘못 쓴다거나 시작 시간이 제출 시간보다 늦게 입력한 사람들이 있고, 과도하게 (한 시간) 이상 소요된 것으로 나오는 사람들이 있어서 일일이 찾아서 수정하였고, 한 시간 이상은 사실상 설문지를 작성하다가 다른 일을 하고 다시 돌아와 마치는 과정을 의미하는 것으로 판단하여 NA 로 처리하였다. 소요 시간에 있어서도 국문과 영문에는 통계적으로 매우 유의한 수준의 차이가 관찰되었다.
+
+평균적으로 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% diff %>% round(1)`초, 즉 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% diff %>% "%/%"(60)`분 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% diff %>% "%%"(60) %>% round`초정도 국문 질문지에 더 빨리 응답한다. 소요시간의 중위값을 비교해 보면 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = median, na.rm = TRUE) %>% diff %>% round(1)` 초, 약 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = median, na.rm = TRUE) %>% diff %>% "%/%"(60) `분 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = median, na.rm = TRUE) %>% diff %>% "%%"(60)  %>% round`초 만큼 국문 질문지에 더 빨리 응답하지만 통계적으로 유의한 수준은 아니다.
+
+### `summary()`
+
+```{r, echo = FALSE}
+oxford$Duration %>% 
+  as.numeric %>%
+#   `/`(60) %>%
+#   round(2) %>%
+  tapply(INDEX = oxford$Group, FUN = summary) %>%
+  pander
+```
+
+<!--
+### `boxplot()`
+
+```{r, echo = FALSE, eval = FALSE}
+par(family = "HCR Dotum LVT")
+boxplot(Duration ~ Group, data = oxford)
+```
+-->
+
+### `geom_boxplot()`
+
+```{r, echo = FALSE, message = FALSE}
+ggplot(data = oxford, 
+       mapping = aes(x = Group, y = as.numeric(Duration))) +
+  geom_boxplot(outlier.shape = 1, na.rm = TRUE) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+#  theme_kr +
+  scale_x_discrete(name = "질문지 유형") +
+  scale_y_continuous(name = "소요시간(초)")
+```
+
+### `t.test()` on means
+
+```{r, echo = FALSE}
+t.test(as.numeric(Duration) ~ Group, data = oxford, var.equal = FALSE) %>% pander
+```
+
+### 일 단위 마감 시간으로부터 제출 시간의 분포
+
+```{r, echo = FALSE}
+par(family = "KoPubWorldDotum Medium")
+oxford$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(oxford$group, .) %>%
+#  cbind("계" = rowSums(.)) %>%
+#  rbind("계" = colSums(.)) %>%
+  pander(caption = "일 단위")
+oxford$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(oxford$group, .) %>%
+  chisq.test %>%
+  pander
+oxford$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table %>%
+  rev %>%
+  barplot(space = 0, 
+          names.arg = rep(c("월", "화", "수", "목", "금", "토", "일"), 2), 
+          col = c(rep("white", 13), "pink"))
+title(main = "일 단위 퀴즈 제출 횟수")
+```
+
+
+```{r, save, echo = FALSE}
+saveRDS(oxford, file = "../R/oxford221010.RDS")
+save.image("../R/oxford221010.RData")
+```

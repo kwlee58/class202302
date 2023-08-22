@@ -1,0 +1,215 @@
+---
+title: "Tax Korea"
+author: "coop711"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("pander", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+# library(xlsx)
+library(pander)
+library(knitr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+options(width=180)
+```
+
+<!--## Tax Data-->
+
+```{r, data, echo = FALSE}
+load("./tax_kr_21_sum.RData")
+year <- 1994:2021
+year_local <- 1994:2020
+# tax[21, 2] <- 205423546
+tax_full_2 <- round(tax_full/1000000, digits = 1)
+tax_summary_full_2 <- round(tax_summary_full/1000000, digits = 1)
+local_tax_full_2 <- round(local_tax_full/1000000000, digits = 1)
+tax_portion <- round(tax_summary_full_2[, c("국세", "지방세")]/tax_summary_full_2[, "총조세"]*100, digits = 1)
+names(tax_portion) <- c("국세비중_백분율", "지방세비중_백분율")
+```
+
+## 국세와 지방세
+
+```{r, tax 1, echo = FALSE}
+kable(data.frame(tax_summary_full_2[, c(1:2, 10)], tax_portion),
+      col.names = c("총조세(조원)", "국세(조원)", "지방세(조원)", "국세_비중(%)",  "지방세_비중(%)"))
+```
+
+```{r, tax 1 plot, echo = FALSE, fig.width = 12, fig.height = 9}
+par(family = "KoPubWorldDotum Medium")
+par(mar = c(5.1, 4.1, 4.1, 4.1))
+plot(year_local, tax_summary_full_2[, 1], type = "b", ylim = c(0, 400), ann = FALSE)
+lines(year_local, tax_summary_full_2[, 2], type = "b", col = "blue")
+lines(year_local, tax_summary_full_2[, 10], type = "b", col = "red")
+title(main = "국세와 지방세", xlab = "연도", ylab = "납부액(조원)", cex.main = 2)
+text(x = 1994, y = tax_summary_full_2[1, c(10, 2, 1)] + c(-10, -10, 10), labels = tax_summary_full_2[1, c(10, 2, 1)])
+text(x = 2020, y = tax_summary_full_2[27, c(10, 2, 1)] + c(-10, -10, 10), labels = format(tax_summary_full_2[27, c(10, 2, 1)], nsmall = 1))
+text(x = 2008, y = tax_summary_full_2[15, c(10, 2, 1)] + c(-10, -10, 10), labels = c("지방세", "국세", "조세(계)"))
+axis(side = 4, at = c(102.0, 285.5, 387.6), labels = c("26.3%", "73.7%", "100.0%"), las = 2)
+dev.copy(png, file ="../pics/national_vs_local_full.png", width = 960, height = 720)
+```
+
+## 국세
+
+```{r, tax 2, echo = FALSE}
+kable(tax_full_2[, c(1:2, 15:20)])
+```
+
+```{r, tax 2 plot, echo = FALSE, fig.width = 12, fig.height = 9}
+par(family = "KoPubWorldDotum Medium")
+plot(year, tax_full_2[, 1], type = "b", ylim = c(0, 350), ann = FALSE)
+lines(year, tax_full_2[, 2], type = "b", col = rainbow(10)[8])
+lines(year, tax_full_2[, 15], type = "b", col = rainbow(10)[1])
+lines(year, tax_full_2[, 16], type = "b", col = rainbow(10)[2])
+lines(year, tax_full_2[, 17], type = "b", col = rainbow(10)[6])
+lines(year, tax_full_2[, 18], type = "b", col = rainbow(10)[7])
+lines(year, tax_full_2[, 19], type = "b", col = rainbow(10)[9])
+lines(year, tax_full_2[, 20], type = "b", col = rainbow(10)[10])
+title(main = "국세", xlab = "연도", ylab = "납부액(조원)", cex.main = 2)
+text(x = 1994, y = tax_full_2[1, c(15, 2, 1)] + c(10, -10, 10), labels = tax_full_2[1, c(15, 2, 1)])
+text(x = 2021, y = tax_full_2[28, c(15, 2, 1)] + c(10, 10, 10), labels = tax_full_2[28, c(15, 2, 1)])
+text(x = 2008, y = tax_full_2[15, c(15, 2, 1)] + c(10, -10, 10), labels = c("교통_에너지_환경세 등", "내국세", "국세"))
+dev.copy(png, file ="../pics/national_tax_full.png", width = 960, height = 720)
+```
+
+## 내국세
+
+```{r, tax 3, echo = FALSE}
+kable(tax_full_2[, c(2, 7, 13:14)])
+```
+
+```{r, tax 3 plot, echo = FALSE, fig.width = 12, fig.height = 9}
+par(family = "KoPubWorldDotum Medium")
+plot(year, tax_full_2[, 2], type = "b", ylim = c(0, 300), ann = FALSE)
+lines(year, tax_full_2[, 7], type = "b", col = rainbow(10)[8])
+lines(year, tax_full_2[, 13], type = "b", col = rainbow(10)[1])
+lines(year, tax_full_2[, 14], type = "b", col = rainbow(10)[2])
+title(main = "내국세", xlab = "연도", ylab = "납부액(조원)", cex.main = 2)
+text(x = 1994, y = tax_full_2[1, c(14, 13, 7, 2)] + c(5, -5, 5, 5), labels = tax_full_2[1, c(14, 13, 7, 2)])
+text(x = 2021, y = tax_full_2[28, c(14, 13, 7, 2)] + c(5, -5, 5, 5), labels = tax_full_2[28, c(14, 13, 7, 2)])
+text(x = 2008, y = tax_full_2[15, c(14, 13, 7, 2)] + c(5, -5, 5, 5), labels = c("과년도수입", "간접세", "직접세", "내국세"))
+dev.copy(png, file ="../pics/internal_revenue_full.png", width = 960, height = 720)
+```
+
+## 직접세
+
+```{r, tax 4, echo = FALSE}
+kable(tax_full_2[, c(7, 3:6)])
+```
+
+```{r, tax 4 plot, echo = FALSE, fig.width = 12, fig.height = 9}
+par(family = "KoPubWorldDotum Medium")
+plot(year, tax_full_2[, 7], type = "b", ylim = c(0, 200), ann = FALSE)
+lines(year, tax_full_2[, 3], type = "b", col = rainbow(10)[8])
+lines(year, tax_full_2[, 4], type = "b", col = rainbow(10)[1])
+lines(year, tax_full_2[, 5], type = "b", col = rainbow(10)[2])
+lines(year, tax_full_2[, 6], type = "b", col = rainbow(10)[7])
+title(main = "직접세", xlab = "연도", ylab = "납부액(조원)", cex.main = 2)
+text(x = 1994, y = tax_full_2[1, c(6, 4, 3, 7)]+ c(-3, -3, 3, 3), labels = tax_full_2[1, c(6, 4, 3, 7)])
+text(x = 2021, y = tax_full_2[28, c(6, 4, 3, 7)] + c(5, 5, 5, 5), labels = tax_full_2[28, c(6, 4, 3, 7)])
+text(x = 2015, y = tax_full_2[22, c(6, 4, 3, 7)] + c(5, 5, 5, 10), labels = c("증여세 등", "법인세", "소득세", "직접세"))
+dev.copy(png, file ="../pics/direct_tax_full.png", width = 960, height = 720)
+```
+
+
+## 간접세
+
+```{r, tax 5, echo = FALSE}
+kable(tax_full_2[, c(13, 8:12)], 
+      col.names = c("간접세", "부가가치세", "개별소비세", "주세",  "증권거래세", "인지세"))
+```
+
+```{r, tax 5 plot, echo = FALSE, fig.width = 12, fig.height = 9}
+par(family = "KoPubWorldDotum Medium")
+plot(year, tax_full_2[, 13], type = "b", ylim = c(0, 100), ann = FALSE)
+lines(year, tax_full_2[, 8], type = "b", col = rainbow(10)[8])
+lines(year, tax_full_2[, 9], type = "b", col = rainbow(10)[1])
+lines(year, tax_full_2[, 10], type = "b", col = rainbow(10)[2])
+lines(year, tax_full_2[, 11], type = "b", col = rainbow(10)[6])
+lines(year, tax_full_2[, 12], type = "b", col = rainbow(10)[7])
+title(main = "간접세", xlab = "연도", ylab = "납부액(조원)", cex.main = 2)
+text(x = 1994, y = tax_full_2[1, c(9, 8, 13)]+ c(2, -2, 2), labels = tax_full_2[1, c(9, 8, 13)])
+text(x = 2021, y = tax_full_2[28, c(9, 8, 13)] + c(2, 2, 2), labels = format(tax_full_2[28, c(9, 8, 13)], nsmall = 1))
+text(x = 2008, y = tax_full_2[15, c(9, 8, 13)] + c(3, -5, 3), labels = c("개별소비세 등", "부가가치세", "간접세"))
+dev.copy(png, file ="../pics/indirect_tax_full.png", width = 960, height = 720)
+```
+
+## 국세 전체
+
+```{r, total, echo = FALSE, results = 'markup'}
+kable(tax_full_2, align = rep('r', 28))
+```
+
+## 조세 총괄
+
+```{r, tax summary, echo = FALSE, results = 'markup'}
+kable(tax_summary_full_2, align = rep('r', 10))
+```
+
+## 지방세(시군)
+
+```{r, local tax county, echo = FALSE}
+county <- rowSums(local_tax_full_2[, c(7, 3, 22, 8, 20)])
+county_tax <- data.frame("시군" = county, local_tax_full_2[, c(7, 3, 22, 8, 20)])
+kable(county_tax)
+```
+
+```{r, local tax county plot, echo = FALSE, fig.width = 12, fig.height = 9}
+par(family = "KoPubWorldDotum Medium")
+plot(year_local, county, type = "b", ylim = c(0, 45), ann = FALSE)
+lines(year_local, county_tax[, 2], type = "b", col = rainbow(10)[8])
+lines(year_local, county_tax[, 3], type = "b", col = rainbow(10)[1])
+lines(year_local, county_tax[, 4], type = "b", col = rainbow(10)[2])
+lines(year_local, county_tax[, 5], type = "b", col = rainbow(10)[6])
+lines(year_local, county_tax[, 6], type = "b", col = rainbow(10)[7])
+title(main = "지방세(시군)", xlab = "연도", ylab = "납부액(조원)", cex.main = 2)
+text(x = 1994, y = county_tax[1, c(1, 6)] + c(0.8, 0.8), labels = county_tax[1, c(1, 6)])
+text(x = 2020, y = county_tax[27, 1:6] + c(1, 1, 1, 1, -1, 1), labels = county_tax[27, 1:6])
+text(x = 2015, y = county_tax[22, 1:6] + c(-5, -1, 1, 1, -1, 1), labels = c("지방세(시군)", "자동차세", "재산세", "지방소득세", "주민세", "담배소비세"))
+dev.copy(png, file ="../pics/local_tax_county_full.png", width = 960, height = 720)
+```
+
+
+## 지방세(도세)
+
+```{r, local tax province, echo = FALSE}
+province <- rowSums(local_tax_full_2[, c("등록면허세", "취득세", "지방소비세", "레저세", "지방교육세", "지역자원시설세")])
+province_tax <- data.frame("시도" = province, local_tax_full_2[, c("등록면허세", "취득세", "지방소비세", "레저세", "지방교육세", "지역자원시설세")])
+kable(province_tax)
+```
+
+```{r, local tax province plot, echo = FALSE, fig.width = 12, fig.height = 9}
+par(family = "KoPubWorldDotum Medium")
+plot(year_local, province, type = "b", ylim = c(0, 60), ann = FALSE)
+lines(year_local, province_tax[, 2], type = "b", col = rainbow(10)[8])
+lines(year_local, province_tax[, 3], type = "b", col = rainbow(10)[1])
+lines(year_local, province_tax[, 4], type = "b", col = rainbow(10)[2])
+lines(year_local, province_tax[, 5], type = "b", col = rainbow(10)[6])
+lines(year_local, province_tax[, 6], type = "b", col = rainbow(10)[7])
+lines(year_local, province_tax[, 7], type = "b", col = rainbow(10)[9])
+title(main = "지방세(도세)", xlab = "연도", ylab = "납부액(조원)", cex.main = 2)
+text(x = 1994, y = province_tax[1, 1] + 0.8, labels = province_tax[1, 1])
+text(x = 2020, y = province_tax[27, 1:7] + c(0.6, 0.6, 0.6, 0.6, -0.6, 0.6, -0.6), labels = province_tax[27, c(1:7)])
+text(x = 2015, y = province_tax[22, 1:7] + c(2, 1, 2, 1, -2, -1, -1), labels = c("지방세(도세)", "등록면허세", "취득세", "지방소비세", "레저세", "지방교육세", "지역자원시설세"))
+dev.copy(png, file ="../pics/local_tax_province_full.png", width = 960, height = 720)
+```
+
+## 지방세(천억 이상)
+
+```{r, local tax summary, echo = FALSE}
+kable(local_tax_full_2[, c(1:3, 6:8, 15, 17, 20:24)])
+```
+
+## 지방세 전체
+
+```{r, local tax, echo = FALSE}
+kable(local_tax_full_2)
+```
+
+```{r, save, echo = FALSE}
+save.image(file = "tax_kr_full.RData")
+```

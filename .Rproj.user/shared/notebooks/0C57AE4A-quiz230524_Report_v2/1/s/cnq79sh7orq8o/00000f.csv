@@ -1,0 +1,14 @@
+"0","quiz$month %>%"
+"0","  table %>%"
+"0","  chisq.test(simulate.p.value = FALSE) %>%"
+"0","  pander"
+"1","
+---------------------------------
+  Test statistic   df     P value
+---------------- ---- -----------
+           21.89   11   0.02523 *
+---------------------------------
+
+Table: Chi-squared test for given probabilities: `.`
+
+"

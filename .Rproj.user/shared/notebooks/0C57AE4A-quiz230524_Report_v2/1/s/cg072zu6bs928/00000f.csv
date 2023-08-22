@@ -1,0 +1,30 @@
+"0","options(digits = 3)"
+"0","prob <- c(9, 8, 6, 1) / 24"
+"0","Expected <- N2 * prob"
+"0","names(Expected) <- paste0(c(""0"", ""1"", ""2"", ""4""), ""개"")"
+"0","O_E_tbl <- Expected %>%"
+"0","  as.matrix %>%"
+"0","  t %>%"
+"0","  cbind(""계"" = rowSums(.)) %>%"
+"0","  rbind(tbl_matching[3, ], .) "
+"0","Diff <- O_E_tbl[1, ] - O_E_tbl[2, ] %>% "
+"0","  round(1)"
+"0","O_E_tbl <- rbind(O_E_tbl, Diff)"
+"0","rownames(O_E_tbl) <-c(""Observed"", ""Expected"", ""Difference"")"
+"0","O_E_tbl %>%"
+"0","  format(digits = 2, nsmall = 1) %>%"
+"0","  pander(caption = ""Observed vs Expected"")"
+"1","
+--------------------------------------------------------
+&nbsp;               0개     1개     2개     4개      계
+---------------- ------- ------- ------- ------- -------
+**Observed**       287.0   428.0   133.0    23.0   871.0
+
+**Expected**       326.6   290.3   217.8    36.3   871.0
+
+**Difference**     -39.6   137.7   -84.8   -13.3     0.0
+--------------------------------------------------------
+
+Table: Observed vs Expected
+
+"

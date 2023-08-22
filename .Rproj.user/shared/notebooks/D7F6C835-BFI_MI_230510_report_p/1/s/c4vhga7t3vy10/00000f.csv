@@ -1,0 +1,5 @@
+"0","# kable(head(cbind(BFI_score_kr, BFI[paste(c(""E"", ""N"", ""C"", ""A"", ""O""),""Score"", sep = ""_"")])))"
+"0","BFI_score_kr %>%"
+"0","  cbind(BFI[paste(c(""E"", ""N"", ""C"", ""A"", ""O""),""Score"", sep = ""_"")]) %>%"
+"0","  head %>%"
+"0","  kable"

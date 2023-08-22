@@ -1,0 +1,6 @@
+81969.31/3600
+getwd()
+library(markdown)
+rpubsupload("Red_and_Black 2202 : Search for the Best (First 1 Million Trials)", "./Red_and_Black_2202_0_1.html")
+rpubsUpload("Red_and_Black 2202 : Search for the Best (First 1 Million Trials)", "./Red_and_Black_2202_0_1.html")
+rpubsUpload(title = "Red_and_Black 2202 : Search for the Best (First 1 Million Trials)", htmlFile = "./Red_and_Black_2202_0_1.html")

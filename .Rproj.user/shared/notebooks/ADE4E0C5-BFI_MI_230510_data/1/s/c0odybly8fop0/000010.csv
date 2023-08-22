@@ -1,0 +1,25 @@
+"0","MI <- ""../data/MI230510.xlsx"" %>% 
+  read_excel(range = ""A1:BQ867"",
+             col_names = TRUE)
+MI %<>%
+  data.frame
+MI <- MI[, -2]
+MI %<>%
+  `names<-`(c(""Time"",""Dept"", ""ID"", ""Name"", 
+              paste0(LETTERS[1:8], 1:56), 
+              paste(LETTERS[1:8], ""Score"", sep = ""_"")))
+# MI %<>%
+#   `names<-`(c(""Time"", ""Dept"", ""ID"", ""Name"", 
+#               paste0(""Q"", 1:56), 
+#               paste(LETTERS[1:8], ""Score"", sep = ""_"")))
+MI$ID %<>% 
+  as.character
+# duplicated(MI$ID) %>% 
+# which
+# MI <- unique(MI)
+MI[5:60] %<>%
+  sapply(FUN = {. %>% strsplit(split = ""[.]"") %>% sapply(`[`, 1)}) %>%
+  as.numeric
+kable(head(MI[c(3, 5:18)]))
+"
+"0","kable(head(MI[c(3, 19:32)]))"

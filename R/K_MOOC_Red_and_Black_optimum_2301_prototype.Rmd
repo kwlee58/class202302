@@ -1,0 +1,174 @@
+---
+title: "Red and Black : Search for the Best"
+# author: "coop711"
+# date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(pander)
+library(knitr)
+library(magrittr)
+panderOptions('table.split.table', Inf)
+```
+
+## Data
+
+```{r, data, echo = FALSE, results = 'hide'}
+class_roll <- read_excel("../data/HallymK_class_roll_2301.xlsx", 
+                        range = "A1:L35")
+str(class_roll)
+names(class_roll) <- c("id", "user_name", "name", "email", "yob", "gender", "education", "goals", "mode", "status", "city", "country")
+# class_roll$status <- ifelse(is.na(class_roll$status), "휴학", class_roll$status)
+class_roll <- data.frame(class_roll)
+str(class_roll)
+class_roll <- class_roll[, 1:6]
+source("./RnB_K_MOOC_2023.R")
+```
+
+
+## Search for Best Configuration
+
+```{r}
+M1 <- 1
+M2 <- 100000
+Xsum <- sapply(M1:M2, red_and_black)
+names(Xsum) <- M1:M2
+Xsum %>%
+  summary %>%
+  round(2) 
+Xsum %>%
+  sd %>%
+  round(2)
+Xsum %>%
+  `<=`(2) %>%
+  which %>%
+  `[`(Xsum, .) %>%
+  round(2)
+Xmin <- names(Xsum[which(Xsum == min(Xsum))])
+Xmin
+```
+
+## Plot
+
+```{r}
+hist(Xsum, prob = TRUE, nclass = 30, xlim = c(0, 25), ylim = c(0, 0.15))
+x <- seq(0, 25, by = 0.1)
+lines(x, dchisq(x, df = 9), col = "red")
+legend("topright", inset = 0.05, legend = c("Xsum", "Chi-square(9)"), col = c("black", "red"), lty = 1)
+plot(density(Xsum), xlim = c(0, 25), ylim = c(0, 0.15), main = "Density Estimation of Xsum")
+lines(x, dchisq(x, df = 9), col = "red")
+legend("topright", inset = 0.05, legend = c("Xsum", "Chi-square(9)"), col = c("black", "red"), lty = 1)
+```
+
+## Randomization
+
+```{r, randomization}
+set.seed(Xmin)
+N <- nrow(class_roll) 
+class_roll$group <- 
+  sample(1:N) %%
+  2 %>%
+  factor(levels = c(0, 1), labels = c("Red", "Black"))
+red_and_black(Xmin)
+```
+
+### 학번 홀짝
+
+```{r, odd or even}
+tbl2 <- class_roll$id %>%
+  as.numeric %>%
+  `%%`(2) %>%
+  factor(levels = c(1, 0), labels = c("홀", "짝")) %>%
+  table(class_roll$group, .) 
+tbl2 %>%
+  pander
+X2min <- tbl2 %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  `[[`(1)
+X2min
+```
+
+### 출생 시기 
+
+```{r, YOB}
+tbl3 <- class_roll$yob %>%
+    cut(breaks = c(-Inf, 1980, 1995, Inf), 
+        labels =c ("X세대", "Y세대", "Z세대" )) %>%
+    table(class_roll$group, .) 
+tbl3 %>%
+  pander
+X3min <- tbl3 %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  `[[`(1)
+X3min
+```
+
+### email 서비스
+
+```{r, email}
+isp <- class_roll$email %>%
+    strsplit("@", fixed = TRUE) %>%
+    sapply("[", 2) %>%
+    strsplit("[.]", fixed = FALSE) %>%
+    sapply("[", 1)
+tbl4 <- isp %>%
+    `%in%`(c("naver", "gmail")) %>%
+    `!` %>%
+    ifelse("기타서비스", isp) %>%
+    factor(levels = c("naver", "gmail", "기타서비스"),
+           labels = c("네이버", "구글", "기타서비스")) %>%
+    table(class_roll$group, .) 
+tbl4 %>%
+  pander
+X4min <- tbl4 %>%
+    chisq.test(simulate.p.value = TRUE) %>%
+    `[[`(1) 
+X4min
+```
+
+### 성별
+
+```{r, gender}
+tbl5 <- class_roll$gender %>%
+    table(class_roll$group, .) 
+tbl5 %>%
+  pander
+X5min <- tbl5 %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  `[[`(1) 
+X5min
+```
+
+### 성씨 분포
+
+```{r, name}
+f_name <- class_roll$name %>%
+  substring(first = 1, last = 1) 
+tbl6 <- f_name %>%
+  `%in%`(c("김", "이")) %>%
+  ifelse(f_name, "기타") %>%
+  factor(levels = c("김", "이", "기타")) %>%
+  table(class_roll$group, .) 
+tbl6 %>%
+  pander
+X6min <- tbl6 %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  `[[`(1)
+X6min
+```
+
+### Sum of Chi_Squares
+
+```{r}
+Xsum_min <- X2min + X3min + X4min + X5min + X6min
+Xsum_min
+```
+
+<!--
+```{r, save}
+save.image("./K_MOOC_red_and_black_optimum_data_202301.RData")
+```
+-->

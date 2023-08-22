@@ -1,0 +1,327 @@
+---
+title: "Red and Black 210904"
+# author: "coop711"
+# date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("pander", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+# install.packages("readr", repos = "https://cran/rstudio.com")
+library(readxl)
+library(pander)
+library(knitr)
+library(magrittr)
+panderOptions('table.split.table', Inf)
+options(width = 180)
+```
+
+<!--
+### Data
+-->
+
+```{r, data, echo = FALSE, results = "hide"}
+load("./red_and_black_210829_data.RData")
+class_roll0829 <- class_roll[, -8]
+nrow(class_roll0829)
+# class_roll <- read.xlsx("../data/class_roll210904.xlsx", 
+#                         sheetIndex = 1, 
+#                         startRow = 1, 
+#                         endRow = 493, 
+#                         header = TRUE,
+#                         colIndex = c(2:7), 
+#                         colClasses = rep("character", 6), 
+#                         encoding = "UTF-8",
+#                         stringsAsFactors = FALSE)
+class_roll <- read_excel("../data/class_roll210904.xlsx",
+                         range = "B1:G625",
+                         col_names = TRUE,
+                         col_types = "text")
+nrow(class_roll)
+nrow(class_roll0829)
+names(class_roll) <- c("dept", "id", "name", "status", "email", "cell_no")
+class_roll[c(130, 284), ]
+class_roll <- class_roll[-c(130, 284), ]
+class_roll$status <- ifelse(is.na(class_roll$status), "휴학", class_roll$status)
+str(class_roll)
+class_roll0829$mark <- "0829"
+class_roll$mark2 <- "0904"
+class_roll.merged <- merge(class_roll, class_roll0829, 
+                           by = "id", all = TRUE)
+```
+
+<!--
+### 8월 29일자 출석부와 9월 4일자 출석부 통합 결과
+
+```{r, echo = FALSE, results = "hide"}
+nrow(class_roll.merged)
+pander(class_roll.merged[, c("group", "mark1", "mark2")])
+```
+-->
+
+### 8월 29일자 출석부에만 나오는 사람들의 분포
+
+```{r, echo = FALSE}
+class_roll.out <- class_roll.merged[is.na(class_roll.merged$mark2), ]
+pander(class_roll.out[, c("group", "mark", "mark2")])
+pander(table(class_roll.out$group))
+# pander(class_roll.merged[is.na(class_roll.merged$mark2), 
+#                          c("group", "mark1", "mark2")])
+# pander(table(class_roll.merged[is.na(class_roll.merged$mark2), ]$group))
+```
+
+```{r, echo = FALSE, results = "markup"}
+id0829 <- class_roll0829$id
+id0904 <- class_roll$id
+stay0904 <- intersect(id0829, id0904)
+length(stay0904)
+new_id <- setdiff(id0904, id0829)
+class_roll.stay <- subset(class_roll0829, id %in% stay0904)
+class_roll.new <- subset(class_roll, id %in% new_id)
+```
+
+### 8월 29일 출석부에도 나오는 사람들의 데이터 구조
+
+```{r, echo = FALSE}
+str(class_roll.stay)
+```
+
+### 수강신청 변경으로 나간 사람들의 데이터 구조
+
+```{r, echo = FALSE}
+str(class_roll.out)
+```
+
+### 수강 신청 변경으로 새로 들어온 사람들의 데이터 구조
+
+```{r, echo = FALSE}
+str(class_roll.new)
+```
+
+### 남아 있던 사람들 + 새로 들어온 사람들
+
+```{r, echo = FALSE}
+str(class_roll)
+```
+
+### 새로 들어온 사람에게만 랜덤화 적용
+
+```{r, sub randomization, echo = FALSE, eval = TRUE}
+source("./RnB.R")
+M1 <- 1
+M2 <- 100000
+Xsum <- numeric(0)
+Values_mat <- numeric(0)
+for(k in M1:M2){
+  set.seed(k)
+  N <- nrow(class_roll.new) 
+  N_red <- table(class_roll.out$group)[1]
+  id_red <- sample(1:N, size = 41)
+  id_black <- setdiff(1:N, id_red)
+  class_roll.new$group <- ifelse(1:N %in% id_red, "Red", "Black")
+  class_roll.new$group <- factor(class_roll.new$group, 
+                                 levels = c("Red", "Black"))
+  class_roll.new <- class_roll.new[, c(1:6, 8, 7)]
+  names(class_roll.stay)[8] <- "mark"
+  names(class_roll.new)[8] <- "mark"
+  class_roll <- rbind(class_roll.stay, class_roll.new)
+  Xsum <- c(Xsum, red_and_black(class_roll)$Xsum)
+  Values_mat <- rbind(Values_mat, red_and_black(class_roll)$Values)
+  class_roll.new <- class_roll.new[, -7]
+}
+colnames(Values_mat) <- paste0("X", 1:6)
+# Values_mat
+# pairs(Values_mat)
+cor(Values_mat) %>%
+  round(4)
+names(Xsum) <- M1:M2
+Xsum %>%
+  summary %>%
+  round(2) 
+Xsum %>%
+  sd %>%
+  round(2)
+Xsum %>%
+  `<=`(2) %>%
+  which %>%
+  `[`(Xsum, .) %>%
+  round(2)
+Xmin <- names(Xsum[which(Xsum == min(Xsum))])
+Xmin
+```
+
+## Plot
+
+```{r}
+hist(Xsum, prob = TRUE, nclass = 30, xlim = c(0, 15), ylim = c(0, 0.3))
+x <- seq(0, 15, by = 0.1)
+lines(x, dnorm(x, mean = 5.85, sd = 1.5), col = "red")
+legend("topright", inset = 0.05, legend = c("Xsum", "Normal(6, 1.5^2)"), col = c("black", "red"), lty = 1)
+plot(density(Xsum), xlim = c(0, 15), main = "Density Estimation of Xsum")
+lines(x, dnorm(x, mean = 5.85, sd = 1.5), col = "red")
+legend("topright", inset = 0.05, legend = c("Xsum", "Normal(6, 1.5^2)"), col = c("black", "red"), lty = 1)
+```
+
+## Randomization
+
+```{r, randomization}
+set.seed(Xmin)
+N <- nrow(class_roll.new) 
+N_red <- table(class_roll.out$group)[1]
+id_red <- sample(1:N, size = 41)
+# id_red <- sample(1:N, size = 7)
+id_black <- setdiff(1:N, id_red)
+class_roll.new$group <- ifelse(1:N %in% id_red, "Red", "Black")
+class_roll.new$group <- factor(class_roll.new$group, 
+                               levels = c("Red", "Black"))
+class_roll.new <- class_roll.new[, c(1:6, 8, 7)]
+names(class_roll.stay)[8] <- "mark"
+names(class_roll.new)[8] <- "mark"
+class_roll <- rbind(class_roll.stay, class_roll.new)
+```
+
+### 학번
+
+```{r, id}
+class_roll$id_2 <-
+  class_roll$id %>%
+  ifelse(. <= 2015, "2015", .)
+tbl1 <- class_roll %$%
+  table(.$group, .$id_2 %>% substr(1, 4)) %>%
+  `colnames<-`(c("2015 이전", 2016:2021)) 
+tbl1 %>%
+  pander
+X1min <- tbl1 %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  `[[`(1)
+X1min
+```
+
+### 학번 홀짝
+
+```{r, odd or even}
+tbl2 <- class_roll$id %>%
+  as.numeric %>%
+  `%%`(2) %>%
+  factor(levels = c(1, 0), labels = c("홀", "짝")) %>%
+  table(class_roll$group, .) 
+tbl2 %>%
+  pander
+X2min <- tbl2 %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  `[[`(1)
+X2min
+```
+
+### 학적 상태
+
+```{r, status}
+tbl3 <- class_roll$status %>%
+  table(class_roll$group, .) 
+tbl3 %>%
+  pander
+X3min <- tbl3 %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  `[[`(1)
+X3min
+```
+
+### e-mail 서비스업체
+
+```{r, e_mail}
+tbl4 <- class_roll$email %>%
+  strsplit("@", fixed = TRUE) %>%
+  sapply("[", 2) %>%
+  `==`("naver.com") %>%
+  ifelse("네이버", "기타서비스") %>%
+  factor(levels = c("네이버", "기타서비스")) %>%
+  table(class_roll$group, .) 
+tbl4 %>%
+  pander
+X4min <- tbl4 %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  `[[`(1)
+X4min
+```
+
+### 전화번호의 분포
+
+```{r, cell_no}
+cut_label <- paste(paste0(0:9, "000"), paste0(0:9, "999"), 
+                   sep = "~")
+tbl5 <- class_roll$cell_no %>%
+  substr(start = 8, stop = 11) %>%
+  sapply(as.numeric) %>%
+  cut(labels = cut_label, 
+      breaks = seq(0, 10000, by = 1000)) %>%
+  table(class_roll$group, .) 
+tbl5 %>%
+  pander
+X5min <- tbl5 %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  `[[`(1)
+X5min
+```
+
+### 성씨 분포
+
+```{r, name}
+f_name <- class_roll$name %>%
+  substring(first = 1, last = 1) 
+tbl6 <- f_name %>%
+  `%in%`(c("김", "이", "박")) %>%
+  ifelse(f_name, "기타") %>%
+  factor(levels = c("김", "이", "박", "기타")) %>%
+  table(class_roll$group, .) 
+tbl6 %>%
+  pander
+X6min <- tbl6 %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  `[[`(1)
+X6min
+```
+
+### Sum of Chi_Squares
+
+```{r}
+Xsum_min <- X1min + X2min + X3min + X4min + X5min + X6min
+Xsum_min
+```
+
+
+<!--
+### 전체 출석부
+
+```{r}
+class_roll %$%
+  order(.$name) %>%
+  class_roll[., c("id", "name", "group")] %>%
+  pander(caption = "가나다순", row.names = FALSE)
+```
+
+<P style="page-break-before:always">
+
+```{r, echo = FALSE}
+class_roll %$%
+  order(.$group, .$name) %>%
+  class_roll[., c("group", "id", "name")] %>%
+  subset(.$group == "Red", select = c("id", "name")) %>%
+  pander(caption = "Red")
+class_roll %$%
+  order(.$group, .$name) %>%
+  class_roll[., c("group", "id", "name")] %>%
+  subset(.$group == "Black", select = c("id", "name")) %>%
+  pander(caption = "Black")
+```
+
+<P style="page-break-before:always">
+
+```{r, save}
+class_roll %>%
+  `[`(.$id %>% order, c("id", "group")) %>%
+  saveRDS(file = "./class_id_group210904.RDS")
+save.image("./red_and_black_210904_data.RData")
+```
+-->

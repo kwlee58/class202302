@@ -1,0 +1,40 @@
+"0","class_roll <- readRDS(""./class_roll_230404.RDS"")
+quiz <- 
+  read_excel(""../data/quiz230419.xlsx"",
+             range = ""A2:O904"",
+             col_names = FALSE)
+names(quiz) <- c(""time"", ""email"", ""dept"", ""id"", ""name"", paste0(""Q"", 1:3),  ""group"", ""Q4_R"", ""Q5_R"", ""Q6_R"", ""Q4_B"", ""Q5_B"", ""Q6_B"")
+quiz$dept <- factor(quiz$dept)
+quiz$group <- factor(quiz$group, 
+                         levels = c(""Red"", ""Black""))
+quiz[10:15] %<>% 
+  sapply(FUN = {. %>% strsplit(split = ""[.]"") %>% sapply(`[`, 1)})
+#> factor로 만들 것을 처음부터 고려한다면 cbind에서 stringsAsFactors = TRUE, 즉 default로 놔 두면 된다.
+quiz %<>% cbind(mapply(function(x, y){ifelse(is.na(x), y, x)}, quiz[10:12], quiz[13:15], 
+                              USE.NAMES = FALSE)) 
+names(quiz)[16:18] <- paste0(""Q"", 4:6)
+#> 다음 코드에서 sapply를 사용하면 character 행렬이 나오게 되므로 반드시 lapply를 사용해야 한다.
+quiz[paste0(""Q"", 4:6)] %<>% 
+  lapply(factor) 
+Black <- quiz$group == ""Black""
+quiz[Black, paste0(""Q"", 4:6)] %<>%
+  lapply(`levels<-`, c(""나"", ""가""))
+quiz[c(""group"", paste0(""Q"", 4:6))]  
+"
+"0","quiz$Q4 %<>%"
+"0","  factor(levels = c(""가"", ""나""), labels = c(""10센트"", ""5센트""))"
+"0","quiz$Q5 %<>%"
+"0","  factor(levels = c(""가"", ""나""), labels = c(""100분"", ""5분""))"
+"0","quiz$Q6 %<>%"
+"0","  factor(levels = c(""가"", ""나""), labels = c(""24일"", ""47일""))"
+"0","quiz$Q1 %<>% "
+"0","  factor(levels = c(""랜덤화"", ""가짜약 대조군"", ""이중눈가림"", ""층화""))"
+"0","quiz$Q2 %<>% "
+"0","  factor(levels = c(""28 vs 46"", ""28 vs 71"", ""28 vs 25"", ""25 vs 54""))"
+"0","quiz$Q3 %<>% "
+"0","  factor(levels = c(""NFIP 설계의 백신 접종 집단"", "
+"0","                    ""플라시보 컨트롤 설계의 백신 접종 집단"", "
+"0","                    ""플라시보 컨트롤 설계의 생리식염수 접종 집단"", "
+"0","                    ""NFIP 설계의 대조군 집단""))"
+"0","#> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드"
+"0","quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c(""id"", ""name"", ""dept"")]"

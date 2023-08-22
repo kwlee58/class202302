@@ -1,0 +1,27 @@
+"0","quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
+wrong_group <- which(quiz$group != quiz$group2)
+quiz[wrong_group, c(""id"", ""name"", ""group2"", ""group"")] %>%
+  `[`(order(.$id), ) %>%
+  `colnames<-`(c(""학번"", ""이름"", ""랜덤화출석부"", ""구글예습퀴즈"")) %>%
+  pander(row.names = FALSE)
+"
+"1","
+-------------------------------------------------
+      학번     이름   랜덤화출석부   구글예습퀴즈
+---------- -------- -------------- --------------
+  20194108   김성민            Red          Black
+
+  20221526   이나현            Red          Black
+
+  20221531   이예현          Black            Red
+
+  20222413   손효빈            Red          Black
+
+  20226205   권다인            Red          Black
+
+  20233001   이다경            Red          Black
+
+  20233832   이연서            Red          Black
+-------------------------------------------------
+
+"

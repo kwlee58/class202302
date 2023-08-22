@@ -1,0 +1,2 @@
+"0","text(x = b[14, 1], y = sum(days_tbl[, 1]), "
+"0","     labels = paste0(sum(days_tbl[, 1]), ""명""), pos = 3)"

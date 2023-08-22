@@ -1,0 +1,7 @@
+"0","quiz$month_f <- quiz$month %>%"
+"0","  factor(levels = c(paste0(""0"", 1:9), 10:12), labels = paste0(1:12, ""월""))"
+"0","quiz$month_f %>%"
+"0","  table(quiz$group, .) %>%"
+"0","  cbind(""계"" = rowSums(.)) %>%"
+"0","  rbind(""계"" = colSums(.)) %>%"
+"0","  kable(align = ""r"")"

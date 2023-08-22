@@ -1,0 +1,58 @@
+---
+title: "Red and Black Check"
+author: "coop711"
+date: '2019 9 7 '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Red and Black Mismatch
+
+```{r, message = FALSE, echo = FALSE, results = 'hide'}
+library(xlsx)
+library(knitr)
+library(dplyr)
+library(pander)
+load("./red_and_black_190916_data.RData")
+quiz0923 <- readRDS("./quiz0923.RDS")
+class_roll0923 <- read.xlsx("../data/class_roll190923.xlsx",
+                            sheetIndex = 1, 
+                            startRow = 2, 
+                            endRow = 160, 
+                            header = TRUE, 
+                            colIndex = c(3:7, 9), 
+                            colClasses = c(rep("character", 6)), 
+                            stringsAsFactors = FALSE)
+names(class_roll0923) <- c("dept", "id", "name", "year", "email", "cell_no")
+str(class_roll)
+str(quiz0923)
+str(class_roll0923)
+```
+
+```{r, echo = FALSE, results = 'hide'}
+roll_quiz_lj <- left_join(class_roll[c("id", "name", "group")], 
+                          quiz0923[c("id", "name", "group")], 
+                          by = c("id", "name"))
+str(roll_quiz_lj)
+```
+
+```{r, echo = FALSE}
+kable(roll_quiz_lj[roll_quiz_lj$group.x != roll_quiz_lj$group.y & !is.na(roll_quiz_lj$group.y), c("id", "group.x", "group.y")])
+```
+
+## 수강철회자 그룹 점검
+
+```{r, echo = FALSE}
+out_id <- setdiff(class_roll$id, class_roll0923$id)
+kable(class_roll[class_roll$id %in% out_id, c("id", "group")])
+```
+
+## 그룹 점검
+
+```{r, echo = FALSE}
+class_roll0923$group <- class_roll$group[match(class_roll0923$id, class_roll$id)]
+pander(table(class_roll0923$group))
+```

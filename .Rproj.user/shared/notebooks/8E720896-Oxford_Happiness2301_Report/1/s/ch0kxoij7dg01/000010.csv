@@ -1,0 +1,27 @@
+"0","oxford[, paste0(""Q"", c(1, 5, 6, 10, 13, 14, 24, 27:29))] %<>% 
+  `-` (7, .)
+oxford$Scores <- oxford[ , 66:94] %>% 
+#  apply(MARGIN = 1, FUN = function(x) sum(x) / 29) 
+  apply(MARGIN = 1, FUN = {. %>% sum %>% `/`(29)})
+# oxford$Diff <- round(oxford$Scores_M - oxford$Scores, digits = 3)
+# oxford$Diff <- oxford %$% 
+#   `-`(Scores_M, Scores) %>% 
+#   round(digits = 3)
+oxford$Duration <- ifelse(oxford$Duration <= 0 | oxford$Duration >= 3600, NA, oxford$Duration)
+oxford$Duration_m <- as.numeric(oxford$Duration) %/% 60
+oxford$Duration_s <- as.numeric(oxford$Duration) %% 60
+oxford$Duration_2 <- paste0(oxford$Duration_m, ""분"", oxford$Duration_s, ""초"")
+oxford_labels <- c(""행복하지 않다"", ""다소 행복하지 않다"", ""그저 그렇다"",
+                   ""꽤 행복하다"", ""매우 행복하다"")
+oxford$Levels <- oxford$Scores %>% 
+  cut(breaks = 1:6, right = FALSE) %>%
+  factor(levels = levels(.), labels = oxford_labels)
+oxford$Duration_2[oxford$Levels %>% is.na] <- NA
+col_names <- c(""학번"", ""컴퓨터점수"", ""행복 수준"", ""소요 시간"", ""질문지 유형"")
+#> 주석표시 지우고 실행
+oxford[, c(""id"", ""Scores"", ""Levels"", ""Duration_2"", ""Group"")] %>% 
+  format(digits = 3, nsmall = 2) %>%
+  kable(align = c(""c"", ""c"", ""r"", ""r"", ""c""), col.names = col_names)
+"
+"0","#> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드"
+"0","oxford[oxford$id %in% setdiff(oxford$id, class_roll$id), c(""id"", ""Name"", ""Dept"")]"

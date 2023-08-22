@@ -1,0 +1,14 @@
+"0","quiz$month %>%"
+"0","  table(quiz$group, .) %>%"
+"0","  chisq.test(simulate.p.value = FALSE) %>%"
+"0","  pander"
+"1","
+-------------------------------
+  Test statistic   df   P value
+---------------- ---- ---------
+            5.86   11    0.8826
+-------------------------------
+
+Table: Pearson's Chi-squared test: `.`
+
+"

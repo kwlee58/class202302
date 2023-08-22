@@ -1,0 +1,177 @@
+---
+title: "Demography 2022"
+author: "coop711"
+date: "2022-12-09"
+output: html_document
+---
+
+```{r, echo = FALSE, message = FALSE}
+library(RColorBrewer)
+library(readxl)
+library(knitr)
+library(pander)
+library(dplyr)
+library(magrittr)
+library(extrafont)
+panderOptions("table.split.table", Inf)
+```
+
+
+```{r, echo = FALSE, results = 'hide'}
+demo <- 
+  read_excel("../data/demo_2022.xlsx",
+             range = "A1:O62")
+demo %<>%
+  data.frame
+names(demo) <-
+  c("Year", "Total", "P0_14", "P15_64", "P65_", "C0_14", "C15_64", "C65_", "TDR", "YDR", "ODR", "Aging_Index", "Med_Age", "Med_Age_M", "Med_Age_F")
+demo_labour <-
+  read_excel("../data/demo_labour_2022.xlsx",
+             range = "A1:E62")
+demo_labour %<>%
+  data.frame
+names(demo_labour) <-
+  c("Year", "Total", "L15_24", "L25_49", "L50_64")
+str(demo)
+str(demo_labour)
+```
+
+## Barplot
+
+### 연령대별 인구 추계
+
+```{r, echo = FALSE, fig.width = 12, fig.height = 6}
+library(extrafont)
+par(family = "KoPubWorldDotum Medium")
+par(mar = c(5, 5, 4, 2) + 0.1)
+col_blues <- brewer.pal(9, "Blues")
+b1 <- 
+  barplot(t(as.matrix(demo[1:41, c("P0_14", "P15_64", "P65_")])),
+          axes = FALSE, 
+          ann = FALSE,
+          ylim = c(0, 55000000),
+          space = 0.6,
+          col = col_blues[c(9, 7, 3)],
+          names.arg = demo$Year[1:41])
+# axis(side = 1, at = )
+axis(side = 2, at = seq(0, 55000000, by = 5000000), labels = format(seq(0, 5500, by = 500), big.mark = ","), las = 2)
+title(main = "연령대별 인구 추계", family = "KoPubWorldDotum Bold", cex.main = 1.5)
+title(xlab = "(연도)", line = 2)
+title(ylab = "(만명)", line = 3.5)
+# text(x = b1[11], y = 52000000, labels = "5,183.6")
+text(x = b1[11], y = rowSums(demo[demo$Year == "2020", 3:5, drop = FALSE])*1.03, labels = "5,183.6")
+text(x = b1[32], y = rowSums(demo[demo$Year == "2040", 3:5, drop = FALSE])*1.03, labels = "4,999.8")
+legend("bottomright", c("0-14세", "15-64세", "65세 이상"), fill = col_blues[c(9, 7, 3)], inset = c(0.35, 0.95), xpd = TRUE, horiz = TRUE, bty = "n")
+# dev.copy(png, file = "../pics/demo_2022_total.png", width = 16, height = 8)
+# dev.off()
+```
+
+### 생산가능인구 추계
+
+```{r, echo = FALSE, fig.width = 12, fig.height = 6}
+library(extrafont)
+par(family = "KoPubWorldDotum Medium")
+par(mar = c(5, 5, 4, 2) + 0.1)
+col_blues <- brewer.pal(9, "Blues")
+b1 <- 
+  barplot(t(as.matrix(demo_labour[1:41, c("L15_24", "L25_49", "L50_64")])),
+          axes = FALSE, 
+          ann = FALSE,
+          ylim = c(0, 40000),
+          space = 0.6,
+          col = col_blues[c(9, 7, 3)],
+          names.arg = demo$Year[1:41])
+# axis(side = 1, at = )
+axis(side = 2, at = seq(0, 40000, by = 5000), labels = format(seq(0, 4000, by = 500), big.mark = ","), las = 2)
+title(main = "생산가능인구 추계", family = "KoPubWorldDotum Bold", cex.main = 1.5)
+title(xlab = "(연도)", line = 2)
+title(ylab = "(만명)", line = 3.5)
+text(x = b1[10], y = demo[demo$Year == "2019", 4] / 1000 *1.03, labels = "3,762.4")
+legend("bottomright", c("15-24세", "25-49세", "50-64세"), fill = col_blues[c(9, 7, 3)], inset = c(0.35, 0.95), xpd = TRUE, horiz = TRUE, bty = "n")
+# dev.copy(png, file = "../pics/demo_2022_total.png", width = 16, height = 8)
+# dev.off()
+```
+
+### 유소년인구 규모/구성비 추계
+
+```{r, echo = FALSE, fig.width = 12, fig.height = 6}
+library(extrafont)
+par(family = "KoPubWorldDotum Medium")
+par(mar = c(5, 5, 4, 2) + 0.1)
+col_blues <- brewer.pal(9, "Blues")
+b1 <- 
+  barplot(t(as.matrix(demo[1:41, c("C0_14", "C15_64", "C65_")])),
+          axes = FALSE, 
+          ann = FALSE,
+          ylim = c(0, 100),
+          space = 0.2,
+          col = col_blues[c(9, 7, 3)],
+          names.arg = demo$Year[1:41])
+# axis(side = 1, at = )
+axis(side = 2, at = seq(0, 100, by = 20), labels = format(seq(0, 100, by = 20)), las = 2)
+title(main = "인구구성비 추계", family = "KoPubWorldDotum Bold", cex.main = 1.5)
+title(xlab = "(연도)", line = 2)
+title(ylab = "(%)", line = 3.5)
+text(x = b1, y = demo[1:41, "C0_14"] / 2, labels = format(demo[1:41, "C0_14"], digits = 1, nsmall = 1), col = "white", cex = 0.6)
+text(x = b1, y = demo[1:41, "C0_14"] + demo[1:41, "C15_64"] / 2, labels = format(demo[1:41, "C15_64"], digits = 1, nsmall = 1), col = "white", cex = 0.6)
+text(x = b1, y = demo[1:41, "C0_14"] + demo[1:41, "C15_64"] + demo[1:41, "C65_"] / 2, labels = format(demo[1:41, "C65_"], digits = 1, nsmall = 1), col = "black", cex = 0.6)
+legend("bottomright", c("0-14세", "15-64세", "65세 이상"), fill = col_blues[c(9, 7, 3)], inset = c(0.35, 0.99), xpd = TRUE, horiz = TRUE, bty = "n")
+```
+
+### 2050 ~ 2070
+
+```{r, echo = FALSE, fig.width = 12, fig.height = 6}
+library(extrafont)
+par(family = "KoPubWorldDotum Medium")
+par(mar = c(5, 5, 4, 2) + 0.1)
+col_blues <- brewer.pal(9, "Blues")
+b1 <- 
+  barplot(t(as.matrix(demo[41:61, c("C0_14", "C15_64", "C65_")])),
+          axes = FALSE, 
+          ann = FALSE,
+          ylim = c(0, 100),
+          space = 0.2,
+          col = col_blues[c(9, 7, 3)],
+          names.arg = demo$Year[41:61])
+# axis(side = 1, at = )
+axis(side = 2, at = seq(0, 100, by = 20), labels = format(seq(0, 100, by = 20)), las = 2)
+title(main = "인구구성비 추계", family = "KoPubWorldDotum Bold", cex.main = 1.5)
+title(xlab = "(연도)", line = 2)
+title(ylab = "(%)", line = 3.5)
+text(x = b1, y = demo[41:61, "C0_14"] / 2, labels = format(demo[41:61, "C0_14"], digits = 1, nsmall = 1), col = "white", cex = 1)
+text(x = b1, y = demo[41:61, "C0_14"] + demo[41:61, "C15_64"] / 2, labels = format(demo[41:61, "C15_64"], digits = 1, nsmall = 1), col = "white", cex = 1)
+text(x = b1, y = demo[41:61, "C0_14"] + demo[41:61, "C15_64"] + demo[41:61, "C65_"] / 2, labels = format(demo[41:61, "C65_"], digits = 1, nsmall = 1), col = "black", cex = 1)
+legend("bottomright", c("0-14세", "15-64세", "65세 이상"), fill = col_blues[c(9, 7, 3)], inset = c(0.35, 0.99), xpd = TRUE, horiz = TRUE, bty = "n")
+```
+
+### 중위연령
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 7.5}
+par(family = "KoPubWorldDotum Medium")
+plot(Med_Age ~ Year, data = demo, type = "l", lwd = 3, ann = FALSE, xlim = c(2010, 2072), ylim = c(30, 70))
+lines(Med_Age_M ~ Year, data = demo, type = "l", col = "blue", lwd = 3)
+lines(Med_Age_F ~ Year, data = demo, type = "l", col = "red", lwd = 3)
+text(x = 2070, y = demo[61, c("Med_Age", "Med_Age_M", "Med_Age_F")], 
+     labels = format(demo[61, c("Med_Age", "Med_Age_M", "Med_Age_F")], digist = 1, nsmall = 1),
+     pos = c(4, 1, 3))
+legend("topleft", inset = 0.1, lty = 1, lwd = 3, col = c("black", "blue", "red"), legend = c("전체", "남자", "여자"))
+title(main = "성별 중위연령 추계", family = "KoPubWorldDotum Bold", cex.main = 1.5)
+title(xlab = "(연도)")
+title(ylab = "중위 연령(세)")
+```
+
+### 부양비
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 7.5}
+par(family = "KoPubWorldDotum Medium")
+plot(ODR ~ Year, data = demo, type = "l", lwd = 3, ann = FALSE, xlim = c(2010, 2072), ylim = c(0, 110))
+lines(YDR ~ Year, data = demo, type = "l", col = "blue", lwd = 3)
+text(x = 2070, y = demo[61, c("ODR", "YDR")], 
+     labels = format(demo[61, c("ODR", "YDR")], digits = 2, nsmall = 1),
+     pos = c(1, 3))
+legend("topleft", inset = 0.1, lty = 1, lwd = 3, col = c("black", "blue"), legend = c("노년부양비", "유소년부양비"))
+title(main = "부양비 추계", family = "KoPubWorldDotum Bold", cex.main = 1.5)
+title(xlab = "(연도)")
+title(ylab = "부양비(%)")
+```
+`

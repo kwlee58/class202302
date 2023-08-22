@@ -1,0 +1,369 @@
+---
+title: "Quiz 221010 (Cognitive Reponse Test)"
+author: "coop711"
+date: "2022-10-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("pander", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+library(readxl)
+# library(openxlsx)
+library(pander)
+library(knitr)
+library(magrittr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+options(width = 180)
+```
+
+```{r, data, echo = FALSE, results = 'hide', message = FALSE}
+load("./red_and_black_220909_data.RData")
+quiz <- 
+  read_excel("../data/quiz221010.xlsx",
+             range = "A2:O989",
+             col_names = FALSE)
+names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:3),  "group", "Q4_R", "Q5_R", "Q6_R", "Q4_B", "Q5_B", "Q6_B")
+quiz$dept <- factor(quiz$dept)
+quiz$group <- factor(quiz$group, 
+                         levels = c("Red", "Black"))
+quiz[10:15] %<>% 
+  sapply(FUN = {. %>% strsplit(split = "[.]") %>% sapply(`[`, 1)})
+#> factor로 만들 것을 처음부터 고려한다면 cbind에서 stringsAsFactors = TRUE, 즉 default로 놔 두면 된다.
+quiz %<>% cbind(mapply(function(x, y){ifelse(is.na(x), y, x)}, quiz[10:12], quiz[13:15], 
+                              USE.NAMES = FALSE)) 
+names(quiz)[16:18] <- paste0("Q", 4:6)
+#> 다음 코드에서 sapply를 사용하면 character 행렬이 나오게 되므로 반드시 lapply를 사용해야 한다.
+quiz[paste0("Q", 4:6)] %<>% 
+  lapply(factor) 
+Black <- quiz$group == "Black"
+quiz[Black, paste0("Q", 4:6)] %<>%
+  lapply(`levels<-`, c("나", "가"))
+quiz[c("group", paste0("Q", 4:6))]  
+quiz$Q4 %<>%
+  factor(levels = c("가", "나"), labels = c("10센트", "5센트"))
+quiz$Q5 %<>%
+  factor(levels = c("가", "나"), labels = c("100분", "5분"))
+quiz$Q6 %<>%
+  factor(levels = c("가", "나"), labels = c("24일", "47일"))
+quiz$Q1 %<>% 
+  factor(levels = c("랜덤화", "가짜약 대조군", "이중눈가림", "층화"))
+quiz$Q2 %<>% 
+  factor(levels = c("28 vs 46", "28 vs 71", "28 vs 25", "25 vs 54"))
+quiz$Q3 %<>% 
+  factor(levels = c("NFIP 설계의 백신 접종 집단", 
+                    "플라시보 컨트롤 설계의 백신 접종 집단", 
+                    "플라시보 컨트롤 설계의 생리식염수 접종 집단", 
+                    "NFIP 설계의 대조군 집단"))
+#> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
+quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
+quiz$days <- as.numeric(difftime("2022-10-24 09:00:00", quiz$time, units = 'days'))
+quiz$hours <- as.numeric(difftime("2022-10-24 09:00:00", quiz$time, units = 'hours'))
+str(quiz)
+```
+
+```{r, randomization, echo = FALSE, results = 'hide'}
+pander(summary(quiz))
+```
+
+## Red, Black을 잘못 표시한 사람들
+
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과는 여기서도 작동하고 있는 걸 알 수 있습니다. Red를 Black 이라고 한 사람의 수효(5명)과 Black을 Red 라고 한 사람의 수효(3명)이 비슷합니다 group 을 잘못 기억하고 있는 사람들의 수효조차 Red, Black 에 비슷하게 나뉘었습니다. 굳이 학번까지 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
+다
+
+```{r, wrong group, echo = FALSE}
+quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
+wrong_group <- which(quiz$group != quiz$group2)
+# class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
+#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander
+quiz[wrong_group, c("id", "group2", "group")] %>%
+  `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
+  pander
+wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
+                   "구글예습퀴즈" = quiz$group)
+wrong_tbl %>%
+  pander(row.names = c("Red(랜덤화출석부)", "Black(랜덤화출석부)"), col.names = c("Red(구글예습퀴즈)", "Black(구글예습퀴즈)"))
+```
+
+# 퀴즈 응답 비교
+
+# Salk Vaccine Field Trial
+
+## Q1. Randomized Placebo Control Approach의 특징 
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz180409_01.png")
+```
+
+### Randomization
+
+```{r, randomized placebo control approach, echo = FALSE}
+tbl_q1_a <- quiz$Q1 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+# colnames(tbl_q1_a)[6] <- "결석"
+tbl_q1_a %>% 
+  pander
+tbl_q1_a %>%
+  `[`(-3, -c(4:7)) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### Randomization (%)
+
+```{r, randomized placebo control approach in percentage, echo = FALSE}
+tbl_q1_a %>% 
+  `[`(3, -(5:7)) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q2. Clear Evidence of Vaccine Effects
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz180409_02.png")
+```
+
+### Treatment vs Control
+
+```{r, Treatment vs Control, echo = FALSE}
+tbl_q2_a <- quiz$Q2 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+# colnames(tbl_q2_a)[5] <- "결석"
+tbl_q2_a %>% 
+  pander
+tbl_q2_a %>%
+  `[`(-3, -5) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### Treatment vs Control (%)
+
+```{r, opposite in percentage, echo = FALSE}
+tbl_q2_a %>% 
+  `[`(3, -5) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q3. Polio Rates of 3rd Grades
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/polio_03.png")
+```
+
+### Control group of NFIP design
+
+```{r, NFIP, echo = FALSE}
+tbl_q3_a <- quiz$Q3 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+# colnames(tbl_q3_a)[5] <- "누락"
+tbl_q3_a %>% 
+  pander
+tbl_q3_a %>%
+  `[`(-3, -5) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### Control group of NFIP Design (%)
+
+```{r, NFIP %, echo = FALSE}
+tbl_q3_a %>% 
+  `[`(3, -(5:6)) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+# Red and Black Cognitive Response Test
+
+3초 안에 답하노라면 틀리기 쉬운 인지반응 테스트인데 정답률이 상당히 높습니다. Red 와 Black 은 선지의 순서를 바꾸어 1번효과를 알아보려고 하였으나 발견하지 못하고,  엄청난 수준의 랜덤화 효과를 관찰합니다.
+
+## Q4, 야구 방망이와 공세트
+
+```{r, echo = FALSE, out.width = "90%"}
+include_graphics("../pics/CRT_Q1.png")
+```
+
+## 집계
+
+```{r, social comparison, echo = FALSE}
+tbl_q4_a <- quiz$Q4 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+rownames(tbl_q4_a)[1:2] <- c("Red(10센트 먼저)", "Black(5센트 먼저)")
+tbl_q4_a %>% 
+  pander
+tbl_q4_a %>%
+  `[`(-3, -3) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+## % 비교.  
+
+```{r, social comparison in percentage, echo = FALSE}
+tbl_q4_a %>% 
+  `[`(-3, -3) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## 합산(%)
+
+```{r, percentage in sum, echo = FALSE}
+tbl_q4_a %>% 
+  `[`(3, -3, drop = FALSE) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q5. 가발 만드는 기계
+
+```{r, echo = FALSE, out.width = "90%"}
+include_graphics("../pics/CRT_Q2.png")
+```
+
+## 집계
+
+```{r, echo = FALSE}
+tbl_q5_a <- quiz$Q5 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+rownames(tbl_q5_a)[1:2] <- c("Red(100분 먼저)", "Black(5분 먼저)")
+tbl_q5_a %>% 
+  pander
+tbl_q5_a %>%
+  `[`(-3, -3) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+## % 비교.  
+
+```{r, echo = FALSE}
+tbl_q5_a %>% 
+  `[`(-3, -3) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## 합산(%)
+
+```{r, echo = FALSE}
+tbl_q5_a %>% 
+  `[`(3, -3, drop = FALSE) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q6. 호수에 수련
+
+```{r, echo = FALSE, out.width = "90%"}
+include_graphics("../pics/CRT_Q3.png")
+```
+
+## 집계
+
+```{r, echo = FALSE}
+tbl_q6_a <- quiz$Q6 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+rownames(tbl_q6_a)[1:2] <- c("Red(24일 먼저)", "Black(47일 먼저)")
+tbl_q6_a %>% 
+  pander
+tbl_q6_a %>%
+  `[`(-3, -3) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+## % 비교.  
+
+```{r, echo = FALSE}
+tbl_q6_a %>% 
+  `[`(-3, -3) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## 합산(%)
+
+```{r, echo = FALSE}
+tbl_q6_a %>% 
+  `[`(3, -3, drop = FALSE) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+### 일 단위 마감 시간으로부터 제출 시간의 분포
+
+```{r, echo = FALSE}
+par(family = "KoPubWorldDotum Medium")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+#  cbind("계" = rowSums(.)) %>%
+#  rbind("계" = colSums(.)) %>%
+  pander(caption = "일 단위")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+  chisq.test %>%
+  pander
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table %>%
+  rev %>%
+  barplot(space = 0, 
+          names.arg = rep(c("월", "화", "수", "목", "금", "토", "일"), 2), 
+          col = c(rep("white", 13), "pink"))
+title(main = "일 단위 퀴즈 제출 횟수")
+```
+
+
+```{r, save, echo = FALSE}
+saveRDS(quiz[c("id", "name")], file = "./quiz221010.RDS")
+save.image("../R/quiz221010.RData")
+```

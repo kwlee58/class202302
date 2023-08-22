@@ -1,0 +1,4 @@
+"0","library(knitr)"
+"0","library(pander)"
+"0","panderOptions(""table.split.table"", Inf)"
+"0","knitr::opts_chunk$set(echo = TRUE)"
