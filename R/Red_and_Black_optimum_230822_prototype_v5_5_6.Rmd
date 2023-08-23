@@ -30,7 +30,7 @@ source("./RnB_2023_v5.R")
 
 ## Search for Best Configuration
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 M1 <- 5000001
 M2 <- 6000000
 Xsum <- sapply(M1:M2, red_and_black)
@@ -228,7 +228,7 @@ Xsum_min
 -->
 
 <!--
-```{r, save, eval = FALSE}
+```{r, save, eval = TRUE}
 save.image("./red_and_black_optimum_data_230822_v5_5.RData")
 ```
 -->

@@ -1,2 +1,0 @@
-"0","# BFI_level_tbl <- sapply(BFI_level_kr, table)"
-"0","# kable(BFI_level_tbl[4:1, ])"

@@ -1,6 +1,0 @@
-"0","BFI_full_kr <- BFI_level_kr_df %>%"
-"0","  left_join(class_roll, ., by = ""ID"")"
-"0","# Name 제외"
-"0","BFI_full_kr <- BFI_full_kr[-2]"
-"0","BFI_full_kr %>%"
-"0","  kable"

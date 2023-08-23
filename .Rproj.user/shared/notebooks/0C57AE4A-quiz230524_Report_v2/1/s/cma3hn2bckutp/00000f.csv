@@ -1,7 +1,0 @@
-"0","tbl_q3_a %>%"
-"0","  `[`(3, -3, drop = FALSE) %>%"
-"0","  prop.table %>%"
-"0","  cbind(""계"" = rowSums(.)) %>%"
-"0","  `*`(100) %>%"
-"0","  format(digits = 2, nsmall = 1) %>%"
-"0","  kable(align = ""c"", row.names = FALSE)"

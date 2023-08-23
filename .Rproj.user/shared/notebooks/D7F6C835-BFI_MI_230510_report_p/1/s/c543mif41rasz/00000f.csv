@@ -1,3 +1,0 @@
-"0","BFI_level_kr %>%"
-"0","  cbind(BFI[c(""E"", ""N"", ""C"", ""A"", ""O"")]) %>%"
-"0","  kable(align = ""c"")"

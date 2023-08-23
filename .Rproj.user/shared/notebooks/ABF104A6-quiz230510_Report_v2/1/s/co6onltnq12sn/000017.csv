@@ -1,4 +1,0 @@
-"0","quiz$Q7 <- ifelse(is.na(quiz$Q7_R), quiz$Q7_B, quiz$Q7_R)"
-"0","quiz$Q7 %<>% "
-"0","  strsplit(split = "" : "") %>% sapply(`[`, 1)"
-"0","quiz[c(""group"", ""Q7_R"", ""Q7_B"", ""Q7"")]"

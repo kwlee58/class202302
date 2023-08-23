@@ -1,5 +1,0 @@
-"0","# class_roll[class_roll$id %in% setdiff(b_id, a_id), c(""id"", ""name"")]"
-"0","#> after 는 수행하고 before 는 안한 사람  "
-"0","setdiff(a_id, b_id) %>%"
-"0","  `%in%`(class_roll$id, .) %>%"
-"0","  `[`(class_roll, ., c(""id"", ""name""))"

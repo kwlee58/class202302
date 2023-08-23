@@ -1,8 +1,0 @@
-"0","# title(main = ""일 단위 퀴즈 제출 인원"", sub = paste0(""Quiz230308 ("", N, ""명 제출)""))"
-"0","dev.copy(png, file = ""../pics/2301/quiz_submission_2.png"", width = 640, height = 480)"
-"1","quartz_off_screen "
-"1","
-"
-"1","                3 "
-"1","
-"

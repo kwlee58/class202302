@@ -1,6 +1,0 @@
-"0","tbl_q3_a <- quiz$Q3 %>%"
-"0","  table(quiz$group, ., useNA = ""ifany"") %>%"
-"0","  cbind(""계"" = rowSums(.)) %>%"
-"0","  rbind(""계"" = colSums(.))"
-"0","tbl_q3_a %>% "
-"0","  kable"
