@@ -32,13 +32,13 @@ source("./RnB_2023.R")
 ## Randomization
 
 ```{r, randomization}
-set.seed(94269)
+set.seed(5340513)
 N <- nrow(class_roll) 
 class_roll$group <- 
   sample(1:N) %%
   2 %>%
   factor(levels = c(0, 1), labels = c("Red", "Black"))
-red_and_black(94269)
+# red_and_black(94269)
 ```
 
 ### 학년
@@ -179,6 +179,7 @@ Xsum_min
 
 <!--
 ```{r, save}
+saveRDS(class_roll, file = "./class_roll0822.RDS")
 save.image("./red_and_black_230822_data.RData")
 ```
 -->
