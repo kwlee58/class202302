@@ -1,5 +1,5 @@
 ---
-title: "Red and Black 230307"
+title: "Red and Black 230901"
 output: html_document
 ---
 
@@ -21,12 +21,12 @@ options(width = 180)
 -->
 
 ```{r, data, echo = FALSE, results = "hide"}
-class_roll0227 <- readRDS("./class_roll0227.RDS")
-# load("./red_and_black_230227_data.RData")
-# class_roll0227 <- class_roll
-nrow(class_roll0227)
-class_roll <- read_excel("../data/class_roll230307.xlsx",
-                         range = "B1:I1025",
+class_roll0822 <- readRDS("./class_roll0822.RDS")
+# load("./red_and_black_230822_data.RData")
+# class_roll0822 <- class_roll
+nrow(class_roll0822)
+class_roll <- read_excel("../data/class_roll230901.xlsx",
+                         range = "B1:I920",
                          col_names = TRUE,
                          col_types = "text")
 nrow(class_roll)
@@ -36,29 +36,29 @@ class_roll$status <-
   ifelse(is.na(class_roll$status), "휴학", class_roll$status)
 str(class_roll)
 class_roll$group <- 
-  class_roll0227$group[match(class_roll$id, class_roll0227$id)]
+  class_roll0822$group[match(class_roll$id, class_roll0822$id)]
 str(class_roll)
 class_roll$college[class_roll$college == "공과대학"] <- "정보과학대학"
 ```
 
-### 2월 27일자 출석부에만 나오는 사람들의 분포
+### 8월 22일자 출석부에만 나오는 사람들의 분포
 
 ```{r, echo = FALSE}
-id_out <- setdiff(class_roll0227$id, class_roll$id)
-id_new <- setdiff(class_roll$id, class_roll0227$id)
+id_out <- setdiff(class_roll0822$id, class_roll$id)
+id_new <- setdiff(class_roll$id, class_roll0822$id)
 N_new <- length(id_new)
-id_stay <- setdiff(class_roll0227$id, id_out)
-class_roll0227[class_roll0227$id %in% id_out, c("id", "group")] %>%
+id_stay <- setdiff(class_roll0822$id, id_out)
+class_roll0822[class_roll0822$id %in% id_out, c("id", "group")] %>%
   pander
-class_roll0227$group %>%
-  `[`(class_roll0227$id %in% id_out) %>%
+class_roll0822$group %>%
+  `[`(class_roll0822$id %in% id_out) %>%
   table %>%
   pander
-N_stay <- class_roll0227$group %>%
-  `[`(class_roll0227$id %in% id_stay) %>%
+N_stay <- class_roll0822$group %>%
+  `[`(class_roll0822$id %in% id_stay) %>%
   length
-red_stay <- class_roll0227$group %>%
-  `[`(class_roll0227$id %in% id_stay) %>%
+red_stay <- class_roll0822$group %>%
+  `[`(class_roll0822$id %in% id_stay) %>%
   table %>%
   `[`(1) %>%
   unname
@@ -66,7 +66,7 @@ N <- nrow(class_roll)
 red_new <- floor((N - 2 * red_stay) / 2)
 ```
 
-### 3월 7일 출석부에도 나오는 사람들의 데이터 구조
+### 9월 1일 출석부에도 나오는 사람들의 데이터 구조
 
 ```{r, echo = FALSE}
 str(class_roll[class_roll$id %in% id_stay, ])
@@ -75,7 +75,7 @@ str(class_roll[class_roll$id %in% id_stay, ])
 ### 수강신청 변경으로 나간 사람들의 데이터 구조
 
 ```{r, echo = FALSE}
-str(class_roll0227[class_roll0227$id %in% id_out, ])
+str(class_roll0822[class_roll0822$id %in% id_out, ])
 ```
 
 ### 수강 신청 변경으로 새로 들어온 사람들의 데이터 구조
@@ -90,9 +90,9 @@ str(class_roll[class_roll$id %in% id_new, ])
 str(class_roll)
 ```
 
-### 새로 들어온 사람에게만 랜덤화 적용
+### 100만번씩 10회 반복한 결과를 
 
-```{r, sub randomization, echo = FALSE, eval = TRUE}
+```{r, sub randomization, echo = FALSE, eval = FALSE}
 source("./RnB_v4_2023.R")
 M1 <- 1
 M2 <- 100000
@@ -116,13 +116,12 @@ Xmin
 ## Randomization
 
 ```{r, randomization}
-# Xmin <- 353308
+Xmin <- 9028589
 set.seed(Xmin)
 id_red <- sample(1:N_new, size = red_new)
 class_roll[class_roll$id %in% id_new, "group"] <- 
   factor(ifelse(1:N_new %in% id_red, "Red", "Black"), levels = c("Red", "Black")) 
 class_roll[order(class_roll$name), c("id", "group")]
-# red_and_black(Xmin)
 ```
 -->
 
@@ -137,7 +136,7 @@ tbl1 <- class_roll %$%
   `colnames<-`(c("2017 이전", 2018:2023)) 
 tbl1 %>%
   pander
-class_roll <- class_roll[, names(class_roll0227)]
+class_roll <- class_roll[, names(class_roll0822)]
 tbl1 %>%
   chisq.test(simulate.p.value = FALSE) %>%
   pander
@@ -279,7 +278,7 @@ class_roll %$%
 ```{r, save}
 class_roll %>%
   `[`(.$id %>% order, c("id", "group")) %>%
-  saveRDS(file = "./class_id_group230307.RDS")
-save.image("./red_and_black_230307_data.RData")
+  saveRDS(file = "./class_id_group230901.RDS")
+save.image("./red_and_black_230901_data.RData")
 ```
 -->
