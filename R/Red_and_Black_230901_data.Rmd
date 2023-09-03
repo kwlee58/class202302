@@ -104,6 +104,7 @@ X3min
 ### e-mail 서비스업체
 
 ```{r, e_mail}
+class_roll$email[718] <- "cmsgood99@naver.com"
 tbl4 <- class_roll$email %>%
   strsplit("@", fixed = TRUE) %>%
   sapply("[", 2) %>%

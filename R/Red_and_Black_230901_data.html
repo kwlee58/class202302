@@ -588,7 +588,8 @@ X3min</code></pre>
 </div>
 <div id="e-mail-서비스업체" class="section level3">
 <h3>e-mail 서비스업체</h3>
-<pre class="r"><code>tbl4 &lt;- class_roll$email %&gt;%
+<pre class="r"><code>class_roll$email[718] &lt;- &quot;cmsgood99@naver.com&quot;
+tbl4 &lt;- class_roll$email %&gt;%
   strsplit(&quot;@&quot;, fixed = TRUE) %&gt;%
   sapply(&quot;[&quot;, 2) %&gt;%
   `==`(&quot;naver.com&quot;) %&gt;%
@@ -613,8 +614,8 @@ tbl4 %&gt;%
 <tbody>
 <tr class="odd">
 <td align="center"><strong>Red</strong></td>
-<td align="center">349</td>
-<td align="center">110</td>
+<td align="center">350</td>
+<td align="center">109</td>
 </tr>
 <tr class="even">
 <td align="center"><strong>Black</strong></td>
@@ -627,8 +628,8 @@ tbl4 %&gt;%
   chisq.test(simulate.p.value = TRUE) %&gt;%
   `[[`(1)
 X4min</code></pre>
-<pre><code>##   X-squared 
-## 0.003436752</code></pre>
+<pre><code>##  X-squared 
+## 0.01852432</code></pre>
 </div>
 <div id="전화번호의-분포" class="section level3">
 <h3>전화번호의 분포</h3>
@@ -848,7 +849,7 @@ X7min</code></pre>
 <pre class="r"><code>Xsum_min &lt;- X0min + X1min + X2min + X3min + X4min + X5min + X6min + X7min
 Xsum_min</code></pre>
 <pre><code>## X-squared 
-##  7.266823</code></pre>
+##  7.281911</code></pre>
 <!--
 
 ```r

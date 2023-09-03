@@ -11,7 +11,7 @@
 
 
 
-<title>Red and Black 230901</title>
+<title>Red and Black 230901 : Those who left</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -348,7 +348,7 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Red and Black 230901</h1>
+<h1 class="title toc-ignore">Red and Black 230901 : Those who left</h1>
 
 </div>
 
@@ -506,74 +506,92 @@ display: none;
 </tr>
 </tbody>
 </table>
-</div>
-<div id="월-1일-출석부에도-나오는-사람들의-데이터-구조" class="section level3">
-<h3>9월 1일 출석부에도 나오는 사람들의 데이터 구조</h3>
-<pre><code>## tibble [879 × 9] (S3: tbl_df/tbl/data.frame)
-##  $ college: chr [1:879] &quot;인문대학&quot; &quot;사회과학대학&quot; &quot;사회과학대학&quot; &quot;경영대학&quot; ...
-##  $ dept   : chr [1:879] &quot;러시아학과&quot; &quot;광고홍보학과&quot; &quot;법학과&quot; &quot;금융재무학과&quot; ...
-##  $ year   : chr [1:879] &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; ...
-##  $ id     : chr [1:879] &quot;20161723&quot; &quot;20162617&quot; &quot;20162715&quot; &quot;20163118&quot; ...
-##  $ name   : chr [1:879] &quot;이장호&quot; &quot;박현규&quot; &quot;김현욱&quot; &quot;서장민&quot; ...
-##  $ status : chr [1:879] &quot;학생&quot; &quot;학생&quot; &quot;학생&quot; &quot;학생&quot; ...
-##  $ email  : chr [1:879] &quot;jangho5636@gmail.com&quot; &quot;digiphk12@naver.com&quot; &quot;gusdnr1575@naver.com&quot; &quot;sjm3756@naver.com&quot; ...
-##  $ cell_no: chr [1:879] &quot;01062695636&quot; &quot;01024337556&quot; &quot;01038941575&quot; &quot;01040863756&quot; ...
-##  $ group  : Factor w/ 2 levels &quot;Red&quot;,&quot;Black&quot;: 1 2 1 2 2 2 2 1 2 2 ...</code></pre>
-</div>
-<div id="수강신청-변경으로-나간-사람들의-데이터-구조" class="section level3">
-<h3>수강신청 변경으로 나간 사람들의 데이터 구조</h3>
-<pre><code>## tibble [29 × 10] (S3: tbl_df/tbl/data.frame)
-##  $ college: chr [1:29] &quot;자연과학대학&quot; &quot;사회과학대학&quot; &quot;자연과학대학&quot; &quot;미디어스쿨&quot; ...
-##  $ dept   : chr [1:29] &quot;생명과학과&quot; &quot;정치행정학과&quot; &quot;생명과학과&quot; &quot;디지털미디어콘텐츠전공&quot; ...
-##  $ year   : chr [1:29] &quot;3&quot; &quot;3&quot; &quot;3&quot; &quot;4&quot; ...
-##  $ id     : chr [1:29] &quot;20163504&quot; &quot;20172435&quot; &quot;20173501&quot; &quot;20182526&quot; ...
-##  $ name   : chr [1:29] &quot;김상민&quot; &quot;조한신&quot; &quot;강민재&quot; &quot;박요셉&quot; ...
-##  $ status : chr [1:29] &quot;학생&quot; &quot;학생&quot; &quot;학생&quot; &quot;학생&quot; ...
-##  $ email  : chr [1:29] &quot;sbnik35@naver.com&quot; &quot;johs0105@naver.com&quot; &quot;max7352@naver.com&quot; &quot;pjs02080208@gmail.com&quot; ...
-##  $ cell_no: chr [1:29] &quot;01052317315&quot; &quot;01029962524&quot; &quot;01051377352&quot; &quot;01088701842&quot; ...
-##  $ group  : Factor w/ 2 levels &quot;Red&quot;,&quot;Black&quot;: 2 2 1 1 1 1 2 1 2 2 ...
-##  $ id_2   : chr [1:29] &quot;2016&quot; &quot;2017&quot; &quot;2017&quot; &quot;2018&quot; ...</code></pre>
-</div>
-<div id="수강-신청-변경으로-새로-들어온-사람들의-데이터-구조" class="section level3">
-<h3>수강 신청 변경으로 새로 들어온 사람들의 데이터 구조</h3>
-<pre><code>## tibble [40 × 9] (S3: tbl_df/tbl/data.frame)
-##  $ college: chr [1:40] &quot;사회과학대학&quot; &quot;인문대학&quot; &quot;경영대학&quot; &quot;사회과학대학&quot; ...
-##  $ dept   : chr [1:40] &quot;경제학과&quot; &quot;중국학과&quot; &quot;금융재무학과&quot; &quot;광고홍보학과&quot; ...
-##  $ year   : chr [1:40] &quot;3&quot; &quot;3&quot; &quot;4&quot; &quot;3&quot; ...
-##  $ id     : chr [1:40] &quot;20173026&quot; &quot;20191508&quot; &quot;20192818&quot; &quot;20202992&quot; ...
-##  $ name   : chr [1:40] &quot;오병우&quot; &quot;김용연&quot; &quot;김다연&quot; &quot;원현서&quot; ...
-##  $ status : chr [1:40] &quot;학생&quot; &quot;학생&quot; &quot;학생&quot; &quot;학생&quot; ...
-##  $ email  : chr [1:40] &quot;obj2107@naver.com&quot; &quot;rladyddus789@naver.com&quot; &quot;00kimdayeon@naver.com&quot; &quot;csnoi@naver.com&quot; ...
-##  $ cell_no: chr [1:40] &quot;01038762107&quot; &quot;01074527583&quot; &quot;01054923216&quot; &quot;01038676579&quot; ...
-##  $ group  : Factor w/ 2 levels &quot;Red&quot;,&quot;Black&quot;: NA NA NA NA NA NA NA NA NA NA ...</code></pre>
-</div>
-<div id="남아-있던-사람들-새로-들어온-사람들" class="section level3">
-<h3>남아 있던 사람들 + 새로 들어온 사람들</h3>
-<pre><code>## tibble [919 × 9] (S3: tbl_df/tbl/data.frame)
-##  $ college: chr [1:919] &quot;인문대학&quot; &quot;사회과학대학&quot; &quot;사회과학대학&quot; &quot;경영대학&quot; ...
-##  $ dept   : chr [1:919] &quot;러시아학과&quot; &quot;광고홍보학과&quot; &quot;법학과&quot; &quot;금융재무학과&quot; ...
-##  $ year   : chr [1:919] &quot;4&quot; &quot;4&quot; &quot;4&quot; &quot;4&quot; ...
-##  $ id     : chr [1:919] &quot;20161723&quot; &quot;20162617&quot; &quot;20162715&quot; &quot;20163118&quot; ...
-##  $ name   : chr [1:919] &quot;이장호&quot; &quot;박현규&quot; &quot;김현욱&quot; &quot;서장민&quot; ...
-##  $ status : chr [1:919] &quot;학생&quot; &quot;학생&quot; &quot;학생&quot; &quot;학생&quot; ...
-##  $ email  : chr [1:919] &quot;jangho5636@gmail.com&quot; &quot;digiphk12@naver.com&quot; &quot;gusdnr1575@naver.com&quot; &quot;sjm3756@naver.com&quot; ...
-##  $ cell_no: chr [1:919] &quot;01062695636&quot; &quot;01024337556&quot; &quot;01038941575&quot; &quot;01040863756&quot; ...
-##  $ group  : Factor w/ 2 levels &quot;Red&quot;,&quot;Black&quot;: 1 2 1 2 2 2 2 1 2 2 ...</code></pre>
-</div>
-<div id="만번씩-10회-반복한-결과를" class="section level3">
-<h3>100만번씩 10회 반복한 결과를</h3>
-</div>
-<div id="randomization" class="section level2">
-<h2>Randomization</h2>
-<pre class="r"><code>Xmin &lt;- 9028589
+<!--
+### 9월 1일 출석부에도 나오는 사람들의 데이터 구조
+
+
+```
+## tibble [879 × 9] (S3: tbl_df/tbl/data.frame)
+##  $ college: chr [1:879] "인문대학" "사회과학대학" "사회과학대학" "경영대학" ...
+##  $ dept   : chr [1:879] "러시아학과" "광고홍보학과" "법학과" "금융재무학과" ...
+##  $ year   : chr [1:879] "4" "4" "4" "4" ...
+##  $ id     : chr [1:879] "20161723" "20162617" "20162715" "20163118" ...
+##  $ name   : chr [1:879] "이장호" "박현규" "김현욱" "서장민" ...
+##  $ status : chr [1:879] "학생" "학생" "학생" "학생" ...
+##  $ email  : chr [1:879] "jangho5636@gmail.com" "digiphk12@naver.com" "gusdnr1575@naver.com" "sjm3756@naver.com" ...
+##  $ cell_no: chr [1:879] "01062695636" "01024337556" "01038941575" "01040863756" ...
+##  $ group  : Factor w/ 2 levels "Red","Black": 1 2 1 2 2 2 2 1 2 2 ...
+```
+
+### 수강신청 변경으로 나간 사람들의 데이터 구조
+
+
+```
+## tibble [29 × 10] (S3: tbl_df/tbl/data.frame)
+##  $ college: chr [1:29] "자연과학대학" "사회과학대학" "자연과학대학" "미디어스쿨" ...
+##  $ dept   : chr [1:29] "생명과학과" "정치행정학과" "생명과학과" "디지털미디어콘텐츠전공" ...
+##  $ year   : chr [1:29] "3" "3" "3" "4" ...
+##  $ id     : chr [1:29] "20163504" "20172435" "20173501" "20182526" ...
+##  $ name   : chr [1:29] "김상민" "조한신" "강민재" "박요셉" ...
+##  $ status : chr [1:29] "학생" "학생" "학생" "학생" ...
+##  $ email  : chr [1:29] "sbnik35@naver.com" "johs0105@naver.com" "max7352@naver.com" "pjs02080208@gmail.com" ...
+##  $ cell_no: chr [1:29] "01052317315" "01029962524" "01051377352" "01088701842" ...
+##  $ group  : Factor w/ 2 levels "Red","Black": 2 2 1 1 1 1 2 1 2 2 ...
+##  $ id_2   : chr [1:29] "2016" "2017" "2017" "2018" ...
+```
+
+### 수강 신청 변경으로 새로 들어온 사람들의 데이터 구조
+
+
+```
+## tibble [40 × 9] (S3: tbl_df/tbl/data.frame)
+##  $ college: chr [1:40] "사회과학대학" "인문대학" "경영대학" "사회과학대학" ...
+##  $ dept   : chr [1:40] "경제학과" "중국학과" "금융재무학과" "광고홍보학과" ...
+##  $ year   : chr [1:40] "3" "3" "4" "3" ...
+##  $ id     : chr [1:40] "20173026" "20191508" "20192818" "20202992" ...
+##  $ name   : chr [1:40] "오병우" "김용연" "김다연" "원현서" ...
+##  $ status : chr [1:40] "학생" "학생" "학생" "학생" ...
+##  $ email  : chr [1:40] "obj2107@naver.com" "rladyddus789@naver.com" "00kimdayeon@naver.com" "csnoi@naver.com" ...
+##  $ cell_no: chr [1:40] "01038762107" "01074527583" "01054923216" "01038676579" ...
+##  $ group  : Factor w/ 2 levels "Red","Black": NA NA NA NA NA NA NA NA NA NA ...
+```
+
+### 남아 있던 사람들 + 새로 들어온 사람들
+
+
+```
+## tibble [919 × 9] (S3: tbl_df/tbl/data.frame)
+##  $ college: chr [1:919] "인문대학" "사회과학대학" "사회과학대학" "경영대학" ...
+##  $ dept   : chr [1:919] "러시아학과" "광고홍보학과" "법학과" "금융재무학과" ...
+##  $ year   : chr [1:919] "4" "4" "4" "4" ...
+##  $ id     : chr [1:919] "20161723" "20162617" "20162715" "20163118" ...
+##  $ name   : chr [1:919] "이장호" "박현규" "김현욱" "서장민" ...
+##  $ status : chr [1:919] "학생" "학생" "학생" "학생" ...
+##  $ email  : chr [1:919] "jangho5636@gmail.com" "digiphk12@naver.com" "gusdnr1575@naver.com" "sjm3756@naver.com" ...
+##  $ cell_no: chr [1:919] "01062695636" "01024337556" "01038941575" "01040863756" ...
+##  $ group  : Factor w/ 2 levels "Red","Black": 1 2 1 2 2 2 2 1 2 2 ...
+```
+
+### 100만번씩 10회 반복한 결과를 
+
+
+
+## Randomization
+
+
+```r
+Xmin <- 9028589
 set.seed(Xmin)
-id_red &lt;- sample(1:N_new, size = red_new)
-class_roll[class_roll$id %in% id_new, &quot;group&quot;] &lt;- 
-  factor(ifelse(1:N_new %in% id_red, &quot;Red&quot;, &quot;Black&quot;), levels = c(&quot;Red&quot;, &quot;Black&quot;)) 
-class_roll[order(class_roll$name), c(&quot;id&quot;, &quot;group&quot;)]</code></pre>
-<pre><code>## # A tibble: 919 × 2
+id_red <- sample(1:N_new, size = red_new)
+class_roll[class_roll$id %in% id_new, "group"] <- 
+  factor(ifelse(1:N_new %in% id_red, "Red", "Black"), levels = c("Red", "Black")) 
+class_roll[order(class_roll$name), c("id", "group")]
+```
+
+```
+## # A tibble: 919 × 2
 ##    id       group
-##    &lt;chr&gt;    &lt;fct&gt;
+##    <chr>    <fct>
 ##  1 20218001 Black
 ##  2 20218006 Red  
 ##  3 20208013 Black
@@ -584,79 +602,29 @@ class_roll[order(class_roll$name), c(&quot;id&quot;, &quot;group&quot;)]</code><
 ##  8 20193601 Black
 ##  9 20182101 Black
 ## 10 20191002 Black
-## # ℹ 909 more rows</code></pre>
-<p>–&gt;</p>
-<div id="학번" class="section level3">
-<h3>학번</h3>
-<table style="width:92%;">
-<colgroup>
-<col width="16%" />
-<col width="16%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center"> </th>
-<th align="center">2017 이전</th>
-<th align="center">2018</th>
-<th align="center">2019</th>
-<th align="center">2020</th>
-<th align="center">2021</th>
-<th align="center">2022</th>
-<th align="center">2023</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center"><strong>Red</strong></td>
-<td align="center">11</td>
-<td align="center">22</td>
-<td align="center">40</td>
-<td align="center">49</td>
-<td align="center">36</td>
-<td align="center">61</td>
-<td align="center">240</td>
-</tr>
-<tr class="even">
-<td align="center"><strong>Black</strong></td>
-<td align="center">13</td>
-<td align="center">23</td>
-<td align="center">35</td>
-<td align="center">43</td>
-<td align="center">38</td>
-<td align="center">64</td>
-<td align="center">244</td>
-</tr>
-</tbody>
-</table>
-<table style="width:44%;">
-<caption>Pearson’s Chi-squared test: <code>.</code></caption>
-<colgroup>
-<col width="23%" />
-<col width="6%" />
-<col width="13%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center">Test statistic</th>
-<th align="center">df</th>
-<th align="center">P value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">1.072</td>
-<td align="center">6</td>
-<td align="center">0.9828</td>
-</tr>
-</tbody>
-</table>
-<!--
+## # ℹ 909 more rows
+```
+
+### 학번
+
+
+-----------------------------------------------------------------
+  &nbsp;     2017 이전   2018   2019   2020   2021   2022   2023 
+----------- ----------- ------ ------ ------ ------ ------ ------
+  **Red**       11        22     40     49     36     61    240  
+
+ **Black**      13        23     35     43     38     64    244  
+-----------------------------------------------------------------
+
+
+-------------------------------
+ Test statistic   df   P value 
+---------------- ---- ---------
+     1.072        6    0.9828  
+-------------------------------
+
+Table: Pearson's Chi-squared test: `.`
+
 ### 학번 홀짝
 
 
@@ -690,300 +658,87 @@ X3min <- tbl3 %>%
   `[[`(1)
 X3min
 ```
--->
-</div>
-<div id="e-mail-서비스업체" class="section level3">
-<h3>e-mail 서비스업체</h3>
-<table style="width:57%;">
-<colgroup>
-<col width="16%" />
-<col width="12%" />
-<col width="9%" />
-<col width="18%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center"> </th>
-<th align="center">네이버</th>
-<th align="center">구글</th>
-<th align="center">기타서비스</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center"><strong>Red</strong></td>
-<td align="center">351</td>
-<td align="center">96</td>
-<td align="center">12</td>
-</tr>
-<tr class="even">
-<td align="center"><strong>Black</strong></td>
-<td align="center">348</td>
-<td align="center">100</td>
-<td align="center">12</td>
-</tr>
-</tbody>
-</table>
-<table style="width:44%;">
-<caption>Pearson’s Chi-squared test: <code>.</code></caption>
-<colgroup>
-<col width="23%" />
-<col width="6%" />
-<col width="13%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center">Test statistic</th>
-<th align="center">df</th>
-<th align="center">P value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">0.09342</td>
-<td align="center">2</td>
-<td align="center">0.9544</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="전화번호의-분포" class="section level3">
-<h3>전화번호의 분포</h3>
-<table>
-<colgroup>
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-<col width="9%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center"> </th>
-<th align="center">0000~0999</th>
-<th align="center">1000~1999</th>
-<th align="center">2000~2999</th>
-<th align="center">3000~3999</th>
-<th align="center">4000~4999</th>
-<th align="center">5000~5999</th>
-<th align="center">6000~6999</th>
-<th align="center">7000~7999</th>
-<th align="center">8000~8999</th>
-<th align="center">9000~9999</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center"><strong>Red</strong></td>
-<td align="center">36</td>
-<td align="center">52</td>
-<td align="center">45</td>
-<td align="center">51</td>
-<td align="center">44</td>
-<td align="center">36</td>
-<td align="center">48</td>
-<td align="center">51</td>
-<td align="center">47</td>
-<td align="center">49</td>
-</tr>
-<tr class="even">
-<td align="center"><strong>Black</strong></td>
-<td align="center">45</td>
-<td align="center">47</td>
-<td align="center">48</td>
-<td align="center">51</td>
-<td align="center">42</td>
-<td align="center">45</td>
-<td align="center">43</td>
-<td align="center">47</td>
-<td align="center">42</td>
-<td align="center">50</td>
-</tr>
-</tbody>
-</table>
-<table style="width:44%;">
-<caption>Pearson’s Chi-squared test: <code>.</code></caption>
-<colgroup>
-<col width="23%" />
-<col width="6%" />
-<col width="13%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center">Test statistic</th>
-<th align="center">df</th>
-<th align="center">P value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">3.124</td>
-<td align="center">9</td>
-<td align="center">0.9592</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="성씨-분포" class="section level3">
-<h3>성씨 분포</h3>
-<table style="width:62%;">
-<colgroup>
-<col width="16%" />
-<col width="8%" />
-<col width="6%" />
-<col width="6%" />
-<col width="6%" />
-<col width="6%" />
-<col width="9%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center"> </th>
-<th align="center">김</th>
-<th align="center">이</th>
-<th align="center">박</th>
-<th align="center">최</th>
-<th align="center">정</th>
-<th align="center">기타</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center"><strong>Red</strong></td>
-<td align="center">98</td>
-<td align="center">67</td>
-<td align="center">40</td>
-<td align="center">21</td>
-<td align="center">15</td>
-<td align="center">218</td>
-</tr>
-<tr class="even">
-<td align="center"><strong>Black</strong></td>
-<td align="center">101</td>
-<td align="center">71</td>
-<td align="center">40</td>
-<td align="center">25</td>
-<td align="center">18</td>
-<td align="center">205</td>
-</tr>
-</tbody>
-</table>
-<table style="width:44%;">
-<caption>Pearson’s Chi-squared test: <code>.</code></caption>
-<colgroup>
-<col width="23%" />
-<col width="6%" />
-<col width="13%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center">Test statistic</th>
-<th align="center">df</th>
-<th align="center">P value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">1.18</td>
-<td align="center">5</td>
-<td align="center">0.9468</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="단과대학" class="section level3">
-<h3>단과대학</h3>
-<table>
-<colgroup>
-<col width="7%" />
-<col width="6%" />
-<col width="6%" />
-<col width="10%" />
-<col width="7%" />
-<col width="8%" />
-<col width="14%" />
-<col width="8%" />
-<col width="6%" />
-<col width="6%" />
-<col width="8%" />
-<col width="8%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center"> </th>
-<th align="center">간호대학</th>
-<th align="center">경영대학</th>
-<th align="center">글로벌융합대학</th>
-<th align="center">미디어스쿨</th>
-<th align="center">미래융합스쿨</th>
-<th align="center">반도체·디스플레이스쿨</th>
-<th align="center">사회과학대학</th>
-<th align="center">의과대학</th>
-<th align="center">인문대학</th>
-<th align="center">자연과학대학</th>
-<th align="center">정보과학대학</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center"><strong>Red</strong></td>
-<td align="center">27</td>
-<td align="center">43</td>
-<td align="center">7</td>
-<td align="center">26</td>
-<td align="center">12</td>
-<td align="center">9</td>
-<td align="center">102</td>
-<td align="center">9</td>
-<td align="center">53</td>
-<td align="center">75</td>
-<td align="center">96</td>
-</tr>
-<tr class="even">
-<td align="center"><strong>Black</strong></td>
-<td align="center">32</td>
-<td align="center">47</td>
-<td align="center">7</td>
-<td align="center">26</td>
-<td align="center">12</td>
-<td align="center">8</td>
-<td align="center">100</td>
-<td align="center">10</td>
-<td align="center">47</td>
-<td align="center">86</td>
-<td align="center">85</td>
-</tr>
-</tbody>
-</table>
-<table style="width:44%;">
-<caption>Pearson’s Chi-squared test: <code>.</code></caption>
-<colgroup>
-<col width="23%" />
-<col width="6%" />
-<col width="13%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="center">Test statistic</th>
-<th align="center">df</th>
-<th align="center">P value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="center">2.512</td>
-<td align="center">10</td>
-<td align="center">0.9907</td>
-</tr>
-</tbody>
-</table>
-<!--
+
+### e-mail 서비스업체
+
+
+----------------------------------------
+  &nbsp;     네이버   구글   기타서비스 
+----------- -------- ------ ------------
+  **Red**     351      96        12     
+
+ **Black**    348     100        12     
+----------------------------------------
+
+
+-------------------------------
+ Test statistic   df   P value 
+---------------- ---- ---------
+    0.09342       2    0.9544  
+-------------------------------
+
+Table: Pearson's Chi-squared test: `.`
+
+### 전화번호의 분포
+
+
+-----------------------------------------------------------------------------------------------------------------------------------
+  &nbsp;     0000~0999   1000~1999   2000~2999   3000~3999   4000~4999   5000~5999   6000~6999   7000~7999   8000~8999   9000~9999 
+----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- -----------
+  **Red**       36          52          45          51          44          36          48          51          47          49     
+
+ **Black**      45          47          48          51          42          45          43          47          42          50     
+-----------------------------------------------------------------------------------------------------------------------------------
+
+
+-------------------------------
+ Test statistic   df   P value 
+---------------- ---- ---------
+     3.124        9    0.9592  
+-------------------------------
+
+Table: Pearson's Chi-squared test: `.`
+    
+### 성씨 분포
+
+
+--------------------------------------------
+  &nbsp;     김    이   박   최   정   기타 
+----------- ----- ---- ---- ---- ---- ------
+  **Red**    98    67   40   21   15   218  
+
+ **Black**   101   71   40   25   18   205  
+--------------------------------------------
+
+
+-------------------------------
+ Test statistic   df   P value 
+---------------- ---- ---------
+      1.18        5    0.9468  
+-------------------------------
+
+Table: Pearson's Chi-squared test: `.`
+
+### 단과대학
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  &nbsp;     간호대학   경영대학   글로벌융합대학   미디어스쿨   미래융합스쿨   반도체·디스플레이스쿨   사회과학대학   의과대학   인문대학   자연과학대학   정보과학대학 
+----------- ---------- ---------- ---------------- ------------ -------------- ----------------------- -------------- ---------- ---------- -------------- --------------
+  **Red**       27         43            7              26            12                  9                 102           9          53           75             96      
+
+ **Black**      32         47            7              26            12                  8                 100           10         47           86             85      
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+-------------------------------
+ Test statistic   df   P value 
+---------------- ---- ---------
+     2.512        10   0.9907  
+-------------------------------
+
+Table: Pearson's Chi-squared test: `.`
+
 ### Sum of Chi_Squares
 
 
@@ -4711,7 +4466,6 @@ class_roll %>%
 save.image("./red_and_black_230901_data.RData")
 ```
 -->
-</div>
 </div>
 
 

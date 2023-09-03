@@ -1,5 +1,5 @@
 ---
-title: "Red and Black 230901"
+title: "Red and Black 230901 : Those who left"
 output: html_document
 ---
 
@@ -66,6 +66,7 @@ N <- nrow(class_roll)
 red_new <- floor((N - 2 * red_stay) / 2)
 ```
 
+<!--
 ### 9월 1일 출석부에도 나오는 사람들의 데이터 구조
 
 ```{r, echo = FALSE}
@@ -123,7 +124,6 @@ class_roll[class_roll$id %in% id_new, "group"] <-
   factor(ifelse(1:N_new %in% id_red, "Red", "Black"), levels = c("Red", "Black")) 
 class_roll[order(class_roll$name), c("id", "group")]
 ```
--->
 
 ### 학번
 
@@ -142,7 +142,6 @@ tbl1 %>%
   pander
 ```
 
-<!--
 ### 학번 홀짝
 
 ```{r, odd or even, echo = FALSE}
@@ -170,7 +169,6 @@ X3min <- tbl3 %>%
   `[[`(1)
 X3min
 ```
--->
 
 ### e-mail 서비스업체
 
@@ -241,7 +239,6 @@ tbl7 %>%
   pander
 ```
 
-<!--
 ### Sum of Chi_Squares
 
 ```{r, eval = FALSE}
@@ -275,7 +272,7 @@ class_roll %$%
 
 <P style="page-break-before:always">
 
-```{r, save}
+```{r, eval = FALSE}
 class_roll %>%
   `[`(.$id %>% order, c("id", "group")) %>%
   saveRDS(file = "./class_id_group230901.RDS")

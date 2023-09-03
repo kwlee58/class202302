@@ -21,11 +21,27 @@ panderOptions('table.alignment.default', 'right')
 <!--# Data Reading-->
 
 ```{r, data, echo = FALSE, results = 'hide'}
+class_roll0822 <- readRDS("./class_roll0822.RDS")
 load("./red_and_black_230901_data.RData")
 str(class_roll)
 ```
 
 # Randomization Effects
+
+## 수강신청 변경 기간 중 나간 사람들
+
+```{r, echo = FALSE}
+id_out <- setdiff(class_roll0822$id, class_roll$id)
+id_new <- setdiff(class_roll$id, class_roll0822$id)
+N_new <- length(id_new)
+id_stay <- setdiff(class_roll0822$id, id_out)
+# class_roll0822[class_roll0822$id %in% id_out, c("id", "group")] %>%
+#   pander(row.names = FALSE)
+class_roll0822$group %>%
+  `[`(class_roll0822$id %in% id_out) %>%
+  table %>%
+  pander
+```
 
 <!--
 ## 학년
