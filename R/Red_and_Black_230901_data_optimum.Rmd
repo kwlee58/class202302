@@ -66,7 +66,7 @@ N <- nrow(class_roll)
 red_new <- floor((N - 2 * red_stay) / 2)
 ```
 
-<!--
+
 ### 9월 1일 출석부에도 나오는 사람들의 데이터 구조
 
 ```{r, echo = FALSE}
