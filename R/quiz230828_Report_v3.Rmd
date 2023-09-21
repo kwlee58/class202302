@@ -348,7 +348,7 @@ invisible(dev.off())
 ### Mosaic Plot
 
 ```{r, echo = FALSE, fig.width = 10, fig.height = 5}
-m2_list <- days_tbl %>%
+m2_list <- days_tbl[, 14:1] %>%
   mosaic_gg
 m2 <- m2_list$m
 df2 <- m2_list$df

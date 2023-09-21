@@ -448,7 +448,7 @@ quiz$days %>%
 ### 막대그래프
 
 ```{r, echo = FALSE}
-# png(file = "../pics/2301/quiz_submission_2.png", width = 640, height = 480)
+# png(file = "../pics/2302/quiz_submission_2.png", width = 640, height = 480)
 par(family = "KoPubWorldDotum Medium")
 b <- 
   quiz$days %>%
@@ -464,14 +464,14 @@ text(x = b[14, 1], y = sum(days_tbl[, 1]) / 2,
      labels = paste0(format(sum(days_tbl[, 1]) / N * 100, digits = 1, nsmall = 0), "%"))
 title(main = paste0("Quiz230904 (", N, "명 제출)"))
 # title(main = "일 단위 퀴즈 제출 인원", sub = paste0("Quiz230904 (", N, "명 제출)"))
-# dev.copy(png, file = "../pics/2301/quiz_submission_2.png", width = 640, height = 480)
+# dev.copy(png, file = "../pics/2302/quiz_submission_2.png", width = 640, height = 480)
 invisible(dev.off())
 ```
 
 ### Mosaic Plot
 
 ```{r, echo = FALSE, fig.width = 10, fig.height = 5}
-m2_list <- days_tbl %>%
+m2_list <- days_tbl[, 14:1] %>%
   mosaic_gg
 m2 <- m2_list$m
 df2 <- m2_list$df
