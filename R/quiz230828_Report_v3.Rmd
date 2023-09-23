@@ -76,6 +76,15 @@ quiz$Q4 <- factor(quiz$Q4,
 table(quiz$Q4, useNA = "ifany")
 #> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
 quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
+#> 불참자들
+absentee <- 
+  class_roll[class_roll$id %in% setdiff(class_roll$id, quiz$id), c("id", "name", "group")] %>%
+  `[`(order(.$name), ) 
+absentee %>%
+  pander(row.names = FALSE) 
+absentee$group %>%
+  table
+#> 마감기한으로부터 제출시점의 기간
 quiz$days <- as.numeric(difftime("2023-09-11 09:00:00", quiz$time, units = 'days'))
 quiz$hours <- as.numeric(difftime("2023-09-11 09:00:00", quiz$time, units = 'hours'))
 str(quiz)
