@@ -26,7 +26,7 @@ class_roll <- readRDS("./class_roll_230916.RDS")
 class_roll <- data.frame(class_roll)
 quiz <- 
   read_excel("../data/quiz230911.xlsx",
-             range = "A2:N685",
+             range = "A2:N705",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "group", "Q7_R", "Q7_B")
 str(quiz)
@@ -92,7 +92,7 @@ pander(summary(quiz))
 
 ## Red, Black을 잘못 표시한 사람들
 
-랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 여전히 다른 사람들이 있어서 파악해 보았습니다. Red를 Black 이라고 한 사람의 수효(33명)와 Black을 Red 라고 한 사람의 수효(31명)가 많이 닮아서 굳이 표준오차와 p-value 를 계산하지 않아도 될 수준입니다. 요약의 일관성을 기하기 위하여 기대값과 표준오차를 계산해 봅니다. 64명을 랜덤하게 둘로 나누면 32명 $\pm\sqrt62/2$명 = 32 $\pm$ 4명의 범위에 매우 잘 들어가는 것을 알 수 있습니다. 
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 여전히 다른 사람들이 있어서 파악해 보았습니다. Red를 Black 이라고 한 사람의 수효(33명)와 Black을 Red 라고 한 사람의 수효(31명)가 많이 닮아서 굳이 표준오차와 p-value 를 계산하지 않아도 될 수준입니다. 요약의 일관성을 기하기 위하여 기대값과 표준오차를 계산해 봅니다. 64명을 랜덤하게 둘로 나누면 $64/2\pm\sqrt64/2$명 = 32 $\pm$ 4명의 범위에 매우 잘 들어가는 것을 알 수 있습니다. 
 
 ```{r, wrong group, echo = FALSE}
 quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
