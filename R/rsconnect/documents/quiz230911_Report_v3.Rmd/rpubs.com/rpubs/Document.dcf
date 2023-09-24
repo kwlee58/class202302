@@ -4,8 +4,8 @@ username:
 account: rpubs
 server: rpubs.com
 envVars: rpubs.com
-hostUrl: https://api.rpubs.com/api/v1/document/1087694/359b86634edf4b2085cc32018591eff3
-appId: https://api.rpubs.com/api/v1/document/1087694/359b86634edf4b2085cc32018591eff3
-bundleId: http://rpubs.com/publish/claim/1087694/ee70e4e2d4844838afc549b043e2f8a7
-url: 1695550101.60014
+hostUrl: https://api.rpubs.com/api/v1/document/1087726/cf00946d3431483dad6fc0298d72e1ac
+appId: https://api.rpubs.com/api/v1/document/1087726/cf00946d3431483dad6fc0298d72e1ac
+bundleId: http://rpubs.com/publish/claim/1087726/79e17e0ed7114a9192729166cdcb5c0e
+url: 1695560028.55611
 version: 1
