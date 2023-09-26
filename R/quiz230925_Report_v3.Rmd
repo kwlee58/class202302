@@ -18,11 +18,19 @@ options(width=180)
 ```
 
 ```{r, data, echo = FALSE, results = 'hide', message = FALSE}
-class_roll <- readRDS("./class_roll_230916.RDS")
-class_roll <- data.frame(class_roll)
+class_roll0916 <- readRDS("./class_roll_230916.RDS")
+class_roll0916 %<>% 
+  data.frame
+class_roll <- read_excel("../data/class_roll230925.xlsx", 
+                        range = "B1:I916")
+class_roll %<>% 
+  data.frame
+str(class_roll)
+names(class_roll) <- c("college", "dept", "year", "id", "name", "status", "email", "cell_no")
+class_roll$group <- class_roll0916$group[match(class_roll$id, class_roll0916$id)]
 quiz <- 
   read_excel("../data/quiz230925.xlsx",
-             range = "A2:N53",
+             range = "A2:N113",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "group", "Q7_R", "Q7_B")
 str(quiz)
@@ -88,9 +96,9 @@ wrong_group <- which(quiz$group != quiz$group2)
 # class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
 #   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
 #   pander
-quiz[wrong_group, c("id", "name", "group2", "group")] %>%
-  `[`(order(.$name), ) %>%
-  `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
+  `[`(order(.$time), ) %>%
+  `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
   pander(row.names = FALSE)
 wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
                    "구글예습퀴즈" = quiz$group)
@@ -453,7 +461,7 @@ text(x = b[14, 1], y = sum(days_tbl[, 1]),
      labels = paste0(sum(days_tbl[, 1]), "명"), pos = 3)
 text(x = b[14, 1], y = sum(days_tbl[, 1]) / 2, 
      labels = paste0(format(sum(days_tbl[, 1]) / N * 100, digits = 1, nsmall = 0), "%"))
-title(main = paste0("Quiz230918 (", N, "명 제출)"))
+title(main = paste0("Quiz230925 (", N, "명 제출)"))
 # title(main = "일 단위 퀴즈 제출 인원", sub = paste0("Quiz230925 (", N, "명 제출)"))
 # dev.copy(png, file = "../pics/2302/quiz_submission_5.png", width = 640, height = 480)
 invisible(dev.off())
@@ -487,6 +495,7 @@ ggsave("../pics/Quiz230925_submission_5.png", dpi = 120, width = 960, height = 8
 
 
 ```{r, save, echo = FALSE}
+saveRDS(class_roll, file = "./class_roll230925.RDS")
 saveRDS(quiz, file = "./quiz230925.RDS")
 save.image("../R/quiz230925.RData")
 ```
