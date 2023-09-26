@@ -34,7 +34,7 @@ options(width=180)
 class_roll <- readRDS("./class_roll230925.RDS")
 literacy_roll <- 
   read_excel("../data/literacy_230925.xlsx",
-             range = "C1:AD135",
+             range = "C1:AD172",
              col_names = TRUE)
 literacy_roll <- literacy_roll[, -c(1, 3)]
 N <- nrow(literacy_roll)
@@ -71,7 +71,7 @@ kable(literacy_roll)
 literacy <- literacy_roll[, c(2:27)] #> 문해력 집계에 필요한 변수만 추출. 
 kable(literacy)
 #> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
-literacy_roll[literacy_roll$id %in% setdiff(literacy_roll$id, class_roll$id), c("id")]
+# literacy_roll[literacy_roll$id %in% setdiff(literacy_roll$id, class_roll$id), c("id")] 
 saveRDS(literacy_roll, file = "./literacy_roll230925.RDS")
 ```
 
@@ -194,7 +194,7 @@ ggplot(data = literacy_tbl2, mapping = aes(x = Questions)) +
 #> y축 눈금 텍스트 없애기
         axis.text.y = element_blank()) +
 #> x축의 라벨을 막대에 보다 가깝게 조정 (flip해서 x축을 수직으로 세울 예정이므로 y = -30)
-  geom_text(mapping = aes(y = -30, label = Questions)) 
+  geom_text(mapping = aes(y = -5, label = Questions)) 
 #> 좌표를 90도 회전하여 막대들을 수평으로 눕히기
 #  coord_flip()
 ggsave(file = "../pics/Literacy_230925_ggplot.png", bg = "white", dpi = 72, width = 840, height = 480, units = "px")
