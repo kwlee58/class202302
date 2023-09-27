@@ -34,7 +34,7 @@ options(width=180)
 class_roll <- readRDS("./class_roll230925.RDS")
 literacy_roll <- 
   read_excel("../data/literacy_230925.xlsx",
-             range = "C1:AD195",
+             range = "C1:AD210",
              col_names = TRUE)
 literacy_roll <- literacy_roll[, -c(1, 3)]
 N <- nrow(literacy_roll)
@@ -71,7 +71,8 @@ kable(literacy_roll)
 literacy <- literacy_roll[, c(2:27)] #> 문해력 집계에 필요한 변수만 추출. 
 kable(literacy)
 #> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
-# literacy_roll[literacy_roll$id %in% setdiff(literacy_roll$id, class_roll$id), c("id")] 
+setdiff(literacy_roll$id, class_roll$id)
+#> RDS 포맷으로 저장 
 saveRDS(literacy_roll, file = "./literacy_roll230925.RDS")
 ```
 
