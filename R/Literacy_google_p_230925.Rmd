@@ -33,8 +33,8 @@ options(width=180)
 # load("./red_and_black_220909_data.RData")
 class_roll <- readRDS("./class_roll230925.RDS")
 literacy_roll <- 
-  read_excel("../data/literacy_230925.xlsx",
-             range = "C1:AD210",
+  read_excel("./data/literacy_230925.xlsx",
+             range = "C1:AD233",
              col_names = TRUE)
 literacy_roll <- literacy_roll[, -c(1, 3)]
 N <- nrow(literacy_roll)
@@ -113,7 +113,7 @@ label_ptbl <- literacy_ptbl %>%
 
 ```{r, echo = FALSE, fig.width = 9, fig.height = 12}
 library(RColorBrewer)
-# png(file = "../pics/Literacy_230925.png", width = 640, height = 840)
+# png(file = "./pics/Literacy_230925.png", width = 640, height = 840)
 par(family = "KoPubWorldDotum Medium", mar = c(5.1, 4.1, 4.1, 8.1))
 b <- barplot(literacy_tbl, 
 # b <- barplot(matrix(literacy_tbl, nrow = 4), 
@@ -140,7 +140,7 @@ pos <- {. %>% {cumsum(.) - `/`(., 2)}}
 x_text <- apply(literacy_tbl, MARGIN = 2, FUN = pos)
 text(x = x_text, y = rep(b, each = 4), labels = label_ptbl)
 title(main = "문해력조사 문항별 응답", cex.main = 1.8, line = -0.5)
-# dev.copy(png, file = "../pics/Literacy_230925.png", width = 640, height = 840)
+# dev.copy(png, file = "./pics/Literacy_230925.png", width = 640, height = 840)
 invisible(dev.off())
 ```
 
@@ -198,7 +198,7 @@ ggplot(data = literacy_tbl2, mapping = aes(x = Questions)) +
   geom_text(mapping = aes(y = -5, label = Questions)) 
 #> 좌표를 90도 회전하여 막대들을 수평으로 눕히기
 #  coord_flip()
-ggsave(file = "../pics/Literacy_230925_ggplot.png", bg = "white", dpi = 72, width = 840, height = 480, units = "px")
+ggsave(file = "./pics/Literacy_230925_ggplot.png", bg = "white", dpi = 72, width = 840, height = 480, units = "px")
 ```
 
 
@@ -215,7 +215,7 @@ ggsave(file = "../pics/Literacy_230925_ggplot.png", bg = "white", dpi = 72, widt
     
     
 ```{r, ans list and unlist, echo = FALSE, results = 'hide'}
-ans <- "../data/literacy_ans.txt" %>%
+ans <- "./data/literacy_ans.txt" %>%
   scan(what = "") %>%
   split(f = paste0("A", 1:25)) %>%
   `[`(paste0("A", 1:25))
@@ -377,7 +377,7 @@ grade_tbl_group %>%
 ## 문항 유형별 점수 분석
 
 ```{r, item by type, echo = FALSE}
-type_kr <- "../data/literacy_type.txt" %>%
+type_kr <- "./data/literacy_type.txt" %>%
   scan(what = "") %>%
   factor(levels = c("a", "b", "c"), labels = c("사실적", "추론적", "비판적"))
 ```
@@ -513,35 +513,35 @@ rate_item %>%
 ### 문6.
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Q06.png")
+include_graphics("./pics/Q06.png")
 ```
 
 ### 문9.
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Q09.png")
+include_graphics("./pics/Q09.png")
 ```
 
 ### 문12.
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Q12.png")
+include_graphics("./pics/Q12.png")
 ```
 
 ### 문15.
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Q15.png")
+include_graphics("./pics/Q15.png")
 ```
 
 ### 문17.
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Q17.png")
+include_graphics("./pics/Q17.png")
 ```
 
 ### 문22.
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Q22.png")
+include_graphics("./pics/Q22.png")
 ```

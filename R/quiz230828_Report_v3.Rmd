@@ -29,7 +29,7 @@ id_new <- setdiff(class_roll0901$id, class_roll0822$id)
 id_out <- setdiff(class_roll0822$id, class_roll0901$id)
 class_roll_id_new <- class_roll0901[class_roll0901$id %in% id_new, ]
 class_roll_id_group <- rbind(class_roll0822[, c("id", "name", "group")], class_roll_id_new[, c("id", "name", "group")])
-class_roll <- read_excel("../data/class_roll230909.xlsx", 
+class_roll <- read_excel("./data/class_roll230909.xlsx", 
                         range = "B1:I922")
 str(class_roll)
 names(class_roll) <- c("college", "dept", "year", "id", "name", "status", "email", "cell_no")
@@ -38,7 +38,7 @@ na_gr <- which(is.na(class_roll$group))
 class_roll[na_gr, "group"] <- c("Red", "Black")
 saveRDS(class_roll, file = "./class_roll_230909.RDS")
 quiz <- 
-  read_excel("../data/quiz230828.xlsx",
+  read_excel("./data/quiz230828.xlsx",
              range = "A2:K881",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "group", "Q4_R", "Q4_B")
@@ -123,7 +123,7 @@ pander(summary(quiz))
 ## Q1. Dewey as good as elected, statistics convince Roper
 
 ```{r, echo = FALSE, out.width = "100%", fig.align = "left"}
-include_graphics("../pics/Quiz210302_01.png")
+include_graphics("./pics/Quiz210302_01.png")
 ```
 
 ### Roper(Counts) 
@@ -155,7 +155,7 @@ tbl_q1_a %>%
 ## Q2. Statistics is the science of learning from data, ...
 
 ```{r, echo = FALSE, out.width = "100%", align = "left"}
-include_graphics("../pics/Quiz210302_02.png")
+include_graphics("./pics/Quiz210302_02.png")
 ```
 
 ### ASA(Counts) 
@@ -187,7 +187,7 @@ tbl_q2_a %>%
 ## Q3. How to lie with statistics
 
 ```{r, echo = FALSE, out.width = "100%", align = "left"}
-include_graphics("../pics/Quiz210302_03.png")
+include_graphics("./pics/Quiz210302_03.png")
 ```
 
 ### D.Huff(Counts) 
@@ -222,11 +222,11 @@ tbl_q3_a %>%
 ## 질문지 선택지에 부연설명 
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz210302_04_Red.png")
+include_graphics("./pics/Quiz210302_04_Red.png")
 ```
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz210302_04_Black.png")
+include_graphics("./pics/Quiz210302_04_Black.png")
 ```
 
 ### 집계
@@ -291,7 +291,7 @@ m + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("../pics/Quiz230828_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz230828_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 
@@ -334,7 +334,7 @@ quiz$days %>%
 ### 막대그래프
 
 ```{r, echo = FALSE}
-# png(file = "../pics/2301/quiz_submission_1.png", width = 640, height = 480)
+# png(file = "./pics/2301/quiz_submission_1.png", width = 640, height = 480)
 par(family = "KoPubWorldDotum Medium")
 b <- 
   quiz$days %>%
@@ -350,7 +350,7 @@ text(x = b[14, 1], y = sum(days_tbl[, 1]) / 2,
      labels = paste0(format(sum(days_tbl[, 1]) / N * 100, digits = 1, nsmall = 0), "%"))
 title(main = paste0("Quiz230828 (", N, "명 제출)"))
 # title(main = "일 단위 퀴즈 제출 인원", sub = paste0("Quiz230904 (", N, "명 제출)"))
-# dev.copy(png, file = "../pics/2301/quiz_submission_1.png", width = 640, height = 480)
+# dev.copy(png, file = "./pics/2301/quiz_submission_1.png", width = 640, height = 480)
 invisible(dev.off())
 ```
 
@@ -380,7 +380,7 @@ m2 + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("../pics/Quiz230904_submission_2.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz230904_submission_2.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 
@@ -402,7 +402,7 @@ tbl_q4 %>%
 
 ```{r, save, echo = FALSE}
 saveRDS(quiz, file = "./quiz230828.RDS")
-save.image("../R/quiz230828.RData")
+save.image("./quiz230828.RData")
 ```
 -->
 

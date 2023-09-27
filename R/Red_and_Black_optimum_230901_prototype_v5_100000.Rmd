@@ -18,7 +18,7 @@ panderOptions('table.split.table', Inf)
 ## Data
 
 ```{r, echo = FALSE, eval = TRUE}
-class_roll <- read_excel("../data/class_roll230901.xlsx", 
+class_roll <- read_excel("./data/class_roll230901.xlsx", 
                         range = "B1:I920")
 str(class_roll)
 names(class_roll) <- c("college", "dept", "year", "id", "name", "status", "email", "cell_no")

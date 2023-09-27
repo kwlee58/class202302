@@ -23,7 +23,7 @@ options(width=180)
 ```{r message=FALSE, data, echo=FALSE, results='hide'}
 # load("./red_and_black_230307_data.RData")
 class_roll0901 <- readRDS("./class_roll_230901.RDS")
-class_roll <- read_excel("../data/class_roll230909.xlsx", 
+class_roll <- read_excel("./data/class_roll230909.xlsx", 
                         range = "B1:I922")
 str(class_roll)
 names(class_roll) <- c("college", "dept", "year", "id", "name", "status", "email", "cell_no")
@@ -32,7 +32,7 @@ na_gr <- which(is.na(class_roll$group))
 class_roll[na_gr, "group"] <- c("Red", "Black")
 saveRDS(class_roll, file = "./class_roll_230916.RDS")
 quiz <- 
-  read_excel("../data/quiz230904.xlsx",
+  read_excel("./data/quiz230904.xlsx",
              range = "A2:N854",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "group", "Q7_R", "Q7_B")
@@ -122,7 +122,7 @@ wrong_tbl %>%
 ## Q1. 춘추전국시대에 국가통계관리의 중요성 강조
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz210309_01.png")
+include_graphics("./pics/Quiz210309_01.png")
 ```
 
 ### 관자(집계표)
@@ -154,7 +154,7 @@ tbl_q1_a %>%
 ## Q2. 국가정책을 수립하는 데 통계의 역할
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz210309_02.png")
+include_graphics("./pics/Quiz210309_02.png")
 ```
 
 ### 통계의 중요성(집계표)
@@ -186,7 +186,7 @@ tbl_q2_a %>%
 ## Q3. 우리나라 생산가능인구 감소 시기
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz210309_03.png")
+include_graphics("./pics/Quiz210309_03.png")
 ```
 
 ### 생산가능인구 감소 시기(집계표)
@@ -218,7 +218,7 @@ tbl_q3_a %>%
 ## Q4. 우리나라 총인구 최대 시기
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz230308_Q4.png")
+include_graphics("./pics/Quiz230308_Q4.png")
 ```
 
 ### 총인구 최대 시기(집계표)
@@ -250,7 +250,7 @@ tbl_q4_a %>%
 ## Q5. 소멸위험 단계 개선 지역
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz230308_Q5.png")
+include_graphics("./pics/Quiz230308_Q5.png")
 ```
 
 ### 소멸위험 단계 개선 지역(집계표)
@@ -282,7 +282,7 @@ tbl_q5_a %>%
 ## Q6. 조출생률과 합계출산율
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz230308_Q6.png")
+include_graphics("./pics/Quiz230308_Q6.png")
 ```
 
 ### 조출생률과 합계출산율(집계표)
@@ -321,13 +321,13 @@ tbl_q6_a %>%
 ### Red
 
 ```{r, echo = FALSE, out.width = "50%", align = "left"}
-include_graphics("../pics/Quiz230904_Q7_Red.png")
+include_graphics("./pics/Quiz230904_Q7_Red.png")
 ```
 
 ### Black
 
 ```{r, echo = FALSE, out.width = "50%", align = "left"}
-include_graphics("../pics/Quiz230904_Q7_Black.png")
+include_graphics("./pics/Quiz230904_Q7_Black.png")
 ```
 
 ### 집계표
@@ -415,7 +415,7 @@ m + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("../pics/Quiz230904_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz230904_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 # 제출 시간의 분포
@@ -457,7 +457,7 @@ quiz$days %>%
 ### 막대그래프
 
 ```{r, echo = FALSE}
-# png(file = "../pics/2302/quiz_submission_2.png", width = 640, height = 480)
+# png(file = "./pics/2302/quiz_submission_2.png", width = 640, height = 480)
 par(family = "KoPubWorldDotum Medium")
 b <- 
   quiz$days %>%
@@ -473,7 +473,7 @@ text(x = b[14, 1], y = sum(days_tbl[, 1]) / 2,
      labels = paste0(format(sum(days_tbl[, 1]) / N * 100, digits = 1, nsmall = 0), "%"))
 title(main = paste0("Quiz230904 (", N, "명 제출)"))
 # title(main = "일 단위 퀴즈 제출 인원", sub = paste0("Quiz230904 (", N, "명 제출)"))
-# dev.copy(png, file = "../pics/2302/quiz_submission_2.png", width = 640, height = 480)
+# dev.copy(png, file = "./pics/2302/quiz_submission_2.png", width = 640, height = 480)
 invisible(dev.off())
 ```
 
@@ -503,10 +503,10 @@ m2 + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("../pics/Quiz230904_submission_2.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz230904_submission_2.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 ```{r, save, echo = FALSE}
 saveRDS(quiz, file = "./quiz230904.RDS")
-save.image("../R/quiz230904.RData")
+save.image("./quiz230904.RData")
 ```

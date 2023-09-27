@@ -24,8 +24,8 @@ options(width=180)
 class_roll <- readRDS("./class_roll_230916.RDS")
 class_roll <- data.frame(class_roll)
 quiz <- 
-  read_excel("../data/quiz230918.xlsx",
-             range = "A2:N578",
+  read_excel("./data/quiz230918.xlsx",
+             range = "A2:N585",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "group", "Q7_R", "Q7_B")
 str(quiz)
@@ -109,7 +109,7 @@ wrong_tbl %>%
 ## Q1. 세종대왕 시대 조세제도
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz230322_Q1.png")
+include_graphics("./pics/Quiz230322_Q1.png")
 ```
 
 ### 조선초기 조세제도
@@ -142,7 +142,7 @@ tbl_q1_a %>%
 ## Q2. 공법도입에 대한 대신들의 찬성율
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz210913_Q2.png")
+include_graphics("./pics/Quiz210913_Q2.png")
 ```
 
 ### 공법도입과 대신들(집계표)
@@ -174,7 +174,7 @@ tbl_q2_a %>%
 ## Q3. 공법도입과 품관촌민들의 찬반
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz210316_Q3.png")
+include_graphics("./pics/Quiz210316_Q3.png")
 ```
 
 ### 품관촌민들의 찬반(집계표)
@@ -206,7 +206,7 @@ tbl_q3_a %>%
 ## Q4. 공법
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz210316_Q4.png")
+include_graphics("./pics/Quiz210316_Q4.png")
 ```
 
 ### 기본세율
@@ -239,7 +239,7 @@ tbl_q4_a %>%
 ## Q5. 1423년 조선시대 호구와 인구
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz210316_Q5.png")
+include_graphics("./pics/Quiz210316_Q5.png")
 ```
 
 ### 호구와 인구
@@ -271,7 +271,7 @@ tbl_q5_a %>%
 ## Q6. 지방관료와 품관촌민
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz210316_Q6.png")
+include_graphics("./pics/Quiz210316_Q6.png")
 ```
 
 ### 찬반이 반대인 곳(집계표)
@@ -308,13 +308,13 @@ tbl_q6_a %>%
 ### Red
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz230322_Q7_Red.png")
+include_graphics("./pics/Quiz230322_Q7_Red.png")
 ```
 
 ### Black
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz230322_Q7_Black.png")
+include_graphics("./pics/Quiz230322_Q7_Black.png")
 ```
 
 부연설명을 찬성 쪽에 붙이는가(Red), 또는 반대 쪽에 붙이는가(Black)에 따라 응답이 영향을 받는 것으로 관찰됩니다. 찬번여부에 대한 카이제곱테스트의 p-value를 놓고 볼 때 그 차이가 통계적으로 매우 유의합니다. 
@@ -392,7 +392,7 @@ m + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("../pics/Quiz230918_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz230918_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 # 제출 시간의 분포
@@ -434,7 +434,7 @@ quiz$days %>%
 ### 막대그래프
 
 ```{r, echo = FALSE}
-# png(file = "../pics/2302/quiz_submission_4.png", width = 640, height = 480)
+# png(file = "./pics/2302/quiz_submission_4.png", width = 640, height = 480)
 par(family = "KoPubWorldDotum Medium")
 b <- 
   quiz$days %>%
@@ -450,7 +450,7 @@ text(x = b[14, 1], y = sum(days_tbl[, 1]) / 2,
      labels = paste0(format(sum(days_tbl[, 1]) / N * 100, digits = 1, nsmall = 0), "%"))
 title(main = paste0("Quiz230918 (", N, "명 제출)"))
 # title(main = "일 단위 퀴즈 제출 인원", sub = paste0("Quiz230904 (", N, "명 제출)"))
-# dev.copy(png, file = "../pics/2302/quiz_submission_4.png", width = 640, height = 480)
+# dev.copy(png, file = "./pics/2302/quiz_submission_4.png", width = 640, height = 480)
 invisible(dev.off())
 ```
 
@@ -477,10 +477,10 @@ m2 + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("../pics/Quiz230918_submission_4.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz230918_submission_4.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 ```{r, save, echo = FALSE}
 saveRDS(quiz, file = "./quiz230918.RDS")
-save.image("../R/quiz230918.RData")
+save.image("./quiz230918.RData")
 ```

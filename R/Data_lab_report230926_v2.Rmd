@@ -30,11 +30,11 @@ options(digits = 2)
 class_roll <- readRDS("./class_roll_230916.RDS")
 class_roll <- data.frame(class_roll)
 comment <-
-  readxl::read_excel("../data/data_lab_230926.xlsx",
+  readxl::read_excel("./data/data_lab_230926.xlsx",
                      range = "A2:H2976", 
                      col_names = TRUE)
 # comment <-
-#   read_csv("../data/data_lab_220503.csv")
+#   read_csv("./data/data_lab_220503.csv")
 comment <- comment[, -c(2, 3)]
 names(comment) <- c("title", "time1", "contents", "name", "id", "time2")
 str(comment)
@@ -214,12 +214,12 @@ Save
 -->
 
 ```{r, echo = FALSE}
-write.csv(comments, file = "../data/comments230926.csv", 
+write.csv(comments, file = "./data/comments230926.csv", 
           row.names = FALSE,
           fileEncoding = "CP949")
 write.csv(comments_w[order(comments_w$name, comments_w$id), 
                  c("id", "name", paste("s", 1:N_labs, sep = "_"), "total")],
-          file = "../data/comments230926_w.csv", 
+          file = "./data/comments230926_w.csv", 
           row.names = FALSE,
           fileEncoding = "CP949")
 saveRDS(comments_w[order(comments_w$name, comments_w$id), 

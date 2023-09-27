@@ -190,6 +190,6 @@ tbl7 %>%
 
 <!--
 ```{r, save, echo=FALSE, message=FALSE, results='hide'}
-save.image("../R/red_and_black_230901_data.RData")
+save.image("./red_and_black_230901_data.RData")
 ```
 -->

@@ -25,7 +25,7 @@ options(width=180)
 class_roll <- readRDS("./class_roll_230916.RDS")
 class_roll <- data.frame(class_roll)
 quiz <- 
-  read_excel("../data/quiz230911.xlsx",
+  read_excel("./data/quiz230911.xlsx",
              range = "A2:N838",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "group", "Q7_R", "Q7_B")
@@ -115,7 +115,7 @@ wrong_tbl %>%
 ## Q1. 국세와 지방세 비중
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz230315_Q1.png")
+include_graphics("./pics/Quiz230315_Q1.png")
 ```
 
 ### 국세와 지방세 비중(집계표)
@@ -147,7 +147,7 @@ tbl_q1_a %>%
 ## Q2. 조세부담률 
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz230315_Q2.png")
+include_graphics("./pics/Quiz230315_Q2.png")
 ```
 
 ### 조새부담률(집계표)
@@ -179,7 +179,7 @@ tbl_q2_a %>%
 ## Q3. OECD 국민부담률
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz230315_Q3.png")
+include_graphics("./pics/Quiz230315_Q3.png")
 ```
 
 ### OECD 국민부담률(집계표)
@@ -211,7 +211,7 @@ tbl_q3_a %>%
 ## Q4. 과세대상 근로소득 1,200만 원
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz230315_Q4.png")
+include_graphics("./pics/Quiz230315_Q4.png")
 ```
 
 ### 과세대상 근로소득 1,200만 원(집계표)
@@ -243,7 +243,7 @@ tbl_q4_a %>%
 ## Q5. 소득세 실효세율
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz230315_Q5.png")
+include_graphics("./pics/Quiz230315_Q5.png")
 ```
 
 ### 소득세 실효세율(집계표)
@@ -275,7 +275,7 @@ tbl_q5_a %>%
 ## Q6. 기업규모별 과세 현황
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz230315_Q6.png")
+include_graphics("./pics/Quiz230315_Q6.png")
 ```
 
 ### 기업규모별 과세 현황(집계표)
@@ -314,13 +314,13 @@ tbl_q6_a %>%
 ### Red
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz230315_Q7_Red.png")
+include_graphics("./pics/Quiz230315_Q7_Red.png")
 ```
 
 ### Black
 
 ```{r, echo = FALSE, out.width = "75%", align = "left"}
-include_graphics("../pics/Quiz230315_Q7_Black.png")
+include_graphics("./pics/Quiz230315_Q7_Black.png")
 ```
 
 ### 집계표
@@ -410,7 +410,7 @@ m + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("../pics/Quiz230911_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz230911_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 # 제출 시간의 분포
@@ -452,7 +452,7 @@ quiz$days %>%
 ### 막대그래프
 
 ```{r, echo = FALSE}
-# png(file = "../pics/2301/quiz_submission_3.png", width = 640, height = 480)
+# png(file = "./pics/2301/quiz_submission_3.png", width = 640, height = 480)
 par(family = "KoPubWorldDotum Medium")
 b <- 
   quiz$days %>%
@@ -468,7 +468,7 @@ text(x = b[14, 1], y = sum(days_tbl[, 1]) / 2,
      labels = paste0(format(sum(days_tbl[, 1]) / N * 100, digits = 1, nsmall = 0), "%"))
 title(main = paste0("Quiz230911 (", N, "명 제출)"))
 # title(main = "일 단위 퀴즈 제출 인원", sub = paste0("Quiz230904 (", N, "명 제출)"))
-# dev.copy(png, file = "../pics/2301/quiz_submission_2.png", width = 640, height = 480)
+# dev.copy(png, file = "./pics/2301/quiz_submission_2.png", width = 640, height = 480)
 invisible(dev.off())
 ```
 
@@ -495,10 +495,10 @@ m2 + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("../pics/Quiz230911_submission_3.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz230911_submission_3.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 ```{r, save, echo = FALSE}
 saveRDS(quiz, file = "./quiz230911.RDS")
-save.image("../R/quiz230911.RData")
+save.image("./quiz230911.RData")
 ```

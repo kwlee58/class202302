@@ -21,7 +21,7 @@ options(width=180)
 class_roll0916 <- readRDS("./class_roll_230916.RDS")
 class_roll0916 %<>% 
   data.frame
-class_roll <- read_excel("../data/class_roll230925.xlsx", 
+class_roll <- read_excel("./data/class_roll230925.xlsx", 
                         range = "B1:I916")
 class_roll %<>% 
   data.frame
@@ -29,8 +29,8 @@ str(class_roll)
 names(class_roll) <- c("college", "dept", "year", "id", "name", "status", "email", "cell_no")
 class_roll$group <- class_roll0916$group[match(class_roll$id, class_roll0916$id)]
 quiz <- 
-  read_excel("../data/quiz230925.xlsx",
-             range = "A2:N178",
+  read_excel("./data/quiz230925.xlsx",
+             range = "A2:N201",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "group", "Q7_R", "Q7_B")
 str(quiz)
@@ -114,7 +114,7 @@ wrong_tbl %>%
 ### 민주 문자, 엘리트 문자
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz210323_Q1.png")
+include_graphics("./pics/Quiz210323_Q1.png")
 ```
 
 ### 한글은 민주 문자
@@ -147,7 +147,7 @@ tbl_q1_a %>%
 ## Q2. 정보혁명과 문자 체계
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz210323_Q2.png")
+include_graphics("./pics/Quiz210323_Q2.png")
 ```
 
 ### 정보혁명을 이끄는 문자는 한글(집계표)
@@ -180,7 +180,7 @@ tbl_q2_a %>%
 ## Q3. 알기 힘든 전문 용어
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz210323_Q3.png", dpi = NA)
+include_graphics("./pics/Quiz210323_Q3.png", dpi = NA)
 ```
 
 ### 몇 개나 아나요?(집계표)
@@ -213,7 +213,7 @@ tbl_q3_a %>%
 ## Q4. 해방직후 비문해율
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz210323_Q4.png")
+include_graphics("./pics/Quiz210323_Q4.png")
 ```
 
 ### 집계
@@ -246,7 +246,7 @@ tbl_q4_a %>%
 ## Q5. 세대간 문해력 격차
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz210323_Q5.png")
+include_graphics("./pics/Quiz210323_Q5.png")
 ```
 
 ### 집계
@@ -279,7 +279,7 @@ tbl_q5_a %>%
 ## Q6. 문해력 격차의 파급효과
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz210323_Q6.png")
+include_graphics("./pics/Quiz210323_Q6.png")
 ```
 
 ### 집계
@@ -317,13 +317,13 @@ tbl_q6_a %>%
 ## Red
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz220321_Q7_Red.png")
+include_graphics("./pics/Quiz220321_Q7_Red.png")
 ```
 
 ## Black
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
-include_graphics("../pics/Quiz220321_Q7_Black.png")
+include_graphics("./pics/Quiz220321_Q7_Black.png")
 ```
 
 똑같은 상황에서 긍정적인 단어를 보고 답하는 것 (Red)과, 부정적인 단어를 보고 답하는 것(Black)에 따라 Red 집단에는 긍정적 답변의 비율이 높게, Black 집단에는 부정적 답변의 비율이 높게 나올 것으로 기대한 대로 통계적으로 매우 유의한 차이가 관찰됨. 힘든 상황이라도 긍정적인 생각을 가지길~~^^
@@ -405,7 +405,7 @@ m + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("../pics/Quiz230925_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz230925_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 # 제출 시간의 분포
@@ -447,7 +447,7 @@ quiz$days %>%
 ### 막대그래프
 
 ```{r, echo = FALSE}
-# png(file = "../pics/2302/quiz_submission_4.png", width = 640, height = 480)
+# png(file = "./pics/2302/quiz_submission_4.png", width = 640, height = 480)
 par(family = "KoPubWorldDotum Medium")
 b <- 
   quiz$days %>%
@@ -463,7 +463,7 @@ text(x = b[14, 1], y = sum(days_tbl[, 1]) / 2,
      labels = paste0(format(sum(days_tbl[, 1]) / N * 100, digits = 1, nsmall = 0), "%"))
 title(main = paste0("Quiz230925 (", N, "명 제출)"))
 # title(main = "일 단위 퀴즈 제출 인원", sub = paste0("Quiz230925 (", N, "명 제출)"))
-# dev.copy(png, file = "../pics/2302/quiz_submission_5.png", width = 640, height = 480)
+# dev.copy(png, file = "./pics/2302/quiz_submission_5.png", width = 640, height = 480)
 invisible(dev.off())
 ```
 
@@ -490,12 +490,12 @@ m2 + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("../pics/Quiz230925_submission_5.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz230925_submission_5.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 
 ```{r, save, echo = FALSE}
 saveRDS(class_roll, file = "./class_roll230925.RDS")
 saveRDS(quiz, file = "./quiz230925.RDS")
-save.image("../R/quiz230925.RData")
+save.image("./quiz230925.RData")
 ```
