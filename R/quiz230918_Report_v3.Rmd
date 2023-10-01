@@ -25,7 +25,7 @@ class_roll <- readRDS("./class_roll_230916.RDS")
 class_roll <- data.frame(class_roll)
 quiz <- 
   read_excel("./data/quiz230918.xlsx",
-             range = "A2:N625",
+             range = "A2:N719",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "group", "Q7_R", "Q7_B")
 str(quiz)
@@ -86,18 +86,22 @@ pander(summary(quiz))
 
 ## Red, Black을 잘못 표시한 사람들
 
-랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 31명이 잘못 선택하였는데 Red 이면서 Black을 선택한 사람이 20명, Black 이면서 Red 를 선택한 사람이  11명 있었습니다. 많이 차이나는 것처럼 보이지만 시행횟수 31회인 이항분포에서 11개 이하나 20개 이상의 앞면을 관찰할 확률은 0.15입니다. 이게 p-value 인데 0.05를 훨씬 넘습니다. 랜덤화효과로 보아도 무방하다는 의미입니다. 굳이 학번까지 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 10/1 07시 현재 14명이 잘못 선택하였는데 Red 이면서 Black을 선택한 사람이 8명, Black 이면서 Red 를 선택한 사람이  6명 있었습니다. 굳이 기대값, 표준오차를 계산하거나 p-value 를 굳이 계산하지 않아도 매우 닮았습니다. 기대값과 표준오차를 계산해 보면 $14/2\pm\sqrt14/2$ = $7 \pm1.9$ 로 계산됩니다. 6이나8은  당연히 범위에 들어갑니다. 공평한 동전을 1회 던져서 앞면이 6번 이하 또는 8번 이상 나올 확률은 0.79입니다. 즉, p-value 가 0.05보다 매우 큽니다. 
 
-```{r, wrong group, echo = FALSE}
+```{r, wrong group, echo = FALSE, results = 'markup'}
 quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
 wrong_group <- which(quiz$group != quiz$group2)
-# class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
-#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
-#   pander
-quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
+# quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
+#   `[`(order(.$time), ) %>%
+#   `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander(row.names = FALSE)
+quiz[wrong_group, c("time", "id", "group2", "group")] %>%
   `[`(order(.$time), ) %>%
-  `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+  `colnames<-`(c("제출시간", "학번", "랜덤화출석부", "구글예습퀴즈")) %>%
   pander(row.names = FALSE)
+```
+
+```{r, echo = FALSE}
 wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
                    "구글예습퀴즈" = quiz$group)
 wrong_tbl %>%
@@ -317,7 +321,7 @@ include_graphics("./pics/Quiz230322_Q7_Red.png")
 include_graphics("./pics/Quiz230322_Q7_Black.png")
 ```
 
-부연설명을 찬성 쪽에 붙이는가(Red), 또는 반대 쪽에 붙이는가(Black)에 따라 응답이 영향을 받는 것으로 관찰됩니다. 찬번여부에 대한 카이제곱테스트의 p-value를 놓고 볼 때 그 차이가 통계적으로 매우 유의합니다. 
+부연설명을 찬성 쪽에 붙이는가(Red), 또는 반대 쪽에 붙이는가(Black)에 따라 응답이 영향을 받는 것으로 관찰됩니다. 찬반여부에 대한 카이제곱테스트의 p-value를 놓고 볼 때 그 차이가 통계적으로 매우 유의합니다. 
 
 ```{r, investigation, echo = FALSE}
 tbl_Q7_a <- quiz$Q7 %>%
