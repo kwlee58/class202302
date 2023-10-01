@@ -5,7 +5,7 @@ account: coop711
 server: posit.cloud
 hostUrl: https://api.posit.cloud/v1
 appId: 6647601
-bundleId: 7748655
+bundleId: 7748994
 url: https://posit.cloud/content/6647601
 version: 1
 asMultiple: FALSE
