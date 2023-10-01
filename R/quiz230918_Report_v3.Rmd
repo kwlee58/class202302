@@ -25,7 +25,7 @@ class_roll <- readRDS("./class_roll_230916.RDS")
 class_roll <- data.frame(class_roll)
 quiz <- 
   read_excel("./data/quiz230918.xlsx",
-             range = "A2:N719",
+             range = "A2:N750",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "group", "Q7_R", "Q7_B")
 str(quiz)
@@ -88,7 +88,7 @@ pander(summary(quiz))
 
 랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 10/1 07시 현재 14명이 잘못 선택하였는데 Red 이면서 Black을 선택한 사람이 8명, Black 이면서 Red 를 선택한 사람이  6명 있었습니다. 굳이 기대값, 표준오차를 계산하거나 p-value 를 굳이 계산하지 않아도 매우 닮았습니다. 기대값과 표준오차를 계산해 보면 $14/2\pm\sqrt14/2$ = $7 \pm1.9$ 로 계산됩니다. 6이나8은  당연히 범위에 들어갑니다. 공평한 동전을 1회 던져서 앞면이 6번 이하 또는 8번 이상 나올 확률은 0.79입니다. 즉, p-value 가 0.05보다 매우 큽니다. 
 
-```{r, wrong group, echo = FALSE, results = 'markup'}
+```{r, wrong group, echo = FALSE, results = 'hide'}
 quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
 wrong_group <- which(quiz$group != quiz$group2)
 # quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
