@@ -30,7 +30,7 @@ names(class_roll) <- c("college", "dept", "year", "id", "name", "status", "email
 class_roll$group <- class_roll0916$group[match(class_roll$id, class_roll0916$id)]
 quiz <- 
   read_excel("./data/quiz230925.xlsx",
-             range = "A2:N471",
+             range = "A2:N569",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "group", "Q7_R", "Q7_B")
 str(quiz)

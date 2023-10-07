@@ -34,7 +34,7 @@ options(width=180)
 class_roll <- readRDS("./class_roll230925.RDS")
 literacy_roll <- 
   read_excel("./data/literacy_230925.xlsx",
-             range = "C1:AD501",
+             range = "C1:AD589",
              col_names = TRUE)
 literacy_roll <- literacy_roll[, -c(1, 3)]
 N <- nrow(literacy_roll)
