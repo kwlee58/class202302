@@ -30,7 +30,7 @@ names(class_roll) <- c("college", "dept", "year", "id", "name", "status", "email
 class_roll$group <- class_roll0916$group[match(class_roll$id, class_roll0916$id)]
 quiz <- 
   read_excel("./data/quiz230925.xlsx",
-             range = "A2:N638",
+             range = "A2:N849",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "group", "Q7_R", "Q7_B")
 str(quiz)
@@ -92,7 +92,7 @@ str(quiz)
 
 ## Red, Black을 잘못 표시한 사람들
 
-랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 잘못 선택하는 사람들의 수효가 6명인데 Red를 Black 이라고 한 사람이 4명이 나왔습니다. 인원이 많이 줄어서 닮은 것으로 보이지 않지만 p-value를 계산해 보면 0.68로 랜덤화 효과가 상당히 관찰됩니다. 굳이 학번을 올린 이유는 그 다음 구글예습설문지에서라도 제대로 올려주길 바라서입니다.
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 잘못 선택하는 사람들의 수효가 7명인데 Red를 Black 이라고 한 사람이 4명이 나왔습니다. 7명을 둘로 나눌 때 가장 닮은 구성입니다. 따라서 공평한 동전을 7회 던져서 앞면이 3회 이하 나오거나 아니면 4회 이상 나오니까 바로 p-value는 1입니다. 굳이 학번을 올린 이유는 그 다음 구글예습설문지에서라도 제대로 올려주길 바라서입니다.
 
 ```{r, wrong group, echo = FALSE}
 quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
@@ -101,10 +101,10 @@ wrong_group <- which(quiz$group != quiz$group2)
 #   `[`(order(.$time), ) %>%
 #   `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
 #   pander(row.names = FALSE)
-quiz[wrong_group, c("time", "id", "group2", "group")] %>%
-  `[`(order(.$time), ) %>%
-  `colnames<-`(c("제출시간", "학번", "랜덤화출석부", "구글예습퀴즈")) %>%
-  pander(row.names = FALSE)
+# quiz[wrong_group, c("time", "id", "group2", "group")] %>%
+#   `[`(order(.$time), ) %>%
+#   `colnames<-`(c("제출시간", "학번", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander(row.names = FALSE)
 wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
                    "구글예습퀴즈" = quiz$group)
 wrong_tbl %>%
