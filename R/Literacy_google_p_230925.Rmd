@@ -72,6 +72,14 @@ literacy <- literacy_roll[, c(2:27)] #> 문해력 집계에 필요한 변수만 
 kable(literacy)
 #> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
 setdiff(literacy_roll$id, class_roll$id)
+#> 불참자들
+absentee <- 
+  class_roll[class_roll$id %in% setdiff(class_roll$id, literacy_roll$id), c("id", "name", "group")] %>%
+  `[`(order(.$name), ) 
+absentee %>%
+  pander(row.names = FALSE) 
+absentee$group %>%
+  table
 #> RDS 포맷으로 저장 
 saveRDS(literacy_roll, file = "./literacy_roll230925.RDS")
 ```
