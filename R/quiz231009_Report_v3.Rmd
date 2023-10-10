@@ -1,7 +1,7 @@
 ---
-title: "Quiz 230412"
+title: "Quiz 231009"
 author: "coop711"
-date: "2023-04-12"
+date: "2023-10-09"
 output: html_document
 ---
 
@@ -20,11 +20,12 @@ options(width=180)
 ```
 
 ```{r, data, echo = FALSE, results = 'hide', message = FALSE}
-# load("./red_and_black_220909_data.RData")
-class_roll <- readRDS("./class_roll_230404.RDS")
+class_roll <- readRDS("./class_roll230925.RDS")
+class_roll %<>% 
+  data.frame
 quiz <- 
-  read_excel("./data/quiz230412.xlsx",
-             range = "A2:P855",
+  read_excel("./data/quiz231009.xlsx",
+             range = "A2:P155",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6),  "group", "Q7_R", "Q8_R", "Q7_B", "Q8_B")
 class(quiz$id) <- "character"
@@ -96,8 +97,17 @@ quiz$Q6 <- factor(quiz$Q6,
                                  "선거 당일 투표하는 유권자 전체"))
 #> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
 quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
-quiz$days <- as.numeric(difftime("2023-04-26 09:00:00", quiz$time, units = 'days'))
-quiz$hours <- as.numeric(difftime("2023-04-26 09:00:00", quiz$time, units = 'hours'))
+#> 불참자들
+absentee <- 
+  class_roll[class_roll$id %in% setdiff(class_roll$id, quiz$id), c("id", "name", "group")] %>%
+  `[`(order(.$name), ) 
+absentee %>%
+  pander(row.names = FALSE) 
+absentee$group %>%
+  table
+#> 마감기한으로부터 제출시점의 기간
+quiz$days <- as.numeric(difftime("2023-10-23 09:00:00", quiz$time, units = 'days'))
+quiz$hours <- as.numeric(difftime("2023-10-23 09:00:00", quiz$time, units = 'hours'))
 str(quiz)
 ```
 
@@ -116,10 +126,10 @@ wrong_group <- which(quiz$group != quiz$group2)
 # class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
 #   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
 #   pander
-quiz[wrong_group, c("id", "group2", "group")] %>%
-  `[`(order(.$id), ) %>%
-  `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
-  pander
+quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
+  `[`(order(.$time), ) %>%
+  `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+  pander(row.names = FALSE)
 wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
                    "구글예습퀴즈" = quiz$group)
 wrong_tbl %>%
@@ -391,7 +401,7 @@ m + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("./pics/Quiz230412_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz231009_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 ## Q8. Red에 구체적 문제, Black에 추상적 문제
@@ -452,7 +462,7 @@ m + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("./pics/Quiz230412_Q8_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz231009_Q8_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 
@@ -536,7 +546,7 @@ m + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("./pics/Quiz230412_Wason_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz231009_Wason_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 ## 합산
@@ -586,16 +596,32 @@ b_fill +
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("./pics/Quiz230412_Wason_Result.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz231009_Wason_Result.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
-
 
 <P style = "page-break-before:always">
 
-### 일 단위 마감 시간으로부터 제출 시간의 분포
+# 제출 시간의 분포
+
+과제 제출이 제출 기간 마지막 날에 몰린다는 것을 시각적으로 보여주고 싶어서 하나 추가하였습니다. 7주차에 접어들어가는 시점에서 마지막 날에 몰리는 현상이 뚜럇해지고 있습니다. 여기서조차 랜덤화 효과를 관찰할 수 있네요. p-value 에 유의해 주세요. 제출시간과 관련한 두 가지 현상에 대해서도 여러분의 생각을 들어보고 싶습니다. 첫째, 랜덤화 효과. 둘쨰, 마감날에 몰리는 현상.
+
+<!--
+### 시간 단위 기초통계량
 
 ```{r, echo = FALSE}
-par(family = "KoPubWorldDotum Medium")
+summary(quiz$hours)
+stem(quiz$hours)
+max(quiz$hours, na.rm = TRUE)
+```
+-->
+
+<P style = "page-break-before:always">
+
+## 일 단위 마감 시간으로부터 제출 시간의 분포
+
+### 분포표
+
+```{r, echo = FALSE}
 N <- nrow(quiz)
 days_tbl <- quiz$days %>%
   cut(breaks = c(0:14), include.lowest = TRUE) %>%
@@ -607,27 +633,60 @@ days_tbl %>%
 quiz$days %>%
   cut(breaks = c(0:14), include.lowest = TRUE) %>%
   table(quiz$group, .) %>%
-  chisq.test %>%
+  chisq.test(simulate.p.value = TRUE) %>%
   pander
+```
+
+### 막대그래프
+
+```{r, echo = FALSE}
+# png(file = "./pics/2302/quiz_submission_7.png", width = 640, height = 480)
+par(family = "KoPubWorldDotum Medium")
 b <- 
   quiz$days %>%
   cut(breaks = c(0:14), include.lowest = TRUE) %>%
   table %>%
   rev %>%
-  barplot(space = 0, names.arg = rep(c("수", "목", "금", "토", "일", "월", "화"), 2),
+  barplot(space = 0, names.arg = rep(c("월", "화", "수", "목", "금", "토", "일"), 2),
           col = c(rep("white", 13), "pink"),
           ylim = c(0, 500)) 
 text(x = b[14, 1], y = sum(days_tbl[, 1]), 
      labels = paste0(sum(days_tbl[, 1]), "명"), pos = 3)
 text(x = b[14, 1], y = sum(days_tbl[, 1]) / 2, 
      labels = paste0(format(sum(days_tbl[, 1]) / N * 100, digits = 1, nsmall = 0), "%"))
-title(main = paste0("Quiz230412 (", N, "명 제출)"))
-# title(main = "일 단위 퀴즈 제출 인원", sub = paste0("Quiz230412 (", N, "명 제출)"))
-dev.copy(png, file = "./pics/2301/quiz_submission_7.png", width = 640, height = 480)
+title(main = paste0("Quiz231009 (", N, "명 제출)"))
+# title(main = "일 단위 퀴즈 제출 인원", sub = paste0("Quiz230925 (", N, "명 제출)"))
+# dev.copy(png, file = "./pics/2302/quiz_submission_5.png", width = 640, height = 480)
 invisible(dev.off())
 ```
 
+### Mosaic Plot
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+m2_list <- days_tbl[, 14:1] %>%
+  mosaic_gg
+m2 <- m2_list$m
+df2 <- m2_list$df
+p_df2 <- m2_list$p_df
+names(df2[, 2]) <- "Days"
+m2 + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = rep(rep(c("월", "화", "수", "목", "금", "토", "일"), each = 2), times = 2)) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "마감일로부터 제출시간의 분포", x = "마감일로부터 일수(누적 %)", y = "인원 백분율(%)") +
+  scale_fill_brewer(name = "그룹", 
+                    labels = c("Red", 
+                               "Black"),
+                    type = "qual", 
+                    palette = "Set1", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("./pics/Quiz231002_submission_7.png", dpi = 120, width = 960, height = 840, units = "px")
+```
+
 ```{r, save, echo = FALSE}
-saveRDS(quiz, file = "quiz230412.RDS")
-save.image("../R/quiz230412.RData")
+saveRDS(quiz, file = "quiz231009.RDS")
+save.image("quiz231009.RData")
 ```
