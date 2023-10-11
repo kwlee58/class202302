@@ -25,7 +25,7 @@ class_roll %<>%
   data.frame
 quiz <- 
   read_excel("./data/quiz231002.xlsx",
-             range = "A2:N526",
+             range = "A2:N539",
              col_names = FALSE)
 str(quiz)
 names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6), "group", "Q7_R", "Q7_B")
@@ -191,7 +191,6 @@ tbl_q2_a %>%
   pander
 ```
 
-
 ## Q3. 한달 독서량의 분포
 
 ```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
@@ -224,7 +223,6 @@ tbl_q3_a %>%
   format(digits = 2, nsmall = 1) %>%
   pander
 ```
-
 
 ## Q4. 최근 1개월간 독서량
 
@@ -354,7 +352,6 @@ tbl_q7_a %>%
   `[`(-3, -3) %>%
   chisq.test(simulate.p.value = TRUE) %>%
   pander
-
 ```
 
 ## % 비교.  
