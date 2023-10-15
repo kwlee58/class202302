@@ -25,7 +25,7 @@ class_roll %<>%
   data.frame
 quiz <- 
   read_excel("./data/quiz231002.xlsx",
-             range = "A2:N613",
+             range = "A2:N845",
              col_names = FALSE)
 str(quiz)
 names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6), "group", "Q7_R", "Q7_B")
@@ -93,18 +93,19 @@ str(quiz)
 
 ## Red, Black을 잘못 표시한 사람들
 
-랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. Red를 Black 이라고 한 사람의 수효(21명)과 Black을 Red 라고 한 사람의 수효(13명)가 상당히 차이가 나는 것처럼 보이지만 공평한 동전을 34번 던질 때 앞 면이 13번 이하 나오거나 21번 이상 나올 확률을 계산해 보면 `r round(pbinom(13, 33, 0.5), digits = 3) + round(1- pbinom(20, 34, 0.5), digits = 3)`입니다. p-value 기준 0.05보다 훨씬 큰 값이죠. 통계적으로 유의한 수준이 아니라고 합니다. 굳이 학번까지 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. Red를 Black 이라고 한 사람의 수효(4명)과 Black을 Red 라고 한 사람의 수효(3명)은 공평한 동전을 7번 던졌을 때  앞면이 나오는 횟수와 뒷면이 나오는 횟수가 가장 닮은 경우입니다. 앞면이 3회 이하 나오거나 4회 이상 나올 확률은 바로 1입니다. 
 
 ```{r, wrong group, echo = FALSE}
 quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
 wrong_group <- which(quiz$group != quiz$group2)
 # class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
+#   `[`(order(.$time), ) %>%
 #   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
 #   pander
-quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
-  `[`(order(.$time), ) %>%
-  `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
-  pander(row.names = FALSE)
+# quiz[wrong_group, c("time", "id", "group2", "group")] %>%
+#   `[`(order(.$time), ) %>%
+#   `colnames<-`(c("제출시간", "학번", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander(row.names = FALSE)
 wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
                    "구글예습퀴즈" = quiz$group)
 wrong_tbl %>%
