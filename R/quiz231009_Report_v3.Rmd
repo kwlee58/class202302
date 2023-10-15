@@ -25,7 +25,7 @@ class_roll %<>%
   data.frame
 quiz <- 
   read_excel("./data/quiz231009.xlsx",
-             range = "A2:P413",
+             range = "A2:P435",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6),  "group", "Q7_R", "Q8_R", "Q7_B", "Q8_B")
 class(quiz$id) <- "character"
