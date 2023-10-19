@@ -20,12 +20,19 @@ options(width=180)
 ```
 
 ```{r, data, echo = FALSE, results = 'hide', message = FALSE}
-class_roll <- readRDS("./class_roll230925.RDS")
+class_roll0925 <- readRDS("./class_roll230925.RDS")
+class_roll0925 %<>% 
+  data.frame
+class_roll <- read_excel("./data/class_roll231016.xlsx", 
+                        range = "B1:I913")
 class_roll %<>% 
   data.frame
+str(class_roll)
+names(class_roll) <- c("college", "dept", "year", "id", "name", "status", "email", "cell_no")
+class_roll$group <- class_roll0925$group[match(class_roll$id, class_roll0925$id)]
 quiz <- 
   read_excel("./data/quiz231009.xlsx",
-             range = "A2:P435",
+             range = "A2:P488",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6),  "group", "Q7_R", "Q8_R", "Q7_B", "Q8_B")
 class(quiz$id) <- "character"
@@ -97,6 +104,8 @@ quiz$Q6 <- factor(quiz$Q6,
                                  "선거 당일 투표하는 유권자 전체"))
 #> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
 quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
+#> 중복제출자
+quiz[which(duplicated(quiz$id)), c("id", "name")]
 #> 불참자들
 absentee <- 
   class_roll[class_roll$id %in% setdiff(class_roll$id, quiz$id), c("id", "name", "group")] %>%
@@ -686,6 +695,7 @@ ggsave("./pics/Quiz231002_submission_7.png", dpi = 120, width = 960, height = 84
 ```
 
 ```{r, save, echo = FALSE}
+saveRDS(class_roll, file = "./class_roll231016.RDS")
 saveRDS(quiz, file = "quiz231009.RDS")
 save.image("quiz231009.RData")
 ```
