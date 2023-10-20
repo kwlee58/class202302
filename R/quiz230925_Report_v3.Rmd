@@ -84,7 +84,6 @@ literacy_roll <- readRDS("./literacy_roll230925.RDS")
 class_roll[class_roll$id %in% setdiff(literacy_roll$id, quiz$id), c("id", "name", "group")]
 class_roll[class_roll$id %in% setdiff(quiz$id, literacy_roll$id), c("id", "name", "group")]
 #> 마감기한으로부터 제출시점의 기간
-#> 제출시간 분포 분석 코드 
 quiz$days <- as.numeric(difftime("2023-10-09 09:00:00", quiz$time, units = 'days'))
 quiz$hours <- as.numeric(difftime("2023-10-09 09:00:00", quiz$time, units = 'hours'))
 str(quiz)

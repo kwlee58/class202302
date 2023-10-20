@@ -26,9 +26,9 @@ library(magrittr)
 options(width = 180)
 class_roll <- readRDS("./class_roll231016.RDS")
 oxford <- "./data/oxford_231016.xlsx" %>%
-  read_excel(range = "A2:BM170",
+  read_excel(range = "A2:BM198",
              col_names = FALSE)
-names(oxford) <- c("Time1", "email", "Dept", "id", "Name", "Time2", "group", paste0("Q", 1:29, "_R"), paste0("Q", 1:29, "_B"))
+names(oxford) <- c("Time1", "email", "dept", "id", "name", "Time2", "group", paste0("Q", 1:29, "_R"), paste0("Q", 1:29, "_B"))
 oxford <- oxford[-2]
 class(oxford$id) <- "character"
 b <- format(as.POSIXct(oxford$Time2, format = "%Y-%m-%d %H:%M:%S"), format = "%H:%M:%S")
@@ -100,7 +100,22 @@ oxford[, c("id", "Scores", "Levels", "Duration_2", "group")] %>%
   format(digits = 3, nsmall = 2) %>%
   kable(align = c("c", "c", "r", "r", "c"), col.names = col_names)
 #> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
-oxford[oxford$id %in% setdiff(oxford$id, class_roll$id), c("id", "Name", "Dept")]
+oxford[oxford$id %in% setdiff(oxford$id, class_roll$id), c("id", "name", "dept")]
+#> 중복제출자
+oxford[which(duplicated(oxford$id)), c("id", "name")]
+#> 불참자들
+absentee <- 
+  class_roll[class_roll$id %in% setdiff(class_roll$id, oxford$id), c("id", "name", "group")] %>%
+  `[`(order(.$name), ) 
+absentee %>%
+  pander(row.names = FALSE) 
+absentee$group %>%
+  table
+#> 옥스포드 행복도 조사 참여자 vs Quiz 참여자
+quiz <- readRDS("./quiz231016.RDS")
+class_roll[class_roll$id %in% setdiff(oxford$id, quiz$id), c("id", "name", "group")]
+class_roll[class_roll$id %in% setdiff(quiz$id, oxford$id), c("id", "name", "group")]
+#> 마감기한으로부터 제출시점의 기간
 oxford$days <- as.numeric(difftime("2023-10-30 09:00:00", oxford$Time1, units = 'days'))
 oxford$hours <- as.numeric(difftime("2023-10-30 09:00:00", oxford$Time1, units = 'hours'))
 ```
@@ -112,12 +127,9 @@ oxford$hours <- as.numeric(difftime("2023-10-30 09:00:00", oxford$Time1, units =
 ```{r, wrong group, echo = FALSE}
 oxford$group2 <- class_roll$group[match(oxford$id, class_roll$id)]
 wrong_group <- which(oxford$group != oxford$group2)
-# class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
-#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
-#   pander
-oxford[wrong_group, c("id", "Name", "group2", "group")] %>%
-  `[`(order(.$id), ) %>%
-  `colnames<-`(c("학번", "이름", "랜덤화출석부", "옥스포드행복설문지")) %>%
+oxford[wrong_group, c("Time1", "id", "name", "group2", "group")] %>%
+  `[`(order(.$Time1), ) %>%
+  `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
   pander(row.names = FALSE)
 wrong_tbl <- table("랜덤화출석부" = oxford$group2, 
                    "옥스포드행복설문지" = oxford$group)
