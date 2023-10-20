@@ -26,9 +26,9 @@ library(magrittr)
 options(width = 180)
 class_roll <- readRDS("./class_roll231016.RDS")
 oxford <- "./data/oxford_231016.xlsx" %>%
-  read_excel(range = "A2:BM149",
+  read_excel(range = "A2:BM170",
              col_names = FALSE)
-names(oxford) <- c("Time1", "email", "Dept", "id", "Name", "Time2", "Group", paste0("Q", 1:29, "_R"), paste0("Q", 1:29, "_B"))
+names(oxford) <- c("Time1", "email", "Dept", "id", "Name", "Time2", "group", paste0("Q", 1:29, "_R"), paste0("Q", 1:29, "_B"))
 oxford <- oxford[-2]
 class(oxford$id) <- "character"
 b <- format(as.POSIXct(oxford$Time2, format = "%Y-%m-%d %H:%M:%S"), format = "%H:%M:%S")
@@ -37,7 +37,7 @@ oxford$Duration <- difftime(as.POSIXct(a, format = "%H:%M:%S"), as.POSIXct(b, fo
 oxford %<>% cbind(mapply(function(x, y){ifelse(is.na(x), y, x)}, oxford[7:35], oxford[36:64], 
                          USE.NAMES = FALSE))
 names(oxford)[66:94] <- paste0("Q", 1:29)
-oxford$Group %<>% 
+oxford$group %<>% 
   factor(levels = c("Red", "Black"))
 ```
 
@@ -96,7 +96,7 @@ oxford$Levels <- oxford$Scores %>%
 oxford$Duration_2[oxford$Levels %>% is.na] <- NA
 col_names <- c("학번", "컴퓨터점수", "행복 수준", "소요 시간", "질문지 유형")
 #> 주석표시 지우고 실행
-oxford[, c("id", "Scores", "Levels", "Duration_2", "Group")] %>% 
+oxford[, c("id", "Scores", "Levels", "Duration_2", "group")] %>% 
   format(digits = 3, nsmall = 2) %>%
   kable(align = c("c", "c", "r", "r", "c"), col.names = col_names)
 #> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
@@ -111,16 +111,16 @@ oxford$hours <- as.numeric(difftime("2023-10-30 09:00:00", oxford$Time1, units =
 
 ```{r, wrong group, echo = FALSE}
 oxford$group2 <- class_roll$group[match(oxford$id, class_roll$id)]
-wrong_group <- which(oxford$Group != oxford$group2)
+wrong_group <- which(oxford$group != oxford$group2)
 # class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
 #   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
 #   pander
-oxford[wrong_group, c("id", "Name", "group2", "Group")] %>%
+oxford[wrong_group, c("id", "Name", "group2", "group")] %>%
   `[`(order(.$id), ) %>%
   `colnames<-`(c("학번", "이름", "랜덤화출석부", "옥스포드행복설문지")) %>%
   pander(row.names = FALSE)
 wrong_tbl <- table("랜덤화출석부" = oxford$group2, 
-                   "옥스포드행복설문지" = oxford$Group)
+                   "옥스포드행복설문지" = oxford$group)
 wrong_tbl %>%
   pander(row.names = c("Red(랜덤화출석부)", "Black(랜덤화출석부)"), 
          col.names = c("Red(옥스포드행복설문지)", "Black(옥스포드행복설문지)"))
@@ -133,10 +133,10 @@ wrong_tbl %>%
 ### `summary()`
 
 ```{r, echo = FALSE}
-oxford$Group %<>% factor(levels = c("Red", "Black"), 
+oxford$group %<>% factor(levels = c("Red", "Black"), 
                          labels = c("국문", "영문"))
 oxford$Scores %>% 
-  tapply(INDEX = oxford$Group, FUN = summary) %>%
+  tapply(INDEX = oxford$group, FUN = summary) %>%
   pander
 ```
 
@@ -144,7 +144,7 @@ oxford$Scores %>%
 
 ```{r, echo = FALSE}
 oxford_tbl <- oxford$Levels %>% 
-  table(oxford$Group, ., useNA = "ifany") %>% 
+  table(oxford$group, ., useNA = "ifany") %>% 
   cbind("계" = rowSums(.)) %>%
   rbind("계" = colSums(.)) 
 oxford_tbl %>% 
@@ -171,7 +171,7 @@ oxford_tbl[3, -6] %>%
 
 ```{r, echo = FALSE}
 par(family = "HCR Dotum LVT")
-boxplot(Scores ~ Group, data = oxford)
+boxplot(Scores ~ group, data = oxford)
 ```
 -->
 
@@ -183,7 +183,7 @@ library(ggplot2)
 library(extrafont)
 # source("theme_kr.R")
 ggplot(data = oxford, 
-       mapping = aes(x = Group, y = Scores)) +
+       mapping = aes(x = group, y = Scores)) +
   geom_boxplot(outlier.shape = 1, na.rm = TRUE) +
   theme_bw(base_family = "KoPubWorldDotum Medium") +
 #  theme_kr +
@@ -194,7 +194,7 @@ ggplot(data = oxford,
 ### `t.test()` on means
 
 ```{r, echo = FALSE}
-t.test(Scores ~ Group, data = oxford, var.equal = FALSE, alternative = "greater") %>% 
+t.test(Scores ~ group, data = oxford, var.equal = FALSE, alternative = "greater") %>% 
   pander
 ```
 
@@ -202,7 +202,7 @@ t.test(Scores ~ Group, data = oxford, var.equal = FALSE, alternative = "greater"
 
 초 단위로 측정한 소요시간에서는 오전, 오후를 잘못 쓴다거나 시작 시간이 제출 시간보다 늦게 입력한 사람들이 있고, 과도하게 (한 시간) 이상 소요된 것으로 나오는 사람들이 있어서 일일이 찾아서 수정하였고, 한 시간 이상은 사실상 설문지를 작성하다가 다른 일을 하고 다시 돌아와 마치는 과정을 의미하는 것으로 판단하여 NA 로 처리하였다. 소요 시간에 있어서도 국문과 영문에는 통계적으로 매우 유의한 수준의 차이가 관찰되었다.
 
-평균적으로 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% diff %>% round(1)`초, 즉 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% diff %>% "%/%"(60)`분 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = mean, na.rm = TRUE) %>% diff %>% "%%"(60) %>% round`초정도 국문 질문지에 더 빨리 응답한다. 소요시간의 중위값을 비교해 보면 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = median, na.rm = TRUE) %>% diff %>% round(1)` 초, 약 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = median, na.rm = TRUE) %>% diff %>% "%/%"(60) `분 `r oxford %$% Duration %>% tapply(INDEX = oxford$Group, FUN = median, na.rm = TRUE) %>% diff %>% "%%"(60)  %>% round`초 만큼 국문 질문지에 더 빨리 응답하지만 통계적으로 유의한 수준은 아니다.
+평균적으로 `r oxford %$% Duration %>% tapply(INDEX = oxford$group, FUN = mean, na.rm = TRUE) %>% diff %>% round(1)`초, 즉 `r oxford %$% Duration %>% tapply(INDEX = oxford$group, FUN = mean, na.rm = TRUE) %>% diff %>% "%/%"(60)`분 `r oxford %$% Duration %>% tapply(INDEX = oxford$group, FUN = mean, na.rm = TRUE) %>% diff %>% "%%"(60) %>% round`초정도 국문 질문지에 더 빨리 응답한다. 소요시간의 중위값을 비교해 보면 `r oxford %$% Duration %>% tapply(INDEX = oxford$group, FUN = median, na.rm = TRUE) %>% diff %>% round(1)` 초, 약 `r oxford %$% Duration %>% tapply(INDEX = oxford$group, FUN = median, na.rm = TRUE) %>% diff %>% "%/%"(60) `분 `r oxford %$% Duration %>% tapply(INDEX = oxford$group, FUN = median, na.rm = TRUE) %>% diff %>% "%%"(60)  %>% round`초 만큼 국문 질문지에 더 빨리 응답하지만 통계적으로 유의한 수준은 아니다.
 
 ### `summary()`
 
@@ -211,7 +211,7 @@ oxford$Duration %>%
   as.numeric %>%
 #   `/`(60) %>%
 #   round(2) %>%
-  tapply(INDEX = oxford$Group, FUN = summary) %>%
+  tapply(INDEX = oxford$group, FUN = summary) %>%
   pander
 ```
 
@@ -220,7 +220,7 @@ oxford$Duration %>%
 
 ```{r, echo = FALSE, eval = FALSE}
 par(family = "HCR Dotum LVT")
-boxplot(Duration ~ Group, data = oxford)
+boxplot(Duration ~ group, data = oxford)
 ```
 -->
 
@@ -228,7 +228,7 @@ boxplot(Duration ~ Group, data = oxford)
 
 ```{r, echo = FALSE, message = FALSE}
 ggplot(data = oxford, 
-       mapping = aes(x = Group, y = as.numeric(Duration))) +
+       mapping = aes(x = group, y = as.numeric(Duration))) +
   geom_boxplot(outlier.shape = 1, na.rm = TRUE) +
   theme_bw(base_family = "KoPubWorldDotum Medium") +
 #  theme_kr +
@@ -239,34 +239,79 @@ ggplot(data = oxford,
 ### `t.test()` on means
 
 ```{r, echo = FALSE}
-t.test(as.numeric(Duration) ~ Group, data = oxford, var.equal = FALSE) %>% pander
+t.test(as.numeric(Duration) ~ group, data = oxford, var.equal = FALSE) %>% pander
 ```
 
-### 일 단위 마감 시간으로부터 제출 시간의 분포
+## 일 단위 마감 시간으로부터 제출 시간의 분포
+
+### 분포표
 
 ```{r, echo = FALSE}
-par(family = "KoPubWorldDotum Medium")
-oxford$days %>%
+N <- nrow(oxford)
+days_tbl <- oxford$days %>%
   cut(breaks = c(0:14), include.lowest = TRUE) %>%
-  table(oxford$group, .) %>%
+  table(oxford$group, .) 
+days_tbl %>%
 #  cbind("계" = rowSums(.)) %>%
 #  rbind("계" = colSums(.)) %>%
   pander(caption = "일 단위")
-oxford$days %>%
+oxofrd$days %>%
   cut(breaks = c(0:14), include.lowest = TRUE) %>%
   table(oxford$group, .) %>%
-  chisq.test %>%
+  chisq.test(simulate.p.value = TRUE) %>%
   pander
-oxford$days %>%
+```
+
+### 막대그래프
+
+```{r, echo = FALSE}
+# png(file = "./pics/2302/quiz_submission_8.png", width = 640, height = 480)
+par(family = "KoPubWorldDotum Medium")
+b <- 
+  oxford$days %>%
   cut(breaks = c(0:14), include.lowest = TRUE) %>%
   table %>%
   rev %>%
-  barplot(space = 0, 
-          names.arg = rep(c("수", "목", "금", "토", "일", "월", "화"), 2), 
-          col = c(rep("white", 13), "pink"))
-title(main = "일 단위 퀴즈 제출 횟수")
+  barplot(space = 0, names.arg = rep(c("월", "화", "수", "목", "금", "토", "일"), 2),
+          col = c(rep("white", 13), "pink"),
+          ylim = c(0, 500)) 
+text(x = b[14, 1], y = sum(days_tbl[, 1]), 
+     labels = paste0(sum(days_tbl[, 1]), "명"), pos = 3)
+text(x = b[14, 1], y = sum(days_tbl[, 1]) / 2, 
+     labels = paste0(format(sum(days_tbl[, 1]) / N * 100, digits = 1, nsmall = 0), "%"))
+title(main = paste0("Oxford 2302 (", N, "명 제출)"))
+# title(main = "일 단위 퀴즈 제출 인원", sub = paste0("Quiz230925 (", N, "명 제출)"))
+# dev.copy(png, file = "./pics/2302/quiz_submission_5.png", width = 640, height = 480)
+invisible(dev.off())
 ```
 
+### Mosaic Plot
+
+```{r, echo = FALSE, fig.width = 10, fig.height = 5}
+library(ggplot2)
+source("./mosaic_gg.R")
+m2_list <- days_tbl[, 14:1] %>%
+  mosaic_gg
+m2 <- m2_list$m
+df2 <- m2_list$df
+p_df2 <- m2_list$p_df
+names(df2[, 2]) <- "Days"
+m2 + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = rep(rep(c("월", "화", "수", "목", "금", "토", "일"), each = 2), times = 2)) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "마감일로부터 제출시간의 분포", x = "마감일로부터 일수(누적 %)", y = "인원 백분율(%)") +
+  scale_fill_brewer(name = "그룹", 
+                    labels = c("Red", 
+                               "Black"),
+                    type = "qual", 
+                    palette = "Set1", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("./pics/oxford_submission.png", dpi = 120, width = 960, height = 840, units = "px")
+```
 
 ```{r, save, echo = FALSE}
 saveRDS(oxford, file = "./oxford231016.RDS")
