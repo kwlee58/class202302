@@ -32,7 +32,7 @@ names(class_roll) <- c("college", "dept", "year", "id", "name", "status", "email
 class_roll$group <- class_roll0925$group[match(class_roll$id, class_roll0925$id)]
 quiz <- 
   read_excel("./data/quiz231009.xlsx",
-             range = "A2:P633",
+             range = "A2:P842",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6),  "group", "Q7_R", "Q8_R", "Q7_B", "Q8_B")
 class(quiz$id) <- "character"
@@ -126,15 +126,11 @@ pander(summary(quiz))
 
 ## Red, Black을 잘못 표시한 사람들
 
-랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과는 여기서도 작동하고 있는 걸 알 수 있습니다. Red를 Black 이라고 한 사람의 수효(3명)과 Black을 Red 라고 한 사람의 수효(4명)이 비슷합니다 group 을 잘못 기억하고 있는 사람들의 수효조차 Red, Black 에 비슷하게 나뉘었습니다. 굳이 학번까지 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
-다
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과는 여기서도 작동하고 있는 걸 알 수 있습니다. Red를 Black 이라고 한 사람의 수효(4명)과 Black을 Red 라고 한 사람의 수효(5명)이 비슷합니다 group 을 잘못 기억하고 있는 사람들의 수효조차 Red, Black 에 비슷하게 나뉘었습니다. 굳이 학번까지 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
 
 ```{r, wrong group, echo = FALSE}
 quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
 wrong_group <- which(quiz$group != quiz$group2)
-# class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
-#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
-#   pander
 quiz[wrong_group, c("time", "id", "group2", "group")] %>%
   `[`(order(.$time), ) %>%
   `colnames<-`(c("제출시간", "학번", "랜덤화출석부", "구글예습퀴즈")) %>%

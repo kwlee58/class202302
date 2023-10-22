@@ -26,7 +26,7 @@ library(magrittr)
 options(width = 180)
 class_roll <- readRDS("./class_roll231016.RDS")
 oxford <- "./data/oxford_231016.xlsx" %>%
-  read_excel(range = "A2:BM290",
+  read_excel(range = "A2:BM380",
              col_names = FALSE)
 names(oxford) <- c("Time1", "email", "dept", "id", "name", "Time2", "group", paste0("Q", 1:29, "_R"), paste0("Q", 1:29, "_B"))
 oxford <- oxford[-2]
@@ -39,6 +39,19 @@ oxford %<>% cbind(mapply(function(x, y){ifelse(is.na(x), y, x)}, oxford[7:35], o
 names(oxford)[66:94] <- paste0("Q", 1:29)
 oxford$group %<>% 
   factor(levels = c("Red", "Black"))
+```
+
+```{r, echo = FALSE, eval = FALSE}
+# List of column names without the "_R" and "_B" suffix
+col_names <- paste0("Q", 1:29)
+
+# Function to replace missing values in columns
+replace_missing <- function(col_name) {
+  oxford[[col_name]] <- ifelse(is.na(oxford[[paste0(col_name, "_R")]]), oxford[[paste0(col_name, "_B")]], oxford[[paste0(col_name, "_R")]])
+}
+
+# Use lapply to apply the function to each column
+lapply(col_names, replace_missing)
 ```
 
 ```{r, echo = FALSE, eval= FALSE}
