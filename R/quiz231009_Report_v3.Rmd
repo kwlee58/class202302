@@ -32,7 +32,7 @@ names(class_roll) <- c("college", "dept", "year", "id", "name", "status", "email
 class_roll$group <- class_roll0925$group[match(class_roll$id, class_roll0925$id)]
 quiz <- 
   read_excel("./data/quiz231009.xlsx",
-             range = "A2:P563",
+             range = "A2:P633",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6),  "group", "Q7_R", "Q8_R", "Q7_B", "Q8_B")
 class(quiz$id) <- "character"
@@ -135,9 +135,9 @@ wrong_group <- which(quiz$group != quiz$group2)
 # class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
 #   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
 #   pander
-quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
+quiz[wrong_group, c("time", "id", "group2", "group")] %>%
   `[`(order(.$time), ) %>%
-  `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+  `colnames<-`(c("제출시간", "학번", "랜덤화출석부", "구글예습퀴즈")) %>%
   pander(row.names = FALSE)
 wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
                    "구글예습퀴즈" = quiz$group)
