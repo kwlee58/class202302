@@ -25,7 +25,7 @@ options(width = 180)
 class_roll <- readRDS("./class_roll231016.RDS")
 quiz <- 
   read_excel("./data/quiz231016.xlsx",
-             range = "A2:O435",
+             range = "A2:O448",
              col_names = FALSE)
 names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:3),  "group", "Q4_R", "Q5_R", "Q6_R", "Q4_B", "Q5_B", "Q6_B")
 quiz$dept <- factor(quiz$dept)
@@ -89,9 +89,6 @@ pander(summary(quiz))
 ```{r, wrong group, echo = FALSE}
 quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
 wrong_group <- which(quiz$group != quiz$group2)
-# class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
-#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
-#   pander
 quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
   `[`(order(.$time), ) %>%
   `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
@@ -259,6 +256,41 @@ tbl_q4_a %>%
   pander
 ```
 
+## Mosaic Plot
+
+```{r, mosaic plot4, echo = FALSE, fig.width = 7, fig.height = 5}
+library(ggplot2)
+source("./mosaic_gg.R")
+m_list4 <- quiz$Q4 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  t %>%
+  mosaic_gg
+m4 <- m_list4$m
+df4 <- m_list4$df
+p_df4 <- m_list4$p_df
+names(df4)[1] <- "Var1"
+names(p_df4)[1] <- "Var1"
+# df$Var1 %<>% factor(labels = c("반이나 남았네", "반밖에 안 남았네", "모름/무응답"))
+df4$Var2 %<>% factor(labels = c("Red(10센트 먼저)", "Black(5센트 먼저)"))
+# p_df$Var1 %<>% factor(labels = c("반이나 남았네", "반밖에 안 남았네", "모름/무응답"))
+p_df4$Var2 %<>% factor(labels = c("Red(10센트 먼저)", "Black(5센트 먼저)"))
+m4 + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = df4[, 2]) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "야구 방망이와 공 세트", x = "Red or Black(누적 %)", y = "인원(%, 명)") +
+  scale_fill_brewer(name = "응답", 
+                    labels = c("10센트", "5센트"),
+                    type = "qual", 
+                    palette = "Set2", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("./pics/Quiz231016_Q4_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+```
+
+
 ## Q5. 가발 만드는 기계
 
 ```{r, echo = FALSE, out.width = "90%"}
@@ -305,6 +337,40 @@ tbl_q5_a %>%
   pander
 ```
 
+## Mosaic Plot
+
+```{r, mosaic plot5, echo = FALSE, fig.width = 7, fig.height = 5}
+library(ggplot2)
+source("./mosaic_gg.R")
+m_list5 <- quiz$Q5 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  t %>%
+  mosaic_gg
+m5 <- m_list5$m
+df5 <- m_list5$df
+p_df5 <- m_list5$p_df
+names(df5)[1] <- "Var1"
+names(p_df5)[1] <- "Var1"
+# df$Var1 %<>% factor(labels = c("반이나 남았네", "반밖에 안 남았네", "모름/무응답"))
+df5$Var2 %<>% factor(labels = c("Red(100분 먼저)", "Black(5분 먼저)"))
+# p_df$Var1 %<>% factor(labels = c("반이나 남았네", "반밖에 안 남았네", "모름/무응답"))
+p_df5$Var2 %<>% factor(labels = c("Red(100분 먼저)", "Black(5분 먼저)"))
+m5 + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = df5[, 2]) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "가발 만드는 기계", x = "Red or Black(누적 %)", y = "인원(%, 명)") +
+  scale_fill_brewer(name = "응답", 
+                    labels = c("100분", "5분"),
+                    type = "qual", 
+                    palette = "Set2", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("./pics/Quiz231016_Q5_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+```
+
 ## Q6. 호수에 수련
 
 ```{r, echo = FALSE, out.width = "90%"}
@@ -349,6 +415,40 @@ tbl_q6_a %>%
   cbind("계" = rowSums(.)) %>%
   format(digits = 2, nsmall = 1) %>%
   pander
+```
+
+## Mosaic Plot
+
+```{r, mosaic plot6, echo = FALSE, fig.width = 7, fig.height = 5}
+library(ggplot2)
+source("./mosaic_gg.R")
+m_list6 <- quiz$Q6 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  t %>%
+  mosaic_gg
+m6 <- m_list6$m
+df6 <- m_list6$df
+p_df6 <- m_list6$p_df
+names(df6)[1] <- "Var1"
+names(p_df6)[1] <- "Var1"
+# df$Var1 %<>% factor(labels = c("반이나 남았네", "반밖에 안 남았네", "모름/무응답"))
+df6$Var2 %<>% factor(labels = c("Red(24일 먼저)", "Black(48일 먼저)"))
+# p_df$Var1 %<>% factor(labels = c("반이나 남았네", "반밖에 안 남았네", "모름/무응답"))
+p_df6$Var2 %<>% factor(labels = c("Red(24일 먼저)", "Black(48일 먼저)"))
+m6 + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = df6[, 2]) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "호수에 수련", x = "Red or Black(누적 %)", y = "인원(%, 명)") +
+  scale_fill_brewer(name = "응답", 
+                    labels = c("24일", "48일"),
+                    type = "qual", 
+                    palette = "Set2", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("./pics/Quiz231016_Q6_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 ## 일 단위 마감 시간으로부터 제출 시간의 분포
