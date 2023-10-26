@@ -26,7 +26,7 @@ library(magrittr)
 options(width = 180)
 class_roll <- readRDS("./class_roll231016.RDS")
 oxford <- "./data/oxford_231016.xlsx" %>%
-  read_excel(range = "A2:BM489",
+  read_excel(range = "A2:BM496",
              col_names = FALSE)
 names(oxford) <- c("Time1", "email", "dept", "id", "name", "Time2", "group", paste0("Q", 1:29, "_R"), paste0("Q", 1:29, "_B"))
 oxford <- oxford[-2]
