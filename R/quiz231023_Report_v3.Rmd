@@ -23,7 +23,7 @@ options(width=180)
 class_roll <- readRDS("./class_roll231016.RDS")
 quiz <- 
   read_excel("./data/quiz231023.xlsx",
-             range = "A2:N211",
+             range = "A2:N295",
              col_names = FALSE)
 str(quiz)
 names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6),  "group", "Q7_R", "Q7_B")
@@ -79,8 +79,8 @@ quiz$Q7 %<>%
          labels = c("사후 장기기증 의사 있음", "사후 장기기증 의사 없음"))
 #> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
 quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
-quiz$days <- as.numeric(difftime("2023-11-06 09:00:00", quiz$time, units = 'days'))
-quiz$hours <- as.numeric(difftime("2023-11-06 09:00:00", quiz$time, units = 'hours'))
+quiz$days <- as.numeric(difftime("2023-11-06 09:00:00", quiz$time, tz = "Asia/Seoul",  units = 'days'))
+quiz$hours <- as.numeric(difftime("2023-11-06 09:00:00", quiz$time, tz = "Asia/Seoul", units = 'hours'))
 quiz %>% 
   str  
 ```

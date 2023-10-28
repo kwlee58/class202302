@@ -98,10 +98,10 @@ str(quiz)
 ```{r, wrong group, echo = FALSE}
 quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
 wrong_group <- which(quiz$group != quiz$group2)
-quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
-  `[`(order(.$time), ) %>%
-  `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
-  pander(row.names = FALSE)
+# quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
+#   `[`(order(.$time), ) %>%
+#   `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander(row.names = FALSE)
 wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
                    "구글예습퀴즈" = quiz$group)
 wrong_tbl %>%

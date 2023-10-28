@@ -26,7 +26,7 @@ library(magrittr)
 options(width = 180)
 class_roll <- readRDS("./class_roll231016.RDS")
 oxford <- "./data/oxford_231016.xlsx" %>%
-  read_excel(range = "A2:BM496",
+  read_excel(range = "A2:BM573",
              col_names = FALSE)
 names(oxford) <- c("Time1", "email", "dept", "id", "name", "Time2", "group", paste0("Q", 1:29, "_R"), paste0("Q", 1:29, "_B"))
 oxford <- oxford[-2]
@@ -129,8 +129,8 @@ quiz <- readRDS("./quiz231016.RDS")
 class_roll[class_roll$id %in% setdiff(oxford$id, quiz$id), c("id", "name", "group")]
 class_roll[class_roll$id %in% setdiff(quiz$id, oxford$id), c("id", "name", "group")]
 #> 마감기한으로부터 제출시점의 기간
-oxford$days <- as.numeric(difftime("2023-10-30 09:00:00", oxford$Time1, units = 'days'))
-oxford$hours <- as.numeric(difftime("2023-10-30 09:00:00", oxford$Time1, units = 'hours'))
+oxford$days <- as.numeric(difftime("2023-10-30 09:00:00", oxford$Time1, tz = "Asia/Seoul", units = 'days'))
+oxford$hours <- as.numeric(difftime("2023-10-30 09:00:00", oxford$Time1, tz = "Asia/Seoul", units = 'hours'))
 ```
 
 ## Red, Black을 잘못 표시한 사람들
