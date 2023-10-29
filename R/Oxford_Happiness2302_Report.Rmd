@@ -26,7 +26,7 @@ library(magrittr)
 options(width = 180)
 class_roll <- readRDS("./class_roll231016.RDS")
 oxford <- "./data/oxford_231016.xlsx" %>%
-  read_excel(range = "A2:BM573",
+  read_excel(range = "A2:BM637",
              col_names = FALSE)
 names(oxford) <- c("Time1", "email", "dept", "id", "name", "Time2", "group", paste0("Q", 1:29, "_R"), paste0("Q", 1:29, "_B"))
 oxford <- oxford[-2]
@@ -140,9 +140,9 @@ oxford$hours <- as.numeric(difftime("2023-10-30 09:00:00", oxford$Time1, tz = "A
 ```{r, wrong group, echo = FALSE}
 oxford$group2 <- class_roll$group[match(oxford$id, class_roll$id)]
 wrong_group <- which(oxford$group != oxford$group2)
-oxford[wrong_group, c("Time1", "id", "name", "group2", "group")] %>%
+oxford[wrong_group, c("Time1", "id", "group2", "group")] %>%
   `[`(order(.$Time1), ) %>%
-  `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+  `colnames<-`(c("제출시간", "학번", "랜덤화출석부", "구글예습퀴즈")) %>%
   pander(row.names = FALSE)
 wrong_tbl <- table("랜덤화출석부" = oxford$group2, 
                    "옥스포드행복설문지" = oxford$group)
