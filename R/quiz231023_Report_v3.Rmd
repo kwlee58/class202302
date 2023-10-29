@@ -23,7 +23,7 @@ options(width=180)
 class_roll <- readRDS("./class_roll231016.RDS")
 quiz <- 
   read_excel("./data/quiz231023.xlsx",
-             range = "A2:N327",
+             range = "A2:N400",
              col_names = FALSE)
 str(quiz)
 names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6),  "group", "Q7_R", "Q7_B")
@@ -79,6 +79,18 @@ quiz$Q7 %<>%
          labels = c("사후 장기기증 의사 있음", "사후 장기기증 의사 없음"))
 #> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
 quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
+#> 중복제출자
+quiz[which(duplicated(quiz$id)), c("id", "name")]
+#> 불참자들
+absentee <- 
+  class_roll[class_roll$id %in% setdiff(class_roll$id, quiz$id), 
+             c("id", "name", "group")] %>%
+  `[`(order(.$name), ) 
+absentee %>%
+  pander(row.names = FALSE) 
+absentee$group %>%
+  table
+#> 마감기한으로부터 제출시점의 기간
 quiz$days <- as.numeric(difftime("2023-11-06 09:00:00", quiz$time, tz = "Asia/Seoul",  units = 'days'))
 quiz$hours <- as.numeric(difftime("2023-11-06 09:00:00", quiz$time, tz = "Asia/Seoul", units = 'hours'))
 quiz %>% 
