@@ -1,9 +1,13 @@
 {
-    "path": "//Mac/Home/My_Google_Drive/Works/Class/Statistics/R.WD/Class_data/class202301/R",
+    "path": "~/class202302/R",
     "sortOrder": [
         {
             "columnIndex": 2,
             "ascending": true
+        },
+        {
+            "columnIndex": 4,
+            "ascending": false
         }
     ]
 }
