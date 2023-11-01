@@ -21,13 +21,16 @@ options(width=180)
 ```
 
 ```{r, data, echo = FALSE, results = 'hide', message = FALSE}
-class_roll <- readRDS("./class_roll231016.RDS")
+class_roll <- 
+  readRDS("./class_roll231016.RDS")
 quiz <- 
   read_excel("./data/quiz231023.xlsx",
-             range = "A2:N444",
+             range = "A2:N466",
              col_names = FALSE)
 str(quiz)
-names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6),  "group", "Q7_R", "Q7_B")
+names(quiz) <- 
+  c("time", "email", "dept", "id", "name", 
+    paste0("Q", 1:6),  "group", "Q7_R", "Q7_B")
 class(quiz$id) <- "character"
 quiz <- data.frame(quiz)
 quiz[c("group", "Q7_R", "Q7_B")]
@@ -39,13 +42,12 @@ quiz[quiz$group == "Black", "Q7_B"] <-
   ifelse(is.na(quiz[quiz$group == "Black", "Q7_B"]), 
          "나는 사후 장기기증에 참여할 뜻이 없다", 
          quiz[quiz$group == "Black", "Q7_B"])
-quiz$Q7 <- ifelse(is.na(quiz$Q7_R), 
-                      quiz$Q7_B, 
-                      quiz$Q7_R)
+quiz$Q7 <- 
+  ifelse(is.na(quiz$Q7_R), quiz$Q7_B, quiz$Q7_R)
 quiz[c("group", "Q7_R", "Q7_B", "Q7")]
 quiz$dept <- factor(quiz$dept)
-quiz$group <- factor(quiz$group, 
-                         levels = c("Red", "Black"))
+quiz$group <- 
+  factor(quiz$group, levels = c("Red", "Black"))
 quiz$Q1 %<>% 
   factor(levels = c("스페인", "미국", "OECD 전체", "대한민국"))
 quiz$Q2 %<>% 
@@ -92,8 +94,10 @@ absentee %>%
 absentee$group %>%
   table
 #> 마감기한으로부터 제출시점의 기간
-quiz$days <- as.numeric(difftime("2023-11-06 09:00:00", quiz$time, tz = "Asia/Seoul",  units = 'days'))
-quiz$hours <- as.numeric(difftime("2023-11-06 09:00:00", quiz$time, tz = "Asia/Seoul", units = 'hours'))
+quiz$days <- as.numeric(difftime("2023-11-06 09:00:00", 
+                                 quiz$time, tz = "Asia/Seoul",  units = 'days'))
+quiz$hours <- as.numeric(difftime("2023-11-06 09:00:00", 
+                                  quiz$time, tz = "Asia/Seoul", units = 'hours'))
 quiz %>% 
   str  
 ```
@@ -110,19 +114,20 @@ quiz %>%
 다
 
 ```{r, wrong group, echo = FALSE}
-quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
-wrong_group <- which(quiz$group != quiz$group2)
+quiz$group2 <- 
+  class_roll$group[match(quiz$id, class_roll$id)]
+wrong_group <- 
+  which(quiz$group != quiz$group2)
 quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
   `[`(order(.$time), ) %>%
   `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
   pander(row.names = FALSE)
-wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
-                   "구글예습퀴즈" = quiz$group)
+wrong_tbl <- 
+  table("랜덤화출석부" = quiz$group2, "구글예습퀴즈" = quiz$group)
 wrong_tbl %>%
   pander(row.names = c("Red(랜덤화출석부)", "Black(랜덤화출석부)"), 
          col.names = c("Red(구글예습퀴즈)", "Black(구글예습퀴즈)"))
 ```
-
 
 # 퀴즈 응답 비교
 
@@ -135,7 +140,8 @@ include_graphics("./pics/Quiz230426_Q1.png")
 ### 실업률 가장 낮은 나라
 
 ```{r, echo = FALSE}
-tbl_q1_a <- quiz$Q1 %>% 
+tbl_q1_a <- 
+  quiz$Q1 %>% 
   table(quiz$group, ., useNA = "ifany") %>%
   cbind("계" = rowSums(.)) %>%
   rbind("계" = colSums(.))
