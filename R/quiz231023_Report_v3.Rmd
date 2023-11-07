@@ -25,7 +25,7 @@ class_roll <-
   readRDS("./class_roll231016.RDS")
 quiz <- 
   read_excel("./data/quiz231023.xlsx",
-             range = "A2:N522",
+             range = "A2:N827",
              col_names = FALSE)
 str(quiz)
 names(quiz) <- 
@@ -110,18 +110,17 @@ quiz %>%
 
 ## Red, Black을 잘못 표시한 사람들
 
-랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 대부분 제대로 적은 결과 단 세명이 잘못 적어 냈습니다.  Red를 Black 이라고 한 사람의 수효가 세명입니다. 랜덤화 효과를 논할 정도의 인원이 아닙니다. 굳이 학번까지 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
-다
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 대부분 제대로 적은 결과 단 세명이 잘못 적어 냈습니다.  Red를 Black 이라고 한 사람의 수효가 2명입니다. 
 
 ```{r, wrong group, echo = FALSE}
 quiz$group2 <- 
   class_roll$group[match(quiz$id, class_roll$id)]
 wrong_group <- 
   which(quiz$group != quiz$group2)
-quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
-  `[`(order(.$time), ) %>%
-  `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
-  pander(row.names = FALSE)
+# quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
+#   `[`(order(.$time), ) %>%
+#   `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander(row.names = FALSE)
 wrong_tbl <- 
   table("랜덤화출석부" = quiz$group2, "구글예습퀴즈" = quiz$group)
 wrong_tbl %>%

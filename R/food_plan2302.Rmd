@@ -22,11 +22,10 @@ options(width = 180)
 -->
 
 ```{r, data, echo = FALSE, results = 'hide'}
-# load("./red_and_black_220909_data.RData")
 class_roll <- readRDS("./class_roll_230916.RDS")
 food <-
   read_excel("./data/food_plan_231030.xlsx",
-             range = "C1:Y258")
+             range = "C1:Y456")
 str(food)
 names(food) <- c("dept", "id", "name", paste0("Q", 1:20))
 class(food$id) <- "character"
