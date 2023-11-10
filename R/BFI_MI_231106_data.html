@@ -674,10 +674,13 @@ str(BFI)</code></pre>
 ##  $ O_Score: chr  &quot;중하&quot; &quot;낮음&quot; &quot;중하&quot; &quot;낮음&quot; ...</code></pre>
 <pre class="r"><code>#&gt; ID 잘못 적은 친구
 BFI[BFI$ID %in% setdiff(BFI$ID, class_roll$ID), c(&quot;ID&quot;, &quot;Name&quot;)]</code></pre>
-<pre><code>##           ID   Name
-## 200 20222367 최수종</code></pre>
-<pre class="r"><code>BFI_days &lt;- as.numeric(difftime(&quot;2023-11-20 09:00:00&quot;, BFI$Time, units = &#39;days&#39;))
-BFI_hours &lt;- as.numeric(difftime(&quot;2023-11-20 09:00:00&quot;, BFI$Time, units = &#39;hours&#39;))</code></pre>
+<pre><code>## [1] ID   Name
+## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+<pre class="r"><code>#&gt; 마감일로부터 제출시점의 기간
+BFI_days &lt;- as.numeric(difftime(&quot;2023-11-20 09:00:00&quot;, BFI$Time, 
+                                 tz = &quot;Asia/Seoul&quot;, units = &#39;days&#39;))
+BFI_hours &lt;- as.numeric(difftime(&quot;2023-11-20 09:00:00&quot;, BFI$Time, 
+                                 tz = &quot;Asia/Seoul&quot;, units = &#39;hours&#39;))</code></pre>
 </div>
 <div id="mi" class="section level3">
 <h3>MI</h3>
@@ -1263,10 +1266,10 @@ kable(head(MI[c(3, 5:18)]))</code></pre>
 # setdiff(class_roll$Name, MI$Name)
 setdiff(BFI$ID, MI$ID) %&gt;%
   sort</code></pre>
-<pre><code>## [1] &quot;20207091&quot; &quot;20213939&quot; &quot;20222367&quot; &quot;20231503&quot; &quot;20232821&quot; &quot;20236292&quot;</code></pre>
+<pre><code>## [1] &quot;20207091&quot; &quot;20213939&quot; &quot;20231503&quot; &quot;20232821&quot; &quot;20236292&quot;</code></pre>
 <pre class="r"><code>setdiff(MI$ID, BFI$ID) %&gt;%
   sort</code></pre>
-<pre><code>## [1] &quot;20222637&quot; &quot;20236714&quot;</code></pre>
+<pre><code>## [1] &quot;20236714&quot;</code></pre>
 <pre class="r"><code># MI$Name
 # class_roll$Name
 str(MI)</code></pre>
@@ -1343,6 +1346,11 @@ str(MI)</code></pre>
 MI[MI$ID %in% setdiff(MI$ID, class_roll$ID), c(&quot;ID&quot;, &quot;Name&quot;)]</code></pre>
 <pre><code>## [1] ID   Name
 ## &lt;0 rows&gt; (or 0-length row.names)</code></pre>
+<pre class="r"><code>#&gt; 마감일로부터 제출시점의 기간
+MI_days &lt;- as.numeric(difftime(&quot;2023-11-20 09:00:00&quot;, MI$Time, 
+                                 tz = &quot;Asia/Seoul&quot;, units = &#39;days&#39;))
+MI_hours &lt;- as.numeric(difftime(&quot;2023-11-20 09:00:00&quot;, MI$Time, 
+                                 tz = &quot;Asia/Seoul&quot;, units = &#39;hours&#39;))</code></pre>
 </div>
 <div id="time" class="section level3">
 <h3>Time</h3>

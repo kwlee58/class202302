@@ -23,7 +23,7 @@ panderOptions('table.alignment.default', 'right')
 class_roll <- readRDS("./class_roll_230916.RDS")
 quiz <- 
   read_excel("./data/quiz231106.xlsx",
-             range = "A2:N188",
+             range = "A2:N216",
              col_names = FALSE)
 str(quiz)
 names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6),  "group", "Q7_R", "Q7_B")
@@ -72,10 +72,22 @@ quiz$Q7 %<>%
   factor(levels = c("무상", "100만원", "200만원", "500만원", "1,000만원"))
 #> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
 quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
-quiz$days <- as.numeric(difftime("2023-11-20 09:00:00", quiz$time, 
-                                 tz = "Asia/Seoul", units = 'days'))
-quiz$hours <- as.numeric(difftime("2023-11-20 09:00:00", quiz$time, 
-                                  tz = "Asia/Seoul", units = 'hours'))
+#> 중복제출자
+quiz[which(duplicated(quiz$id)), c("id", "name")]
+#> 불참자들
+absentee <- 
+  class_roll[class_roll$id %in% setdiff(class_roll$id, quiz$id), 
+             c("id", "name", "group")] %>%
+  `[`(order(.$name), ) 
+absentee %>%
+  pander(row.names = FALSE) 
+absentee$group %>%
+  table
+#> 마감기한으로부터 제출시점의 기간
+quiz$days <- as.numeric(difftime("2023-11-20 09:00:00", 
+                                 quiz$time, tz = "Asia/Seoul",  units = 'days'))
+quiz$hours <- as.numeric(difftime("2023-11-20 09:00:00", 
+                                  quiz$time, tz = "Asia/Seoul", units = 'hours'))
 quiz %>% 
   str
 ```
@@ -446,7 +458,7 @@ text(x = b[14, 1], y = sum(days_tbl[, 1]),
      labels = paste0(sum(days_tbl[, 1]), "명"), pos = 3)
 text(x = b[14, 1], y = sum(days_tbl[, 1]) / 2, 
      labels = paste0(format(sum(days_tbl[, 1]) / N * 100, digits = 1, nsmall = 0), "%"))
-title(main = paste0("Quiz2311060 (", N, "명 제출)"))
+title(main = paste0("Quiz231106 (", N, "명 제출)"))
 # title(main = "일 단위 퀴즈 제출 인원", sub = paste0("Quiz230925 (", N, "명 제출)"))
 # dev.copy(png, file = "./pics/2302/quiz_submission_5.png", width = 640, height = 480)
 invisible(dev.off())

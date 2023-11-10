@@ -65,8 +65,11 @@ BFI %>%
 str(BFI)
 #> ID 잘못 적은 친구
 BFI[BFI$ID %in% setdiff(BFI$ID, class_roll$ID), c("ID", "Name")]
-BFI_days <- as.numeric(difftime("2023-11-20 09:00:00", BFI$Time, units = 'days'))
-BFI_hours <- as.numeric(difftime("2023-11-20 09:00:00", BFI$Time, units = 'hours'))
+#> 마감일로부터 제출시점의 기간
+BFI_days <- as.numeric(difftime("2023-11-20 09:00:00", BFI$Time, 
+                                 tz = "Asia/Seoul", units = 'days'))
+BFI_hours <- as.numeric(difftime("2023-11-20 09:00:00", BFI$Time, 
+                                 tz = "Asia/Seoul", units = 'hours'))
 ```
 
 ### MI
@@ -110,6 +113,11 @@ setdiff(MI$ID, BFI$ID) %>%
 str(MI)
 #> ID 잘못 적은 친구
 MI[MI$ID %in% setdiff(MI$ID, class_roll$ID), c("ID", "Name")]
+#> 마감일로부터 제출시점의 기간
+MI_days <- as.numeric(difftime("2023-11-20 09:00:00", MI$Time, 
+                                 tz = "Asia/Seoul", units = 'days'))
+MI_hours <- as.numeric(difftime("2023-11-20 09:00:00", MI$Time, 
+                                 tz = "Asia/Seoul", units = 'hours'))
 ```
 
 ### Time
