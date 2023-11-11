@@ -25,7 +25,7 @@ options(width = 180)
 class_roll <- readRDS("./class_roll_230916.RDS")
 food <-
   read_excel("./data/food_plan_231030.xlsx",
-             range = "C1:Y554")
+             range = "C1:Y588")
 str(food)
 names(food) <- c("dept", "id", "name", paste0("Q", 1:20))
 class(food$id) <- "character"

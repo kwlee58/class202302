@@ -14,9 +14,9 @@ panderOptions("table.split.table", Inf)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Data
+# Data
 
-### 출석부
+## 출석부
 
 ```{r, xlsx}
 library(readxl)
@@ -34,11 +34,11 @@ class_roll$ID %<>%
 str(class_roll)
 ```
 
-### BFI
+## BFI
 
 ```{r}
 BFI <- "./data/BFI231106.xlsx" %>% 
-  read_excel(range = "A1:AA274",
+  read_excel(range = "A1:AA305",
              col_names = TRUE)
 BFI %<>%
   data.frame
@@ -72,11 +72,11 @@ BFI_hours <- as.numeric(difftime("2023-11-20 09:00:00", BFI$Time,
                                  tz = "Asia/Seoul", units = 'hours'))
 ```
 
-### MI
+## MI
 
 ```{r}
 MI <- "./data/MI231106.xlsx" %>% 
-  read_excel(range = "A1:BQ260",
+  read_excel(range = "A1:BQ291",
              col_names = TRUE)
 MI %<>%
   data.frame
@@ -114,13 +114,17 @@ str(MI)
 #> ID 잘못 적은 친구
 MI[MI$ID %in% setdiff(MI$ID, class_roll$ID), c("ID", "Name")]
 #> 마감일로부터 제출시점의 기간
-MI_days <- as.numeric(difftime("2023-11-20 09:00:00", MI$Time, 
-                                 tz = "Asia/Seoul", units = 'days'))
-MI_hours <- as.numeric(difftime("2023-11-20 09:00:00", MI$Time, 
-                                 tz = "Asia/Seoul", units = 'hours'))
+MI_days <- 
+  as.numeric(difftime("2023-11-20 09:00:00", MI$Time, 
+                      tz = "Asia/Seoul", units = 'days'))
+MI_hours <- 
+  as.numeric(difftime("2023-11-20 09:00:00", MI$Time, 
+                      tz = "Asia/Seoul", units = 'hours'))
 ```
 
-### Time
+## Time
+
+### BFI
 
 ```{r, echo = TRUE, eval = TRUE}
 par(family = "KoPubWorldDotum Medium")
@@ -140,12 +144,36 @@ BFI_days %>%
   table %>%
   rev %>%
   barplot(space = 0, 
-          names.arg = rep(c("수", "목", "금", "토", "일", "월", "화"), 2), 
+          names.arg = rep(c("월", "화", "수", "목", "금", "토", "일"), 2), 
           col = c(rep("white", 13), "pink"))
-title(main = "일 단위 퀴즈 제출 횟수")
+title(main = "일 단위 BFI 제출 횟수")
+```
+### MI
+
+```{r, echo = TRUE, eval = TRUE}
+par(family = "KoPubWorldDotum Medium")
+MI_days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table %>%
+#  cbind("계" = rowSums(.)) %>%
+#  rbind("계" = colSums(.)) %>%
+  pander(caption = "일 단위")
+MI_days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table %>%
+  chisq.test %>%
+  pander
+MI_days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table %>%
+  rev %>%
+  barplot(space = 0, 
+          names.arg = rep(c("월", "화", "수", "목", "금", "토", "일"), 2), 
+          col = c(rep("white", 13), "pink"))
+title(main = "일 단위 MI 제출 횟수")
 ```
 
-### Working Data
+## Working Data
 
 ```{r, echo = TRUE}
 BFI <- BFI[, -c(3, 5)]
