@@ -101,6 +101,11 @@ kable(head(MI[c(3, 5:18)]))
 kable(head(MI[c(3, 19:32)]))
 kable(head(MI[c(3, 33:46)]))
 kable(head(MI[c(3, 47:60)]))
+```
+
+## 학번오류, 불참자
+
+```{r}
 #> 각 조사 불참자 
 # setdiff(class_roll$Name, BFI$Name)
 # setdiff(class_roll$Name, MI$Name)
