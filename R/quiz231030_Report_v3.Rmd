@@ -21,7 +21,7 @@ options(width = 180)
 class_roll <- readRDS("./class_roll_230916.RDS")
 quiz <- 
   read_excel("./data/quiz231030.xlsx",
-             range = "A2:N562",
+             range = "A2:N806",
              col_names = FALSE)
 names(quiz) <- 
   c("time", "email", "dept", "id", "name", paste0("Q", 1:6),  "group", "Q7_R", "Q7_B")
@@ -87,15 +87,15 @@ str(quiz)
 
 ## Red, Black을 잘못 표시한 사람들
 
-랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과를 논하기에는 적은 인원입니다. 9명을 랜덤하게 둘로 나누었을 때 한쪽에 3명 이하(다른 쪽에 6명 이상)가 배치될 확률은 0.508로 0.05를 훨씬 넘아갑니다. 굳이 학번까지 올린 이유는 몇 안 남은 다음 구글 예습 설문지만이라도 제대로 올려주길 바라서입니다.
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람은 한 명에 불과합니다. 
 
 ```{r, wrong group, echo = FALSE}
 quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
 wrong_group <- which(quiz$group != quiz$group2)
-quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
-  `[`(order(.$time), ) %>%
-  `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
-  pander(row.names = FALSE)
+# quiz[wrong_group, c("time", "id", "name", "group2", "group")] %>%
+#   `[`(order(.$time), ) %>%
+#   `colnames<-`(c("제출시간", "학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander(row.names = FALSE)
 wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
                    "구글예습퀴즈" = quiz$group)
 wrong_tbl %>%
