@@ -18,7 +18,8 @@ options(width = 180)
 ```
 
 ```{r, data, echo = FALSE, results = 'hide', message = FALSE}
-class_roll <- readRDS("./class_roll_230916.RDS")
+class_roll <- 
+  readRDS("./class_roll231016.RDS")
 quiz <- 
   read_excel("./data/quiz231030.xlsx",
              range = "A2:N806",
