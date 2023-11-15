@@ -366,7 +366,7 @@ options(width = 180)
 # load(&quot;./red_and_black_220909_data.RData&quot;)
 # class_roll &lt;- class_roll[, c(&quot;id&quot;, &quot;name&quot;)]
 # names(class_roll) &lt;- c(&quot;ID&quot;, &quot;Name&quot;)
-class_roll &lt;- read_excel(&quot;../data/class_roll230511.xlsx&quot;,
+class_roll &lt;- read_excel(&quot;./data/class_roll230511.xlsx&quot;,
                          range = &quot;E1:F1006&quot;,
                          col_names = TRUE,
                          col_types = &quot;text&quot;)
@@ -383,7 +383,7 @@ str(class_roll)</code></pre>
 </div>
 <div id="bfi" class="section level3">
 <h3>BFI</h3>
-<pre class="r"><code>BFI &lt;- &quot;../data/BFI230510.xlsx&quot; %&gt;% 
+<pre class="r"><code>BFI &lt;- &quot;./data/BFI230510.xlsx&quot; %&gt;% 
   read_excel(range = &quot;A1:AA892&quot;,
              col_names = TRUE)
 BFI %&lt;&gt;%
@@ -684,7 +684,7 @@ BFI_hours &lt;- as.numeric(difftime(&quot;2023-05-24 09:00:00&quot;, BFI$Time, u
 </div>
 <div id="mi" class="section level3">
 <h3>MI</h3>
-<pre class="r"><code>MI &lt;- &quot;../data/MI230510.xlsx&quot; %&gt;% 
+<pre class="r"><code>MI &lt;- &quot;./data/MI230510.xlsx&quot; %&gt;% 
   read_excel(range = &quot;A1:BQ867&quot;,
              col_names = TRUE)
 MI %&lt;&gt;%

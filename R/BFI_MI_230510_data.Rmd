@@ -24,7 +24,7 @@ options(width = 180)
 # load("./red_and_black_220909_data.RData")
 # class_roll <- class_roll[, c("id", "name")]
 # names(class_roll) <- c("ID", "Name")
-class_roll <- read_excel("../data/class_roll230511.xlsx",
+class_roll <- read_excel("./data/class_roll230511.xlsx",
                          range = "E1:F1006",
                          col_names = TRUE,
                          col_types = "text")
@@ -40,7 +40,7 @@ str(class_roll)
 ### BFI
 
 ```{r}
-BFI <- "../data/BFI230510.xlsx" %>% 
+BFI <- "./data/BFI230510.xlsx" %>% 
   read_excel(range = "A1:AA892",
              col_names = TRUE)
 BFI %<>%
@@ -75,7 +75,7 @@ BFI_hours <- as.numeric(difftime("2023-05-24 09:00:00", BFI$Time, units = 'hours
 ### MI
 
 ```{r}
-MI <- "../data/MI230510.xlsx" %>% 
+MI <- "./data/MI230510.xlsx" %>% 
   read_excel(range = "A1:BQ867",
              col_names = TRUE)
 MI %<>%
