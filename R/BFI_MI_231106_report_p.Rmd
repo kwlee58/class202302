@@ -150,6 +150,7 @@ BFI_level_kr %>%
 ```{r, self, eval = TRUE}
 BFI_level_kr %>%
   cbind(BFI[c("E", "N", "C", "A", "O")]) %>%
+  head %>%
   kable(align = "c")
 ```
 
@@ -186,6 +187,7 @@ BFI_full_kr <- BFI_level_kr_df %>%
 # Name 제외
 BFI_full_kr <- BFI_full_kr[-2]
 BFI_full_kr %>%
+  head %>%
   kable
 # kable(head(BFI_full_kr))
 ```
@@ -218,28 +220,38 @@ M <- abb_MI %>%
 # M <- 
 #   sapply(abb_MI, function(x) rowSums(MI[3:58][, substr(names(MI[3:58]), 1, 1) == x]))
 MI_score_kr <- M
-MI_names_kr <- c("음악", "신체운동", "논리수학", "공간", "언어", "인간친화", "자기성찰", "자연친화")
+MI_names_kr <- 
+  c("음악", "신체운동", "논리수학", "공간", "언어", "인간친화", "자기성찰", "자연친화")
 dimnames(MI_score_kr) <- list(ID = MI$ID, MI_names_kr)
-kable(head(MI_score_kr))
-kable(cbind(MI_score_kr, MI[paste(LETTERS[1:8], "Score", sep = "_")]))
+MI_score_kr %>%
+  head %>%
+  kable
+MI_score_kr %>%
+  cbind(MI[paste(LETTERS[1:8], "Score", sep = "_")]) %>%
+  head %>%
+  kable
 ```
 
 ## `sapply()`
 
 ```{r}
-MI_score <- LETTERS[1:8] %>%
+MI_score <- 
+  LETTERS[1:8] %>%
   sapply(. %>% {MI[3:58][, `==`(MI[3:58] %>% names %>% substr(1, 1), .)] %>% 
       apply(1, sum)}) %>%
   data.frame
 MI_names_kr <- c("음악", "신체운동", "논리수학", "공간", "언어", "인간친화", "자기성찰", "자연친화")
 dimnames(MI_score) <- list(ID = MI$ID, MI_names_kr)
-kable(head(MI_score))
+MI_score %>%
+  head %>%
+  kable
 ```
 
 각 지능을 점수 순으로 배열, NA는 나중에 처리. 구글 설문지의 구조상 일부 문항에서 무응답이 나오지는 않는 구조임. 
 
 ```{r, MI in order}
-MI_order_kr <- MI_score_kr %>%
+MI_order_kr <- 
+  MI_score_kr %>%
   apply(MARGIN = 1, 
         FUN = order, decreasing = TRUE)
 #> `apply` 연산의 결과로 `MI_order_kr` 은 8개의 행을 가진 행렬이 된다. 
@@ -258,6 +270,7 @@ MI_sort_kr <- matrix(MI_names_kr[MI_order_kr],
                      dimnames = list(MI$ID, 
                                      paste0("제", 1:8, "순위")))
 MI_sort_kr %>%
+  head %>%
   kable(align = "c")
 ```
 
@@ -266,11 +279,12 @@ MI_sort_kr %>%
 `rownames`를 `ID`로 돌리고, `row.names`는 없앰.
 
 ```{r, sort}
-MI_sort_kr_df <- MI_sort_kr %>%
+MI_sort_kr_df <- 
+  MI_sort_kr %>%
   data.frame(ID = MI$ID, ., row.names = NULL, stringsAsFactors = FALSE)
 MI_sort_kr_df %>%
+  head %>%
   kable(align = "c")
-# kable(head(MI_sort_kr_df), align = "c")
 ```
 
 각 순위를 8수준 factor로 통일
@@ -284,12 +298,14 @@ MI_sort_kr_df[-1] %<>%
 출석부에 통합
 
 ```{r, merge with class_roll}
-MI_sort_full_kr <- MI_sort_kr_df %>%
+MI_sort_full_kr <- 
+  MI_sort_kr_df %>%
   left_join(class_roll, ., by = "ID")
 setdiff(MI_sort_full_kr$ID, BFI_full_kr$ID)
 setdiff(BFI_full_kr$ID, MI_sort_full_kr$ID)
 #> 이름은 제외
-MI_sort_full_kr <- MI_sort_full_kr[-2]
+MI_sort_full_kr <- 
+  MI_sort_full_kr[-2]
 MI_sort_full_kr %>%
   head %>%
   kable(align = "c")
@@ -300,11 +316,11 @@ MI_sort_full_kr %>%
 Merge 2 data frames into one
 
 ```{r, one data frame}
-BFI_MI_full <- data.frame(BFI_full_kr, MI_sort_full_kr[c(2:4)])
+BFI_MI_full <- 
+  data.frame(BFI_full_kr, MI_sort_full_kr[c(2:4)])
 BFI_MI_full %>%
   head %>%
   kable(align = "c")
-# kable(head(BFI_MI_full), align = "c")
 ```
 
 ## 결석생 확인
@@ -314,7 +330,7 @@ BFI_MI_full %>%
 BFI결석생은 간단히 전체 출석부의 학번 집합에서 BFI 응답자의 학번 집합을 뺸 것임.
 시행 당일 외에 늦은 응답도 출석으로 인정하지만, 한 가지 조사만 수행한 경우는 별도 처리.
 
-```{r, BFI absence, echo = FALSE, results = 'markup'}
+```{r, BFI absence, echo = FALSE, results = 'markup', eval = FALSE}
 class_roll$ID %>%
   setdiff(BFI$ID) 
 # setdiff(class_roll$ID, BFI$ID)
@@ -323,7 +339,10 @@ class_roll$ID %>%
 
 ### MI
 
-```{r, MI absence, echo = FALSE, results = 'markup'}
+MI결석생은 간단히 전체 출석부의 학번 집합에서 MI 응답자의 학번 집합을 뺸 것임.
+시행 당일 외에 늦은 응답도 출석으로 인정하지만, 한 가지 조사만 수행한 경우는 별도 처리.
+
+```{r, MI absence, echo = FALSE, results = 'markup', eval = FALSE}
 class_roll$ID %>%
   setdiff(MI$ID)
 # setdiff(class_roll$ID, MI$ID)

@@ -38,7 +38,7 @@ str(class_roll)
 
 ```{r}
 BFI <- "./data/BFI231106.xlsx" %>% 
-  read_excel(range = "A1:AA439",
+  read_excel(range = "A1:AA474",
              col_names = TRUE)
 BFI %<>%
   data.frame
@@ -76,7 +76,7 @@ BFI_hours <- as.numeric(difftime("2023-11-20 09:00:00", BFI$Time,
 
 ```{r}
 MI <- "./data/MI231106.xlsx" %>% 
-  read_excel(range = "A1:BQ422",
+  read_excel(range = "A1:BQ464",
              col_names = TRUE)
 MI %<>%
   data.frame
@@ -110,9 +110,14 @@ kable(head(MI[c(3, 47:60)]))
 # setdiff(class_roll$Name, BFI$Name)
 # setdiff(class_roll$Name, MI$Name)
 setdiff(BFI$ID, MI$ID) %>%
-  sort
+  `%in%`(BFI$ID, .) %>%
+  `[`(BFI, ., c("ID", "Name")) %>%
+  .[order(.$ID),]
 setdiff(MI$ID, BFI$ID) %>%
-  sort
+  sort %>%
+  `%in%`(MI$ID, .) %>%
+  `[`(MI, ., c("ID", "Name")) %>%
+  .[order(.$ID),]
 # MI$Name
 # class_roll$Name
 str(MI)

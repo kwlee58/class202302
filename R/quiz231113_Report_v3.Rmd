@@ -22,29 +22,31 @@ class_roll1016 <-
   readRDS("./class_roll231016.RDS")
 class_roll1016 %<>% 
   data.frame
-class_roll <- read_excel("./data/class_roll231113.xlsx", 
-                        range = "B1:I912")
+class_roll <- 
+  read_excel("./data/class_roll231113.xlsx", 
+             range = "B1:I912")
 class_roll %<>% 
   data.frame
 str(class_roll)
-names(class_roll) <- c("college", "dept", "year", "id", "name", "status", "email", "cell_no")
-class_roll$group <- class_roll1016$group[match(class_roll$id, class_roll1016$id)]
+names(class_roll) <- 
+  c("college", "dept", "year", "id", "name", "status", "email", "cell_no")
+class_roll$group <- 
+  class_roll1016$group[match(class_roll$id, class_roll1016$id)]
 quiz <- 
   read_excel("./data/quiz231113.xlsx",
-             range = "A2:Y108")
-names(quiz) <- c("time", "email", "dept", "id", "name", 
-                 "Q1", "Q2", "Q3", 
-                 paste("Q4", 1:5, sep = "_"), 
-                 paste("Q5", 1:8, sep = "_"),
-                 "Q6",
-                 "group", "Q7_R", "Q7_B")
+             range = "A2:Y160")
+names(quiz) <- 
+  c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", 
+    paste("Q4", 1:5, sep = "_"), paste("Q5", 1:8, sep = "_"),
+    "Q6", "group", "Q7_R", "Q7_B")
 class(quiz$id) <- "character"
 quiz <- data.frame(quiz)
 quiz$dept %<>% 
   factor
 quiz$group %<>% 
   factor(levels = c("Red", "Black"))
-quiz$Q7 <- ifelse(is.na(quiz$Q7_R), quiz$Q7_B, quiz$Q7_R)
+quiz$Q7 <- 
+  ifelse(is.na(quiz$Q7_R), quiz$Q7_B, quiz$Q7_R)
 quiz[paste0("Q", c(1:3, 6:7))] %<>%
   sapply(FUN = {. %>% strsplit(split = "[.]") %>% sapply(`[`, 1)})
 quiz$Q1 %<>%
@@ -59,18 +61,23 @@ quiz$Q2 %<>%
 quiz$Q3 %<>% 
   factor(levels = c("가", "나", "다", "라"), 
          labels = c("1명", "2명", "3명", "4명"))
-quiz$Q4 <- apply(quiz[paste("Q4", 1:5, sep = "_")], 
-                     MARGIN = 1, paste, collapse = ",")
-quiz$Q5 <- apply(quiz[paste("Q5", 1:8, sep = "_")], 
-                     MARGIN = 1, paste, collapse = ",")
-BFI_ans <- strsplit("개방성,성실성,외향성,친화성,신경성", split = ",")
-BFI_score <- quiz$Q4 %>% 
+quiz$Q4 <- 
+  apply(quiz[paste("Q4", 1:5, sep = "_")], MARGIN = 1, paste, collapse = ",")
+quiz$Q5 <- 
+  apply(quiz[paste("Q5", 1:8, sep = "_")], MARGIN = 1, paste, collapse = ",")
+BFI_ans <- 
+  strsplit("개방성,성실성,외향성,친화성,신경성", split = ",")
+BFI_score <- 
+  quiz$Q4 %>% 
   strsplit(split = ",") %>%
   sapply(. %>% {`==`(., BFI_ans %>% unlist) %>% ifelse(1, 0)}) %>%
 #  sapply(function(x) ifelse(x == unlist(BFI_ans), 1, 0)) %>%
   apply(MARGIN = 2, sum) 
-MI_ans <- strsplit("신체운동,음악,공간,자기성찰,자연친화,논리수학,언어,인간친화", split = ",")
-MI_score <- quiz$Q5 %>% 
+MI_ans <- 
+  strsplit("신체운동,음악,공간,자기성찰,자연친화,논리수학,언어,인간친화", 
+           split = ",")
+MI_score <- 
+  quiz$Q5 %>% 
   strsplit(split = ",") %>%
   sapply(. %>% {`==`(., MI_ans %>% unlist) %>% ifelse(1, 0)}) %>%
 #  sapply(function(x) ifelse(x == unlist(MI_ans), 1, 0)) %>%
@@ -94,10 +101,12 @@ absentee %>%
 absentee$group %>%
   table
 #> 마감기한으로부터 제출시점의 기간
-quiz$days <- as.numeric(difftime("2023-11-27 09:00:00", 
-                                 quiz$time, tz = "Asia/Seoul",  units = 'days'))
-quiz$hours <- as.numeric(difftime("2023-11-27 09:00:00", 
-                                  quiz$time, tz = "Asia/Seoul", units = 'hours'))
+quiz$days <- 
+  as.numeric(difftime("2023-11-27 09:00:00", 
+                      quiz$time, tz = "Asia/Seoul",  units = 'days'))
+quiz$hours <- 
+  as.numeric(difftime("2023-11-27 09:00:00", 
+                      quiz$time, tz = "Asia/Seoul", units = 'hours'))
 str(quiz)
 ```
 
@@ -108,14 +117,14 @@ str(quiz)
 ```{r, wrong group, echo = FALSE}
 quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
 wrong_group <- which(quiz$group != quiz$group2)
-# quiz[wrong_group, c("id", "name", "group2", "group")] %>%
-#   `[`(order(.$id), ) %>%
-#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
-#   pander(row.names = FALSE)
-quiz[wrong_group, c("id", "group2", "group")] %>%
+quiz[wrong_group, c("id", "name", "group2", "group")] %>%
   `[`(order(.$id), ) %>%
-  `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
+  `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
   pander(row.names = FALSE)
+# quiz[wrong_group, c("id", "group2", "group")] %>%
+#   `[`(order(.$id), ) %>%
+#   `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander(row.names = FALSE)
 wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
                    "구글예습퀴즈" = quiz$group)
 wrong_tbl %>%
@@ -331,7 +340,6 @@ tbl_q6_a %>%
   format(digits = 2, nsmall = 1) %>%
   pander
 ```
-
 
 # Framing Effect
 

@@ -4,9 +4,9 @@ username: coop711
 account: coop711
 server: posit.cloud
 hostUrl: https://api.posit.cloud/v1
-appId: 6991443
-bundleId: 7928380
-url: https://posit.cloud/content/6991443
+appId: 7061595
+bundleId: 7932308
+url: https://posit.cloud/content/7061595
 version: 1
 asMultiple: FALSE
 asStatic: FALSE
