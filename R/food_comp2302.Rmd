@@ -60,7 +60,7 @@ food <- data.frame(food_b[c("id", "group")],
                    grade_a = food_a$grade)
 ```
 
-## Descriptive Statistics
+## 동영상 시청 전후 비교
 
 ### Cross Tables
 
@@ -83,48 +83,107 @@ colnames(grade_ptbl_am)[4] <- "계"
 pander(grade_ptbl_am)
 ```
 
-### Summary Statistics
+### Summary Statistics for `diff`
 
 ```{r, summary, echo = FALSE}
-pander(tapply(food$diff, food$group, summary))
+pander(summary(food$diff))
 ```
 
-### Standard Deviation
+### Standard Deviation of `diff`
 
 ```{r, SD, echo = FALSE}
-pander(tapply(food$diff, food$group, sd, na.rm = TRUE), caption = "Standard Deviation")
+sd(food$diff, na.rm = TRUE)
 ```
 
-### t test (Welch's)
+### t-test for `diff` (One Sample)
 
 ```{r, t test, echo = FALSE}
 pander(t.test(diff, alternative = "greater"))
+```
+
+### Histogram for `diff`
+
+```{r, stem and leaf, echo = FALSE, message = FALSE}
+library(extrafont)
+par(family = "KoPubWorldDotum")
+hist(food$diff, 
+     freq = FALSE,
+     ylim = c(0, 0.035),
+     breaks = seq(-30, 70, by = 10), 
+     main = "동영상 시청 전후 점수차이의 히스토그램",
+     cex.main = 1.3,
+     xlab = "점수 차이",
+     col = "white")
+d_mean <- summary(food$diff)["Mean"]
+d_sd <- sd(food$diff, na.rm = TRUE)
+d_x <- seq(from = d_mean - 3 * d_sd, to = d_mean + 3 * d_sd, length.out = 1000)
+lines(d_x, dnorm(d_x, mean = d_mean, sd = d_sd), type = "l", col = "red")
+```
+
+### Box plot for `diff`
+
+```{r, Box plot, echo = FALSE, fig.width = 7, fig.height = 7}
+boxplot(diff, xlab = "diff")
+```
+
+## Red and Black (랜덤화 효과)
+
+### Summary by Red and Black
+
+```{r, summary_RnB, echo = FALSE}
+pander(tapply(food$diff, food$group, summary))
+```
+
+### Standard Deviation by Red and Black
+
+```{r, SD_RnB, echo = FALSE}
+pander(tapply(food$diff, food$group, sd, na.rm = TRUE), caption = "Standard Deviation")
+```
+
+### t-test (Welch's) Red vs Black (Two Sample)
+
+```{r, t test_RnB, echo = FALSE}
 pander(t.test(diff ~ group, data = food))
 ```
 
-## Plots
+### Histogram by Red and Black
 
-### Stem and Leaf
-
-```{r, stem and leaf, echo = FALSE}
-tapply(food$diff, food$group, stem)
+```{r, stem and leaf_RnB, echo = FALSE, fig.width = 7, fig.height = 10}
+par(family = "KoPubWorldDotum")
+par(mfrow = c(2, 1))
+hist(food$diff[food$group == "Red"], 
+     freq = FALSE,
+     ylim = c(0, 0.035),
+     breaks = seq(-30, 70, by = 10), 
+     main = "Red 그룹 점수 차이의 히스토그램",
+     cex.main = 1.3,
+     xlab = "Red",
+     col = "white")
+R_mean <- summary(food$diff[food$group == "Red"])["Mean"]
+R_sd <- sd(food$diff[food$group == "Red"], na.rm = TRUE)
+R_x <- seq(from = R_mean - 3 * R_sd, to = R_mean + 3 * R_sd, length.out = 1000)
+lines(R_x, dnorm(R_x, mean = R_mean, sd = R_sd), type = "l", col = "red")
+hist(food$diff[food$group == "Black"], 
+     freq = FALSE,
+     ylim = c(0, 0.035),
+     breaks = seq(-30, 70, by = 10), 
+     main = "Black 그룹 점수 차이의 히스토그램",
+     cex.main = 1.3,
+     xlab = "Black",
+     col = "white")
+B_mean <- summary(food$diff[food$group == "Black"])["Mean"]
+B_sd <- sd(food$diff[food$group == "Black"], na.rm = TRUE)
+B_x <- seq(from = B_mean - 3 * B_sd, to = B_mean + 3 * B_sd, length.out = 1000)
+lines(B_x, dnorm(B_x, mean = B_mean, sd = B_sd), type = "l", col = "red")
 ```
 
-### Box plot
+### Box plot by Red and Black
 
-```{r, Box plot, echo = FALSE, fig.width = 7, fig.height = 7}
+```{r, Box plot_RnB, echo = FALSE, fig.width = 7, fig.height = 7}
 plot(diff ~ group, data = food)
 ```
 
-### QQplot
-
-```{r, qqplot, echo = FALSE, fig.width = 7, fig.height = 7}
-Black <- food$group == "Black"
-Red <- food$group == "Red"
-qqplot(food$diff[Black], food$diff[Red], xlab = "Black", ylab = "Red")
-```
-
-### Grades
+### 개별 식생활습관 등급 변화
 
 ```{r, grades, echo = FALSE}
 # pander(food[c("id", "name", "score", "grade")])
