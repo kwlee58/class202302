@@ -24,7 +24,7 @@ class_roll <-
   readRDS("./class_roll231016.RDS")
 quiz <- 
   read_excel("./data/quiz231106.xlsx",
-             range = "A2:N432",
+             range = "A2:N442",
              col_names = FALSE)
 str(quiz)
 names(quiz) <- 

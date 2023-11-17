@@ -378,7 +378,7 @@ library(dplyr)</code></pre>
 <h2>필수 자료 읽어들이기</h2>
 <pre class="r"><code>load(&quot;./BFI_MI_231106.RData&quot;)
 str(BFI)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    478 obs. of  25 variables:
+<pre><code>## &#39;data.frame&#39;:    492 obs. of  25 variables:
 ##  $ Time   : POSIXct, format: &quot;2023-11-06 00:17:13&quot; &quot;2023-11-06 00:17:38&quot; ...
 ##  $ Email  : chr  &quot;hoverdahee@gmail.com&quot; &quot;choims9064@gmail.com&quot; &quot;ghys1837@naver.com&quot; &quot;jinho2066@naver.com&quot; ...
 ##  $ ID     : chr  &quot;20233912&quot; &quot;20236297&quot; &quot;20213939&quot; &quot;20235207&quot; ...
@@ -405,7 +405,7 @@ str(BFI)</code></pre>
 ##  $ A_Score: chr  &quot;높음&quot; &quot;낮음&quot; &quot;중하&quot; &quot;중상&quot; ...
 ##  $ O_Score: chr  &quot;중하&quot; &quot;낮음&quot; &quot;중하&quot; &quot;낮음&quot; ...</code></pre>
 <pre class="r"><code>str(MI)</code></pre>
-<pre><code>## &#39;data.frame&#39;:    471 obs. of  66 variables:
+<pre><code>## &#39;data.frame&#39;:    480 obs. of  66 variables:
 ##  $ Time   : POSIXct, format: &quot;2023-11-06 00:38:17&quot; &quot;2023-11-06 00:38:37&quot; ...
 ##  $ ID     : chr  &quot;20233912&quot; &quot;20236297&quot; &quot;20235207&quot; &quot;20203946&quot; ...
 ##  $ A1     : num  5 3 4 5 5 5 3 5 3 5 ...
@@ -1002,35 +1002,35 @@ BFI_level_kr %&gt;%
 <tbody>
 <tr class="odd">
 <td align="left">높음</td>
-<td align="right">30</td>
-<td align="right">44</td>
-<td align="right">93</td>
-<td align="right">65</td>
+<td align="right">32</td>
+<td align="right">46</td>
+<td align="right">94</td>
+<td align="right">66</td>
 <td align="right">10</td>
 </tr>
 <tr class="even">
 <td align="left">중상</td>
 <td align="right">118</td>
-<td align="right">190</td>
-<td align="right">179</td>
-<td align="right">82</td>
-<td align="right">46</td>
+<td align="right">194</td>
+<td align="right">184</td>
+<td align="right">83</td>
+<td align="right">48</td>
 </tr>
 <tr class="odd">
 <td align="left">중하</td>
+<td align="right">181</td>
 <td align="right">173</td>
 <td align="right">167</td>
-<td align="right">162</td>
-<td align="right">164</td>
-<td align="right">202</td>
+<td align="right">171</td>
+<td align="right">207</td>
 </tr>
 <tr class="even">
 <td align="left">낮음</td>
-<td align="right">157</td>
-<td align="right">77</td>
-<td align="right">44</td>
-<td align="right">167</td>
-<td align="right">220</td>
+<td align="right">161</td>
+<td align="right">79</td>
+<td align="right">47</td>
+<td align="right">172</td>
+<td align="right">227</td>
 </tr>
 </tbody>
 </table>
@@ -1158,11 +1158,11 @@ BFI_full_kr %&gt;%
 </tr>
 <tr class="even">
 <td align="left">20163118</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
-<td align="left">NA</td>
+<td align="left">낮음</td>
+<td align="left">낮음</td>
+<td align="left">중상</td>
+<td align="left">중하</td>
+<td align="left">낮음</td>
 </tr>
 <tr class="odd">
 <td align="left">20167135</td>
@@ -1956,14 +1956,14 @@ MI_sort_full_kr %&gt;%
 </tr>
 <tr class="even">
 <td align="center">20163118</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
+<td align="center">인간친화</td>
+<td align="center">자기성찰</td>
+<td align="center">언어</td>
+<td align="center">논리수학</td>
+<td align="center">자연친화</td>
+<td align="center">신체운동</td>
+<td align="center">음악</td>
+<td align="center">공간</td>
 </tr>
 <tr class="odd">
 <td align="center">20167135</td>
@@ -2061,14 +2061,14 @@ BFI_MI_full %&gt;%
 </tr>
 <tr class="even">
 <td align="center">20163118</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
-<td align="center">NA</td>
+<td align="center">낮음</td>
+<td align="center">낮음</td>
+<td align="center">중상</td>
+<td align="center">중하</td>
+<td align="center">낮음</td>
+<td align="center">인간친화</td>
+<td align="center">자기성찰</td>
+<td align="center">언어</td>
 </tr>
 <tr class="odd">
 <td align="center">20167135</td>
