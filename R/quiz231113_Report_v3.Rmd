@@ -34,7 +34,7 @@ class_roll$group <-
   class_roll1016$group[match(class_roll$id, class_roll1016$id)]
 quiz <- 
   read_excel("./data/quiz231113.xlsx",
-             range = "A2:Y178")
+             range = "A2:Y184")
 names(quiz) <- 
   c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", 
     paste("Q4", 1:5, sep = "_"), paste("Q5", 1:8, sep = "_"),
