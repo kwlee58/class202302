@@ -102,7 +102,7 @@ ggsave("./pics/BFP_strengths2302.png", dpi = 120, width = 10, height = 7.5, unit
 
 마감일이 되어서야 질문지에 응답하는 사람들과 그 이전에 응답하는 사람들이 BFP 와 어떤 관련이 있는지 알아 보겠습니다. 성실성이 중상 이상인 사람들이 마감일 이전에 제출하는 비중이 높다는 것을 알 수 있습니다. 
 
-```{r, echo = FALSE, results = 'hide', eval = FALSE}
+```{r, echo = FALSE, results = 'hide', eval = TRUE}
 source("./mosaic_gg.R")
 mosaic_gg(t(table(BFI_level_kr$외향성, BFI_days <= 1)))$m +
   theme_bw(base_family = "KoPubWorldDotum Medium") +
