@@ -23,7 +23,7 @@ options(width = 180, quartz_off_screen = FALSE)
 class_roll <- 
   readRDS("./class_roll231113.RDS")
 quiz <- "./data/quiz231120.xlsx" %>% 
-  read_excel(range = "A1:N170",
+  read_excel(range = "A1:N194",
              col_types = c("date", rep("text", 13)))
 quiz %>% 
   str
