@@ -334,7 +334,7 @@ quiz$days %>%
 ### 막대그래프
 
 ```{r, echo = FALSE}
-# png(file = "./pics/2301/quiz_submission_1.png", width = 640, height = 480)
+# png(file = "./pics/2302/quiz_submission_1.png", width = 640, height = 480)
 par(family = "KoPubWorldDotum Medium")
 b <- 
   quiz$days %>%
