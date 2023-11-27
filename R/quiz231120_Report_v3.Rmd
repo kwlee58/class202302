@@ -20,8 +20,20 @@ options(width = 180, quartz_off_screen = FALSE)
 ```
 
 ```{r, data, echo = FALSE, results = 'hide', message = FALSE}
-class_roll <- 
+class_roll1113 <- 
   readRDS("./class_roll231113.RDS")
+class_roll1113 %<>% 
+  data.frame
+class_roll <- 
+  read_excel("./data/class_roll231127.xlsx", 
+             range = "B1:I911")
+class_roll %<>% 
+  data.frame
+str(class_roll)
+names(class_roll) <- 
+  c("college", "dept", "year", "id", "name", "status", "email", "cell_no")
+class_roll$group <- 
+  class_roll1113$group[match(class_roll$id, class_roll1113$id)]
 quiz <- "./data/quiz231120.xlsx" %>% 
   read_excel(range = "A1:N420",
              col_types = c("date", rep("text", 13)))
@@ -700,6 +712,7 @@ include_graphics("./pics/2301/quiz_submission_13.png")
 -->
 
 ```{r, save, echo = FALSE}
+saveRDS(class_roll, file = "./class_roll231127.RDS")
 saveRDS(quiz, file = "./quiz231120.RDS")
 save.image("./quiz231120.RData")
 ```
