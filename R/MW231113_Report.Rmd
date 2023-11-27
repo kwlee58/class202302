@@ -1,7 +1,7 @@
 ---
-title: "MW Game 230517"
+title: "MW Game 231113"
 author: "coop711"
-date: "2023-05-17"
+date: "2023-11-13"
 output: html_document
 ---
 
@@ -33,15 +33,15 @@ include_graphics("./pics/MW_Game_scores.png")
 
 ```{r, data, echo = FALSE, results = 'hide'}
 #> 엑셀 자료 읽어들이기
-# MW <- "../data/MW230517.xlsx" %>%
+# MW <- "./data/MW231113.xlsx" %>%
 #   read.xlsx(sheetIndex = 1, 
 #             startRow = 1, endRow = 451, 
 #             colIndex = 2:14, 
 #             colClasses = rep("character", 18), 
 #             header = TRUE, 
 #             stringsAsFactors = FALSE)
-MW <- "./data/MW230517.xlsx" %>%
-  read_excel(range = "C1:O861",
+MW <- "./data/MW231113.xlsx" %>%
+  read_excel(range = "C1:O781",
              col_types = "text")
 str(MW)
 #> Names for the Columns
@@ -185,7 +185,7 @@ best_names <- names(which(team_scores == 60))
 good_names <- names(which(team_scores >= 48 & team_scores < 60))
 worst_names <- names(which(team_scores <= -30 | team_scores_diff > 60))
 kable(result_df[-1])
-nrow(result_df) / 2
+nrow(result_df) / 2 
 ```
 
 ###  협동이 매우 잘된 팀
@@ -218,7 +218,7 @@ sum(result_df$"팀" %in% worst_names) / 2
 
 ```{r, save, echo = FALSE}
 names(result_df) <- c("id", "Team", paste0(1:10, "회차"), "Total")
-saveRDS(result_df, file = "./MW230517.RDS")
+saveRDS(result_df, file = "./MW231113.RDS")
 save.image("./MW.RDada")
 ```
 -->
