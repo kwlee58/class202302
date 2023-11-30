@@ -456,7 +456,7 @@ text(x = b[14, 1], y = sum(days_tbl[, 1]) / 2,
      labels = paste0(format(sum(days_tbl[, 1]) / N * 100, digits = 1, nsmall = 0), "%"))
 title(main = paste0("Quiz231113 (", N, "명 제출)"))
 # title(main = "일 단위 퀴즈 제출 인원", sub = paste0("Quiz231113 (", N, "명 제출)"))
-# dev.copy(png, file = "./pics/2302/quiz_submission_11.png", width = 640, height = 480)
+# dev.copy(png, file = "./pics/2302/quiz_submission_12.png", width = 640, height = 480)
 invisible(dev.off())
 ```
 
