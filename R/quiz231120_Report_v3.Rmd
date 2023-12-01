@@ -641,7 +641,7 @@ m2 + geom_text(aes(x = center, y = 1.05),
   theme(plot.title = element_text(hjust = 0.5, 
                                   size = 18, 
                                   family = "KoPubWorldDotum Bold")) 
-ggsave("./pics/Quiz231113_submission_12.png", dpi = 120, width = 960, height = 840, units = "px")
+ggsave("./pics/Quiz231120_submission_13.png", dpi = 120, width = 960, height = 840, units = "px")
 ```
 
 ## 제출 시간 분포의 변화
