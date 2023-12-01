@@ -541,6 +541,7 @@ tbl_q4_a %>%
 ### Mosaic Plot
 
 ```{r, mosaic plot, echo = FALSE, fig.width = 7, fig.height = 5}
+library(extrafont)
 library(ggplot2)
 source("./mosaic_gg.R")
 m_list <- quiz$Q4 %>%
