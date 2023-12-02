@@ -35,7 +35,7 @@ names(class_roll) <-
 class_roll$group <- 
   class_roll1113$group[match(class_roll$id, class_roll1113$id)]
 quiz <- "./data/quiz231120.xlsx" %>% 
-  read_excel(range = "A1:N495",
+  read_excel(range = "A1:N543",
              col_types = c("date", rep("text", 13)))
 quiz %>% 
   str
