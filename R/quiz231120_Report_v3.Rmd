@@ -1,5 +1,5 @@
 ---
-title: "Quiz 231120 (Birthday Problem, Matching Problem, Monty Hall Show)"
+title: "Quiz 231120 (Birthday Problem, ... , Monty Hall)"
 author: "coop711"
 date: "2023-11-20"
 output: html_document
@@ -35,7 +35,7 @@ names(class_roll) <-
 class_roll$group <- 
   class_roll1113$group[match(class_roll$id, class_roll1113$id)]
 quiz <- "./data/quiz231120.xlsx" %>% 
-  read_excel(range = "A1:N560",
+  read_excel(range = "A1:N805",
              col_types = c("date", rep("text", 13)))
 quiz %>% 
   str
@@ -144,7 +144,7 @@ quiz_2$Q1_2 %>%
 #  t %>%
 #  cbind("계" = rowSums(.)) %>%
   rbind("계" = colSums(.)) %>%
-  data.frame(Birthe_Dates = rownames(.), 
+  data.frame(Birth_Dates = rownames(.), 
              Counts = ., 
              row.names = NULL)
 # %>%
@@ -220,19 +220,15 @@ str(quiz)
 
 ## Red, Black을 잘못 표시한 사람들
 
-<<<<<<< HEAD
 랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과를 논하기에는 아주 적은 인원이 관찰되었습니다.  Red를 Black 이라고 한 사람이 2명, Black 을 Red 라고 한 사람이 1명 관찰되었습니다. 
-=======
-랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과를 논하기에는 아주 적은 인원이 관찰되었습니다.  Red를 Black 이라고 한 사람이 4명, Black 을 Red 라고 한 사람이 1명 관찰되었습니다. 
->>>>>>> 6eaa71569a6cb514b4d8048a6aca600dfa38f06c
 
 ```{r, wrong group, echo = FALSE}
 quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
 wrong_group <- which(quiz$group != quiz$group2)
-quiz[wrong_group, c("id", "group2", "group")] %>%
-  `[`(order(.$id), ) %>%
-  `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
-  pander(row.names = FALSE)
+# quiz[wrong_group, c("id", "group2", "group")] %>%
+#   `[`(order(.$id), ) %>%
+#   `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander(row.names = FALSE)
 # quiz[wrong_group, c("id", "group2", "group")] %>%
 #   `[`(order(.$id), ) %>%
 #   `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
@@ -544,7 +540,7 @@ tbl_q4_a %>%
 
 ### Mosaic Plot
 
-```{r, mosaic plot, echo = FALSE, fig.width = 7, fig.height = 5}
+```{r, mosaic plot, echo = FALSE, message = FALSE, fig.width = 7, fig.height = 5}
 library(extrafont)
 library(ggplot2)
 source("./mosaic_gg.R")
