@@ -1,0 +1,434 @@
+---
+title: "Quiz 220919"
+author: "coop711"
+date: "2022-09-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(pander)
+library(knitr)
+library(magrittr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+options(width=180)
+```
+
+```{r, data, echo = FALSE, results = 'hide', message = FALSE}
+load("./red_and_black_220909_data.RData")
+quiz <- 
+  read_excel("../data/quiz220919.xlsx",
+             range = "A2:N1003",
+             col_names = FALSE)
+names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "group", "Q7_R", "Q7_B")
+str(quiz)
+# quiz$Q7_R[quiz$Q7_R == "대기업의 비리와 독단 경영을 견제하고, 투명성을 높일 수 있으므로 찬 성한다."] <- "찬성한다."
+# quiz$Q7_B[quiz$Q7_B == "정부가 기업에 과다하게 개입하여 경영자율권을 침해하므로 반대한다."] <- "반대한다."
+quiz$Q7 <- ifelse(is.na(quiz$Q7_R), quiz$Q7_B, quiz$Q7_R)
+quiz$dept <- factor(quiz$dept)
+quiz$group <- factor(quiz$group, 
+                         levels = c("Red", "Black"))
+quiz$Q1 <- factor(quiz$Q1, 
+#                      levels = c("가", "나"), 
+                      levels = c("민주 문자", "엘리트 문자"))
+quiz$Q2 <- factor(quiz$Q2, 
+#                      levels = c("가", "나"), 
+                      levels = c("한자", "한글"))
+quiz$Q3 <- factor(quiz$Q3, 
+#                      levels = c("가", "나", "다", "라", "마"), 
+                      levels = c("하나도 없다", "1개", "2개", "3개", "4개"))
+quiz$Q4 <- factor(quiz$Q4, 
+                      levels = c("0.9", "0.8", "0.5", "0.2", "0.1"), 
+                      labels = c("90%", "80%", "50%", "20%", "10%"))
+quiz$Q5 <- factor(quiz$Q5, 
+#                      levels = c("가", "나", "다", "라"), 
+                      levels = c("대한민국", "영국",  "이탈리아", "미국"))
+quiz$Q6 <- factor(quiz$Q6, 
+                      levels = c("시간당 중위 임금이 60% 낮다", 
+                                 "2배 정도 실직할 가능성이 높다", 
+                                 "건강이 좋지 않다", 
+                                 "사회활동이나 자원활동에 덜 참여한다", 
+                                 "남들을 덜 신뢰한다"),
+                      labels = c("60% 낮은 임금", "실직 가능성", "나쁜 건강", "활동 불참", "덜 신뢰"))
+quiz$Q7 %<>%
+  factor(levels = c("휴우, 그래도 반이나 남았네.", "헐, 반 밖에 안 남았네.", "모름/기타"),
+         labels = c("반이나", "반밖에", "모름/기타"))
+# quiz$Q7.2 <- quiz$Q7
+# levels(quiz$Q7.2[quiz$group == "Black"]) <- c("2번", "1번", "9번")
+# levels(quiz$Q7) <- c("합의 가능",  "합의 어려움", "모름/무응답")
+table(quiz$Q7, useNA = "ifany")
+#> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
+quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
+#> 제출시간 분포 분석 코드 
+quiz$days <- as.numeric(difftime("2022-10-03 09:00:00", quiz$time, units = 'days'))
+quiz$hours <- as.numeric(difftime("2022-10-03 09:00:00", quiz$time, units = 'hours'))
+str(quiz)
+```
+
+## Red, Black을 잘못 표시한 사람들
+
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 잘못 선택하는 사람들의 수효가 8명인데 Black 에서 7명이 나왔습니다. 인원이 많이 줄어서 상당히 차이가 나 보이지만 p-value가 0.07로 여전히 랜덤화 효과로 설명이 되는 수준입니다. 굳이 학번을 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
+
+```{r, wrong group, echo = FALSE}
+quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
+wrong_group <- which(quiz$group != quiz$group2)
+# class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
+#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander
+quiz[wrong_group, c("id", "group2", "group")] %>%
+  `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
+  pander
+wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
+                   "구글예습퀴즈" = quiz$group)
+wrong_tbl %>%
+  pander(row.names = c("Red(랜덤화출석부)", "Black(랜덤화출석부)"), col.names = c("Red(구글예습퀴즈)", "Black(구글예습퀴즈)"))
+```
+
+
+# 응답 결과
+
+##  Q1. 한글의 문자 유형
+
+### 민주 문자, 엘리트 문자
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210323_Q1.png")
+```
+
+### 한글은 민주 문자
+
+```{r, echo = FALSE}
+tbl_q1_a <- quiz$Q1 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q1_a %>% 
+  pander 
+tbl_q1_a %>% 
+  `[`(-3, -3) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### 한글은 민주 문자(%)
+
+```{r, echo = FALSE}
+tbl_q1_a %>% 
+  `[`(3, -3) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q2. 정보혁명과 문자 체계
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210323_Q2.png")
+```
+
+### 정보혁명을 이끄는 문자는 한글(집계표)
+
+```{r, echo = FALSE}
+tbl_q2_a <- quiz$Q2 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q2_a %>% 
+  pander
+tbl_q2_a %>% 
+  `[`(-3, -3) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### 정보혁명을 이끄는 문자는 한글(%)
+
+```{r, echo = FALSE}
+tbl_q2_a %>% 
+  `[`(3, -3) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q3. 알기 힘든 전문 용어
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210323_Q3.png", dpi = NA)
+```
+
+### 몇 개나 아나요?(집계표)
+
+```{r, echo = FALSE}
+tbl_q3_a <- quiz$Q3 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+# colnames(tbl_q3_a)[6] %<>% `<-`(., "결석")
+tbl_q3_a %>% pander 
+tbl_q3_a %>% 
+  `[`(-3, -6) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### 몇 개나 아나요?(%)
+
+```{r, echo = FALSE}
+tbl_q3_a %>% 
+  `[`(3, -6) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q4. 해방직후 비문해율
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210323_Q4.png")
+```
+
+### 집계
+
+```{r, National and Local tax, echo = FALSE}
+tbl_q4_a <- quiz$Q4 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q4_a %>% 
+  pander 
+tbl_q4_a %>% 
+  `[`(-3, -6) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### %
+
+```{r, National and Local tax in percentage, echo = FALSE}
+tbl_q4_a %>% 
+  `[`(3, -(6:7)) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q5. 세대간 문해력 격차
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210323_Q5.png")
+```
+
+### 집계
+
+```{r, tax law and cabinets, echo = FALSE}
+tbl_q5_a <- quiz$Q5 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+# colnames(tbl_q2_a)[5] %<>% `<-`(., "결석")
+tbl_q5_a %>% pander 
+tbl_q5_a %>% 
+  `[`(-3, -5) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### %
+
+```{r, tax law and cabinets in percentage, echo = FALSE}
+tbl_q5_a %>% 
+  `[`(3, -5) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q6. 문해력 격차의 파급효과
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210323_Q6.png")
+```
+
+### 집계
+
+```{r, tax law and laymen, echo = FALSE}
+tbl_q6_a <- quiz$Q6 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q6_a %>% 
+  pander 
+tbl_q6_a %>% 
+  `[`(-3, -6) %>%
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+
+### %
+
+```{r, tax law and laymen in percentage, echo = FALSE}
+tbl_q6_a %>% 
+  `[`(3, -6) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+
+# 一切唯心造(일체유심조)
+
+## Q7. 단어의 영향
+
+## Red
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz220321_Q7_Red.png")
+```
+
+## Black
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz220321_Q7_Black.png")
+```
+
+똑같은 상황에서 긍정적인 단어를 보고 답하는 것 (Red)과, 부정적인 단어를 보고 답하는 것(Black)에 따라 Red 집단에는 긍정적 답변의 비율이 높게, Black 집단에는 부정적 답변의 비율이 높게 나올 것으로 기대한 대로 통계적으로 매우 유의한 차이가 관찰됨. 힘든 상황이라도 긍정적인 생각을 가지길~~^^
+
+```{r, vote attitude, echo = FALSE}
+tbl_q7_a <- quiz$Q7 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+# colnames(tbl_Q7_a)[4] <- "불참"
+rownames(tbl_q7_a)[1:2] <- c("Red(긍정적 단어)", "Black(부정적 단어)")
+tbl_q7_a %>% 
+  pander
+tbl_q7_a %>% 
+  `[`(-3, -(4:5)) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### % 비교.  
+
+```{r, investigation in percentage, echo = FALSE}
+levels(quiz$Q7) <- c("반이나", "반밖에", "모름/무응답")
+tbl_q7_a_3 <- quiz$Q7 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+colnames(tbl_q7_a_3)[4] <- "결석"
+rownames(tbl_q7_a_3)[1:2] <- c("Red(긍정적 단어)", "Black(부정적 단어)")
+tbl_q7_a_3 %>% 
+  `[`(-3, -(4:5)) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+### % 합계
+
+```{r, overall percentage, echo = FALSE}
+quiz$Q7 %>%
+  table(useNA = "no") %>%
+  prop.table %>%
+  `*`(100) %>%
+  c("계" = sum(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+### Mosaic Plot
+
+```{r, mosaic plot, echo = FALSE, fig.width = 7, fig.height = 5}
+library(ggplot2)
+source("./mosaic_gg.R")
+m_list <- quiz$Q7 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  t %>%
+  mosaic_gg
+m <- m_list$m
+df <- m_list$df
+p_df <- m_list$p_df
+names(df)[1] <- "Var1"
+names(p_df)[1] <- "Var1"
+# df$Var1 %<>% factor(labels = c("반이나 남았네", "반밖에 안 남았네", "모름/무응답"))
+df$Var2 %<>% factor(labels = c("긍정적 단어를 본 집단", "부정적 단어를 본 집단"))
+# p_df$Var1 %<>% factor(labels = c("반이나 남았네", "반밖에 안 남았네", "모름/무응답"))
+p_df$Var2 %<>% factor(labels = c("긍정적 단어를 본 집단", "부정적 단어를 본 집단"))
+m + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = df[, 2]) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "컵의 물을 반 엎질렀을 때", x = "Red or Black(누적 %)", y = "인원(%, 명)") +
+  scale_fill_brewer(name = "응답", 
+                    labels = c("반이나 남았네", "반밖에 안 남았네", "모름/무응답"),
+                    type = "qual", 
+                    palette = "Set2", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("../pics/Quiz220919_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+```
+
+# 제출 시간의 분포
+
+과제 제출이 제출 기간 마지막 날에 몰린다는 것을 시각적으로 보여주고 싶어서 하나 추가하였습니다. 6주차에 접어들어가는 시점에서 마지막 날에 몰리는 현상이 뚜럇해지고 있습니다. 여기서조차 랜덤화 효과를 관찰할 수 있네요. p-value 에 유의해 주세요. 제출시간과 관련한 두 가지 현상에 대해서도 여러분의 생각을 들어보고 싶습니다. 첫째, 랜덤화 효과. 둘쨰, 마감날에 몰리는 현상.
+
+<!--
+### 시간 단위 기초통계량
+
+```{r, echo = FALSE}
+summary(quiz$hours)
+stem(quiz$hours)
+max(quiz$hours, na.rm = TRUE)
+```
+-->
+
+<P style = "page-break-before:always">
+
+### 일 단위 마감 시간으로부터 제출 시간의 분포
+
+```{r, echo = FALSE}
+par(family = "KoPubWorldDotum Medium")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+#  cbind("계" = rowSums(.)) %>%
+#  rbind("계" = colSums(.)) %>%
+  pander(caption = "일 단위")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+  chisq.test %>%
+  pander
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table %>%
+  rev %>%
+  barplot(space = 0, names.arg = rep(c("월", "화", "수", "목", "금", "토", "일"), 2))
+title(main = "일 단위 퀴즈 제출 횟수")
+```
+
+```{r, save, echo = FALSE}
+saveRDS(quiz, file = "./quiz220919.RDS")
+save.image("../R/quiz220919.RData")
+```

@@ -1,0 +1,137 @@
+---
+title: "Food Habits Plan 221024"
+author: "coop711"
+date: "2022-10-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(pander)
+library(knitr)
+library(magrittr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+options(width = 180)
+```
+
+<!--
+# Data 
+-->
+
+```{r, data, echo = FALSE, results = 'hide'}
+load("./red_and_black_220909_data.RData")
+food <-
+  read_excel("../data/food_plan_221024.xlsx",
+             range = "C1:Y961")
+str(food)
+names(food) <- c("dept", "id", "name", paste0("Q", 1:20))
+class(food$id) <- "character"
+food %<>% data.frame
+food$group <- class_roll$group[match(food$id, class_roll$id)]
+food$dept %<>% 
+  factor
+food$group %<>%
+  factor(levels = c("Red", "Black"))
+food[paste0("Q", 1:20)] %<>%
+  sapply(FUN = {. %>% strsplit(split = "[.]") %>% sapply(`[`, 1)}) %>%
+  as.numeric
+food %>%
+  str
+food$score <- apply(food[paste("Q", 1:20, sep = "")], 1, sum)
+food$grade <- ifelse(food$score <= 59, "식생활을 고치세요", 
+                     ifelse(food$score <= 79, "식생활이 보통입니다", 
+                            ifelse(food$score <= 100, "식생활이 대체로 좋아요", NA)))
+food$grade <- factor(food$grade, 
+                     levels = c("식생활을 고치세요", "식생활이 보통입니다", "식생활이 대체로 좋아요"), 
+                     ordered = TRUE)
+#> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
+food[food$id %in% setdiff(food$id, class_roll$id), c("id", "name", "dept")]
+str(food)
+```
+
+# Descriptive Statistics
+
+## Grades
+
+```{r, grades, echo = FALSE}
+# pander(food[c("id", "name", "score", "grade")])
+pander(food[c("id", "score", "grade")])
+```
+
+## Cross Tables
+
+## Cross Tables
+
+```{r, cross table, echo = FALSE}
+food %$%
+  table(.$group, .$grade) %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.)) %>%
+  pander
+```
+
+## Percentages
+
+```{r, echo = FALSE}
+food %$%
+  table(.$group, .$grade) %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.)) %>%
+  `[`(3, -4) %>%
+    prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Summary Statistics
+
+```{r, summary, echo = FALSE}
+pander(tapply(food$score, food$group, summary))
+```
+
+## Standard Deviation
+
+```{r, SD, echo = FALSE}
+pander(tapply(food$score, food$group, sd, na.rm = TRUE), caption = "Standard Deviation")
+```
+
+## t test (Welch's)
+
+```{r, t test, echo = FALSE}
+pander(t.test(score ~ group, data = food))
+```
+
+# Plots
+
+## Stem and Leaf
+
+```{r, stem and leaf, echo = FALSE}
+tapply(food$score, food$group, stem)
+```
+
+## Box plot
+
+```{r, Box plot, echo = FALSE, fig.width = 7, fig.height = 7}
+plot(score~group, data = food)
+```
+
+## QQplot
+
+```{r, qqplot, echo = FALSE, fig.width = 7, fig.height = 7}
+Black <- food$group == "Black"
+Red <- food$group == "Red"
+qqplot(food$score[Black], food$score[Red], xlab = "Black", ylab = "Red")
+```
+
+<!--
+# save
+-->
+
+```{r, echo = FALSE}
+saveRDS(food, "./food_after2202.rds")
+```

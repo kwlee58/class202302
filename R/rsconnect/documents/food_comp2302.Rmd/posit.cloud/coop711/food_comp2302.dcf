@@ -1,0 +1,12 @@
+name: food_comp2302
+title: food_comp2302
+username: coop711
+account: coop711
+server: posit.cloud
+hostUrl: https://api.posit.cloud/v1
+appId: 7078888
+bundleId: 7938065
+url: https://posit.cloud/content/7078888
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

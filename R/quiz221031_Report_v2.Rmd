@@ -1,0 +1,448 @@
+---
+title: "Quiz 221031 (Anchor Effects)"
+author: "coop711"
+date: "2022-10-31"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("pander", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+library(readxl)
+library(magrittr)
+library(pander)
+library(knitr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+# options(width = 180)
+```
+
+```{r, data, echo = FALSE, message = FALSE, results = 'hide'}
+load("./red_and_black_220909_data.RData")
+quiz <- 
+  read_excel("../data/quiz221031.xlsx",
+             range = "A2:N980",
+             col_names = FALSE)
+str(quiz)
+names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6),  "group", "Q7_R", "Q7_B")
+class(quiz$id) <- "character"
+quiz <- data.frame(quiz)
+str(quiz)
+quiz[c("group", "Q7_R", "Q7_B")]
+quiz$Q7 <- ifelse(is.na(quiz$Q7_R), quiz$Q7_B, quiz$Q7_R)
+quiz$Q7 %<>% 
+  strsplit(split = " : ") %>% sapply(`[`, 1)
+quiz[c("group", "Q7_R", "Q7_B", "Q7")]
+# quiz$Q7 %<>% 
+#   strsplit(split = "[.]") %>% sapply(`[`, 1)
+quiz$dept %<>% 
+  factor
+quiz$group %<>% 
+  factor(levels = c("Red", "Black"))
+quiz$Q1 %<>% 
+  factor(levels = c("황금기에 소득이 가장 많이 늘어난 계층은 하위 20%(1분위)이다.", 
+                    "황금기에 소득증가율이 가장 높은 계층은 하위 20%(1분위)이다.", 
+                    "신자유주의시기에 소득이 가장 많이 늘어난 계층은 하위 20%(1분위)이다.", 
+                    "신자유주의시기에 소득증가율이 가장 높은 계층은 하위 20%(1분위)이다."))
+quiz$Q2 %<>% 
+  factor(levels = c("최고한계세율이 높았던 시기에 하위 99%의 소득증가율이 상위1%의 소득증가율 보다 높았다.",
+                    "최고한계세율을 높이면 하위 99%의 소득증가율이 상위1%의 소득증가율보다 높아진다.",
+                    "최고한계세율이 높았던 시기에 하위 99%의 소득이 상위1%의 소득보다 많았다.",
+                    "최고한계세율을 높이면 하위 99%의 소득이 상위1%의 소득보다 많아진다.")) 
+#         labels = c("높았던 시기에 높았다", 
+#                    "높이면 높아진다", 
+#                    "높았던 시기에 많았다", 
+#                    "높이면 많아진다"))
+quiz$Q3 %<>% 
+  factor(levels = c("1948년부터 1973년까지는 생산성과 임금이 함께 상승하였다.", 
+                    "1973년 이후 생산성과 임금이 함께 상승하였다.", 
+                    "1973년 이후 생산성은 70%가 넘는 상승을 보였다.", 
+                    "1973년 이후 임금은 10% 미만의 상승을 보였다."))
+#         labels = c("황금기 함께 상승", 
+#                    "신자유주의시기 함께 상승", 
+#                    "신자유주의시기 생산성 상승",
+#                    "신자유주의시기 임금 상승"))
+quiz$Q4 %<>% 
+  factor(levels = c("생산성향상 만큼 임금 상승이 따라가지 못하고 있다.", 
+                    "고임금의 상승이 훨씬 빠른 속도로 진행되어 왔다.", 
+                    "임금격차가 점점 커지고 있다.", 
+                    "중산층의 임금은 회복세를 보이고 있다.")) 
+#         labels = c("임금 상승 미흡", 
+#                    "고임금 상승률 가속", 
+#                    "임금격차 심화", 
+#                    "중산층 임금 회복세"))
+quiz$Q5 %<>% 
+  factor(levels = c("10억원", "20억원", "25억원", "30억원"))
+quiz$Q6 %<>% 
+  factor(levels = c("\"100%\"", "\"75%\"", "\"50%\"", "\"25%\""), 
+         labels = c("100%", "75%", "50%", "25%"))
+quiz$Q7 %<>% 
+  factor(levels = c("무상", "100만원", "200만원", "500만원", "1,000만원"))
+#> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
+quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
+quiz$days <- as.numeric(difftime("2022-11-14 09:00:00", quiz$time, units = 'days'))
+quiz$hours <- as.numeric(difftime("2022-11-14 09:00:00", quiz$time, units = 'hours'))
+quiz %>% 
+  str
+```
+
+## Red, Black을 잘못 표시한 사람들
+
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과는 여기서도 작동하고 있는 걸 알 수 있습니다. Red를 Black 이라고 한 사람의 수효(8명)과 Black을 Red 라고 한 사람의 수효(7명)이 비슷합니다 group 을 잘못 기억하고 있는 사람들의 수효조차 Red, Black 에 비슷하게 나뉘었습니다. 굳이 학번까지 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
+
+```{r, wrong group, echo = FALSE}
+quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
+wrong_group <- which(quiz$group != quiz$group2)
+# class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
+#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander
+quiz[wrong_group, c("id", "group2", "group")] %>%
+  `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
+  pander(row.names = FALSE)
+wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
+                   "구글예습퀴즈" = quiz$group)
+wrong_tbl %>%
+  pander(row.names = c("Red(랜덤화출석부)", "Black(랜덤화출석부)"), 
+         col.names = c("Red(구글예습퀴즈)", "Black(구글예습퀴즈)"))
+```
+
+```{r, randomization, echo = FALSE, results = 'hide'}
+quiz %>% str
+```
+
+# 퀴즈 응답 비교
+
+## Q1. 황금기와 신자유주의 시기 소득5분위별 소득증가율
+
+```{r, echo = FALSE, out.width = "75%"}
+include_graphics("../pics/Quiz201102_01.png")
+```
+
+### 집계
+
+```{r, echo = FALSE}
+tbl_q1_a <- quiz %$%
+  table(.$group, .$Q1, useNA = "ifany") %>%
+# tbl_q1_a <- quiz$Q1 %>% 
+#   table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q1_a %>% 
+  pander 
+tbl_q1_a[-3, -5] %>% 
+  chisq.test(simulate.p.value = FALSE) %>% 
+  pander
+```
+
+### %
+
+```{r, productivity vs wage in percentage, echo = FALSE}
+tbl_q1_a %>% 
+  `[`(3, -5) %>% 
+  prop.table %>%
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q2. 최고한계세율과 소득증가율
+
+```{r, echo = FALSE, out.width = "75%"}
+include_graphics("../pics/Quiz201102_02.png")
+```
+
+## 집계
+
+```{r, echo = FALSE}
+tbl_q2_a <- quiz$Q2 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q2_a %>% 
+  pander 
+tbl_q2_a[-3, -5] %>% 
+  chisq.test(simulate.p.value = FALSE) %>% 
+  pander
+```
+
+## %
+
+```{r, echo = FALSE}
+tbl_q2_a %>% 
+  `[`(3, -5) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q3. 생산성과 임금
+
+```{r, echo = FALSE, out.width = "75%"}
+include_graphics("../pics/Quiz201102_03.png")
+```
+
+## 집계
+
+```{r, state arithmetic, echo = FALSE}
+tbl_q3_a <- quiz$Q3 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q3_a %>% 
+  pander 
+tbl_q3_a %>%
+  `[`(-3, -5) %>% 
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+
+## %
+
+```{r, state arithmetic in percentage, echo = FALSE}
+tbl_q3_a %>%
+  `[`(3, -5) %>%
+  prop.table %>%
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(., digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q4. 생산성과 평균 및 중위임금(1973 ~ 2014)
+
+```{r, echo = FALSE, out.width = "75%"}
+include_graphics("../pics/Quiz201102_04.png")
+```
+
+## 집계
+
+```{r, labour force, echo = FALSE}
+tbl_q4_a <- quiz$Q4 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q4_a %>% 
+  pander
+tbl_q4_a %>%
+  `[`(-3, -5) %>% 
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+
+## %
+
+```{r, labour force in percentage, echo = FALSE}
+tbl_q4_a %>%
+  `[`(3, -5) %>%
+  prop.table %>%
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q5. LM3
+
+```{r, echo = FALSE, out.width = "75%"}
+include_graphics("../pics/Quiz201102_05.png")
+```
+
+### 집계
+
+```{r, LM3, echo = FALSE}
+tbl_q5_a <- quiz %$%
+  table(.$group, .$Q5, useNA = "ifany") %>%
+# tbl_q2_a <- quiz$Q5 %>%
+#   table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q5_a %>% 
+  pander 
+tbl_q5_a %>%
+  `[`(-3, -5) %>% 
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+
+### %
+
+```{r, LM3 in percentage, echo = FALSE}
+tbl_q5_a %>%
+  `[`(3, -5) %>%
+  prop.table %>%
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(., digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q6. 식량자급률
+
+```{r, echo = FALSE, out.width = "75%"}
+include_graphics("../pics/Quiz201102_06.png")
+```
+
+### 집계
+
+```{r, echo = FALSE}
+tbl_q6_a <- quiz %$%
+  table(.$group, .$Q6, useNA = "ifany") %>%
+# tbl_q3_a <- quiz$Q6 %>%
+#   table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q6_a %>% 
+  pander
+tbl_q6_a %>%
+  `[`(-3, -5) %>% 
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+
+### %
+
+```{r, echo = FALSE}
+tbl_q6_a %>%
+  `[`(3, -5) %>%
+  prop.table %>%
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q7. 국공립대 등록금 국제 비교
+
+```{r, echo = FALSE, out.width = "75%"}
+include_graphics("../pics/Quiz201102_07_Red.png")
+```
+
+```{r, echo = FALSE, out.width = "75%"}
+include_graphics("../pics/Quiz201102_07_Black.png")
+```
+
+이 질문은 기준점이 어디에 있느냐에 따라서 응답이 달라진다는 것을 보여줍니다. 국공립대학의 등록금이 무상인 나라들을 소개한 Red군에서는 적정 수준이 "무상" 또는 100만원 이라고 이라고 응답한 비율이 62.4%로 국공립대학의 등록금이 우리나라보다 높거나 대등한 나라들의 예를 먼저 들고 적정 수준을 물어본 경우(Black)에 "무상" 또는 100만원이라고 응답한 비율인 26.5%보다 월등히 높은 것을 알 수 있습니다. 500만원 이상을 적정하다고 응답한 비율의 비교도 흥미롭습니다.
+
+### 국공립대 등록금의 적정 수준 (집계)
+
+```{r, college tuition, echo = FALSE}
+tbl_q7_a <- quiz %$%
+  table(.$group, .$Q7, useNA = "ifany") %>%
+# tbl_q4_a <- quiz$Q7 %>%
+#   table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+rownames(tbl_q7_a) <- c("Red(등록금무상국가 소개)", "Black(등록금고액국가 소개)", "계")
+tbl_q7_a %>% 
+  pander
+tbl_q7_a %>%
+  `[`(-3, -(6:7)) %>%
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+
+### 국공립대 등록금의 적정 수준 (%)
+
+```{r, college tuition in percentage, echo = FALSE}
+tbl_q7_a %>% 
+  `[`(-3, -(6:7)) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+### 국공립대 등록금의 적정 수준 (%) 
+
+무상, 100만원 => 100만원 이하, 200만원, 500만원, 1,000만원 => 200만원 이상
+
+```{r, college tuition in percentage 2, echo = FALSE}
+levels(quiz$Q7) <- list("100만원 이하" = c("무상", "100만원"), 
+                            "200만원 이상" = c("200만원", "500만원", "1,000만원"))
+# tbl_q4_a2 <- 
+quiz$Q7 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.)) %>%
+  `[`(-3, -c(3, 4)) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  `rownames<-`(c("Red(등록금무상국가 소개)", "Black(등록금고액국가 소개)")) %>%
+# rownames(tbl_q4_a2) <- c("Red(등록금무상국가 소개)", "Black(등록금고액국가 소개)")
+# tbl_q4_a2 %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+### Mosaic Plot
+
+```{r, mosaic plot1, echo = FALSE, fig.width = 7, fig.height = 5}
+library(ggplot2)
+source("./mosaic_gg.R")
+m_list <- quiz$Q7 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  t %>%
+  mosaic_gg
+m <- m_list$m
+df <- m_list$df
+p_df <- m_list$p_df
+names(df)[1] <- "Var1"
+names(p_df)[1] <- "Var1"
+df$Var2 %<>% 
+  factor(labels = c("Red(등록금무상국가 소개)", "Black(등록금고액국가 소개)"))
+p_df$Var2 %<>% 
+  factor(labels = c("Red(등록금무상국가 소개)", "Black(등록금고액국가 소개)"))
+m + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = df[, 2]) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "Anchor Effects", x = "Red or Black(누적 %)", y = "인원(%, 명)") +
+  scale_fill_brewer(name = "응답", 
+                    labels = c("백만원 이하", "200만원 이상"),
+                    type = "qual", 
+                    palette = "Set2", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("../pics/Quiz221003_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+```
+
+
+## 일 단위 마감 시간으로부터 제출 시간의 분포
+
+```{r, echo = FALSE}
+par(family = "KoPubWorldDotum Medium")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+#  cbind("계" = rowSums(.)) %>%
+#  rbind("계" = colSums(.)) %>%
+  pander(caption = "일 단위")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+  chisq.test %>%
+  pander
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table %>%
+  rev %>%
+  barplot(space = 0, 
+          names.arg = rep(c("월", "화", "수", "목", "금", "토", "일"), 2), 
+          col = c(rep("white", 13), "pink"))
+title(main = "일 단위 퀴즈 제출 횟수")
+```
+
+
+```{r, save, echo = FALSE}
+saveRDS(quiz, file = "quiz221031.RDS")
+save.image("../R/quiz221031.RData")
+```

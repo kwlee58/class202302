@@ -1,0 +1,28 @@
+---
+title: "홀짝 게임 팀 배정표"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(pander)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo = FALSE, results = "hide"}
+load("./red_and_black_200524_data.RData")
+class_roll_order <- class_roll[order(class_roll$name), ]
+class_roll_order[c("id", "name", "cell_no")] 
+class_roll_order[class_roll_order$id == "20142709", "cell_no"] <- "010-2851-1314"
+class_roll_order[class_roll_order$name == "박소연", "cell_no"] <- "010-9945-1625"
+class_roll_order[class_roll_order$name == "김예은", ]
+```
+
+```{r, echo = FALSE}
+# kable(cbind(Team = 1:84, class_roll_order[c(seq(1, 23, by = 2), seq(26, 168, by = 2)), c("id", "name", "cell_no")], 
+#       class_roll_order[c(seq(2, 24, by = 2), seq(27, 169, by = 2)), c("id", "name", "cell_no")], row.names = NULL), align = "c")
+kable(cbind(Team = 1:84, class_roll_order[c(seq(1, 23, by = 2), 27, seq(28, 168, by = 2)), c("id", "name", "cell_no")], 
+      class_roll_order[c(seq(2, 26, by = 2), 25, seq(31, 169, by = 2)), c("id", "name", "cell_no")], row.names = NULL), align = "c")
+kable(cbind(Team = 1:84, class_roll_order[c(seq(1, 23, by = 2), 27, seq(28, 168, by = 2)), c("id", "cell_no")], 
+      class_roll_order[c(seq(2, 26, by = 2), 25, seq(31, 169, by = 2)), c("id", "cell_no")], row.names = NULL), align = "c")
+```

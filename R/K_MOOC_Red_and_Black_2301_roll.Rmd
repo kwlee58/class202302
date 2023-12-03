@@ -1,0 +1,61 @@
+---
+title: "랜덤화 출석부(230225)"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("pander", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+# library(xlsx)
+library(pander)
+library(knitr)
+library(magrittr)
+panderOptions('table.split.table', Inf)
+```
+
+<!--
+### Data
+
+```{r, data, echo = FALSE}
+load("./K_MOOC_red_and_black_optimum_data_202301.RData")
+class(class_roll$id) <- "character" 
+```
+
+### 전체 출석부
+-->
+
+```{r, echo = FALSE}
+class_roll %$%
+  order(.$name) %>%
+#  class_roll[., c("id", "name", "group")] %>%
+  class_roll[., c("id", "group")] %>%
+  pander(caption = "가나다순", row.names = FALSE)
+```
+
+<P style="page-break-before:always">
+
+```{r, echo = FALSE}
+class_roll %$%
+  order(.$group, .$name) %>%
+#  class_roll[., c("group", "id", "name")] %>%
+  class_roll[., c("group", "id")] %>%
+#  subset(.$group == "Red", select = c("id", "name")) %>%
+  subset(.$group == "Red", select = c("id")) %>%
+  pander(caption = "Red", row.names = FALSE)
+```
+
+<P style="page-break-before:always">
+
+```{r, echo = FALSE}
+class_roll %$%
+  order(.$group, .$name) %>%
+#  class_roll[., c("group", "id", "name")] %>%
+  class_roll[., c("group", "id")] %>%
+#  subset(.$group == "Black", select = c("id", "name")) %>%
+  subset(.$group == "Black", select = c("id")) %>%
+  pander(caption = "Black", row.names = FALSE)
+```
+
+<P style="page-break-before:always">
+

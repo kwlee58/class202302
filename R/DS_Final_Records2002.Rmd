@@ -1,0 +1,139 @@
+---
+title: "데이터과학입문 : 최종"
+author: "데이터과학융합스쿨 이기원교수"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(width=180)
+rm(list=ls())
+```
+
+```{r, presets, , message = FALSE, echo = FALSE}
+options(digits=3)
+library(xlsx)
+library(knitr)
+library(pander)
+library(magrittr)
+panderOptions("table.split.table", Inf)
+```
+
+
+<!--### Total Scores-->
+
+```{r, Total Scores, message = FALSE, echo = FALSE}
+total <- read.xlsx(file = "../data/DS_scoreList_2001v2.xlsx", 
+                   sheetIndex = 1, 
+                   rowIndex = 3:119, 
+                   colIndex = 2:10, 
+                   colClasses = c(rep("character", 2), rep("numeric", 7)), 
+                   header = TRUE,
+                   stringsAsFactors = FALSE)
+# str(total)
+total <- total[c(2, 1, 4:9, 3)]
+v_names_total <- c("ID", "Name", "Online", "Midterm", "Quiz", "Team_Project", "Ted", "Assignment", "Total")
+names(total) <- v_names_total
+#> Covid19 으로 인한 특수 상황 반영
+total[total$Name == "황선욱", c("Assignment", "Total")] <- c(19.7, 90.0)
+```
+
+## 절대평가 기준 점수 분포
+
+```{r, message = FALSE, echo = FALSE}
+#> 점수분포표
+stem(total$Total)
+total$Total %>% 
+  cut(breaks = c(0, 20, 30, 40, 50, 60, 70, 80, 90, 100),
+      labels = c("F : [0 ~ 20)", "D0 : [20 ~ 30)", "D+ : [30 ~ 40)", "C0 : [40 ~ 50)", "C+ : [50 ~ 60)", "B0 : [60 ~ 70)", "B+ : [70 ~ 80)", "A0 : [80 ~ 90)", "A+ : [90 ~ 100]"), 
+      include.lowest = TRUE, right = FALSE) %>%
+  table %>%
+  rev %>%
+  t %>%
+  `row.names<-`("Counts") %>%
+# row.names(scores_tbl) <- "Counts"
+# scores_tbl %>%
+  cbind("계" = rowSums(.)) %>%
+  t %>%
+  pander()
+```
+
+## 성적 등급 분포
+
+```{r, message = FALSE, echo = FALSE}
+total$Grades <- total$Total %>% 
+  cut(breaks = c(0, 20, 30, 40, 50, 60, 70, 80, 90, 100), include.lowest = TRUE, right = FALSE) %>%
+  factor(levels = c("[90,100]", "[80,90)", "[70,80)", "[60,70)", "[50,60)", "[40,50)", "[30,40)", "[20,30)",  "[0,20)"),
+         labels = c("A+", "A0", "B+", "B0", "C+", "C0", "D+", "D0", "F"))
+counts <- total$Grades %>%
+  table %>% 
+  c("계" = sum(.))
+perc <- total$Grades %>%
+  table %>% 
+  prop.table %>%
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  round(digits = 2) 
+N <- nrow(total)
+total$Ranks <- N + 1 - rank(total$Total)
+total <- total[, c(1:9, 11, 10)]
+rbind("Counts" = format(counts, digits = 0, nsmall = 0), 
+      "Percentage(%)" = format(perc, digits = 1, nsmall = 1), 
+      "Cumulative(%)" = format(cumsum(perc), digits = 1, nsmall = 1)) %>%
+  `[<-`(3, 10, "") %>%
+  kable(align = "r")
+```
+
+## 성적 산출 내역
+
+```{r, message = FALSE, echo = FALSE}
+o_names <- order(total$Name, total$ID)
+v_names_kr <- c("학번", "이름", "온라인(20)", "중간과제(10)", "퀴즈(20)", "팀 프로젝트(20)", "Ted(10)", "실습과제(20)", "총점(100)", "순위(116명중)", "학점")
+total_kr <- total
+names(total_kr) <- v_names_kr
+kable(total_kr[o_names, ], row.names = FALSE)
+# str(total)
+```
+
+<!--
+## Quiz 19점 이상
+
+```{r, eval = TRUE, echo = FALSE}
+kable(format(total[total$Quiz >= 19, ], digits = 2, nsmall = 1),
+      align = c(rep("r", 10), "c"))
+nrow(total[total$Quiz >= 19, ])
+```
+
+## 총점 60점 미만
+
+```{r, eval = TRUE, echo = FALSE}
+kable(format(total[total$Total < 60, ], digits = 2, nsmall = 1),
+      align = c(rep("r", 10), "c"))
+nrow(total[total$Total < 60, ])
+```
+
+
+<P style = "page-break-before:always">
+
+```{r, individual scores, echo = FALSE}
+my.grade <- function(name){
+  kable(total_kr[total$Name %in% name, -1], row.names = FALSE)
+}
+# my.grade(c("최완빈"))
+# my.grade(c("윤현지"))
+# my.grade(c("장윤주"))
+# my.grade(c("황선욱"))
+# my.grade("서강현")
+# my.grade("조재경")
+```
+-->
+
+<!--
+### Save Data
+
+```{r Save Data, echo = FALSE}
+save.image(file = "../R/R_records_01.RData")
+```
+-->
+               

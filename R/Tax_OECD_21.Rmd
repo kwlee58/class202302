@@ -1,0 +1,395 @@
+---
+title: "Tax OECD"
+author: "coop711"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("pander", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+# library(xlsx)
+library(pander)
+library(knitr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+options(width=180)
+```
+
+<!--## Tax Data-->
+
+## 소득세 최고세율 데이터 
+
+```{r, income_tax_rate, echo = FALSE}
+year <- 2011:2020
+income_fr <- c(41.0, rep(45.0, 9))
+income_de <- rep(45.0, 10)
+income_jp <- c(rep(40.0, 4), rep(45.0, 6))
+income_gb <- c(rep(50.0, 2), rep(45.0, 8))
+income_it <- rep(43.0, 10)
+income_kr <- c(35.0, rep(38.0, 5), 40.0, rep(42.0, 3))
+income_us <- c(rep(35.0, 2), rep(39.6, 5), rep(37.0, 3))
+income_ca <- c(rep(29.0, 5), rep(33.0, 5))
+income_g7 <- c(40.4, 41.0, 40.9, 40.9, 41.7, 42.2, 42.2, 41.9, 41.9, 41.9)
+income_oecd <- c(34.5, 35.0, 35.5, 35.5, 35.5, 35.8, 35.7, 35.7, 35.9, 35.9)
+income_df <- data.frame(Year = year,
+                        France = income_fr, 
+                        Germany = income_de, 
+                        Japan = income_jp,
+                        G_Britain = income_gb,
+                        Italia = income_it,
+                        Korea = income_kr,
+                        USA = income_us,
+                        Canada = income_ca,
+                        G7 = income_g7,
+                        OECD = income_oecd)
+Country_kr <- 
+  c("프랑스", "독일", "일본", "영국", "이탈리아", "대한민국", "미국", "캐나다", "G7평균", "OECD평균")
+pander(income_df)
+```
+
+## 소득세율 국제비교
+
+```{r, echo = FALSE, fig.width = 16, fig.height = 12}
+library(RColorBrewer)
+par(family = "KoPubWorldDotum Medium")
+par(mar = c(5.1, 4.1, 5.1, 2.1))
+cols <- brewer.pal(10, "Paired")
+plot(year, income_df[, "Korea"], xlim = c(2010.8, 2020), ylim = c(27, 52), 
+     type = "b", lwd = 5, col = cols[1], ann = FALSE, axes = FALSE)
+lines(year, income_df[, "France"], type = "b", lwd = 5, col = cols[2])
+lines(year, income_df[, "Germany"], type = "b", lwd = 5, col = cols[3])
+lines(year, income_df[, "Japan"], type = "b", lwd = 5, col = cols[4])
+lines(year, income_df[, "G_Britain"], type = "b", lwd = 5, col = cols[5])
+lines(year, income_df[, "Italia"], type = "b", lwd = 5, col = cols[6])
+lines(year, income_df[, "USA"], type = "b", lwd = 5, col = cols[7])
+lines(year, income_df[, "Canada"], type = "b", lwd = 5, col = cols[8])
+lines(year, income_df[, "G7"], type = "b", lwd = 5, col = cols[9])
+lines(year, income_df[, "OECD"], type = "b", lwd = 5, col = cols[10])
+axis(side = 1, at = year, labels = year)
+axis(side = 2, at = c(as.numeric(income_df[1, -1])), 
+     labels = format(c(as.numeric(income_df[1, -1])), digits = 2, nsmall = 1), las = 1)
+text(x = year[1], y = sort(as.numeric(income_df[1, -1]), decreasing = TRUE), 
+     labels = Country_kr[order(as.numeric(income_df[1, -1]), decreasing = TRUE)],
+     pos = c(3, 3, 3, 2, 2, 1, 3, 2, 1, 3))
+text(x = year[10], y = c(as.numeric(income_df[10, -1])), 
+     labels = format(c(as.numeric(income_df[10, -1])), digits = 2, nsmall = 1), 
+     pos = c(4, 4, 4, 4, 4, 4, 4, 4, 1, 4))
+title(main = "소득세 최고세율 국제 비교", line = 2, cex.main = 2.0, family = "KoPubWorldDotum Bold")
+title(xlab = "연도", ylab = "소득세 최고율(%)")
+box()
+dev.copy(png, file = "../pics/income_tax_top_rates_oecd.png", width = 960, height = 720)
+dev.off()
+```
+
+## 소득세 부담 
+
+```{r, income_burden, echo = FALSE}
+year_b <- 2013:2020
+income_b_fr <- c(9.6, 9.7, 9.9, 10.0, 10.3, 10.5, 9.3, 9.6)
+income_b_de <- c(6.0, 5.9, 5.7, 5.8, 6.2, 6.3, 10.6, 10.4)
+income_b_jp <- c(3.6, 3.8, 4.1, 4.4, 4.5, 4.9, 5.9, 6.0)
+income_b_gb <- c(9.9, 10.1, 10.6, 10.4, 10.4, 10.0, 9.0, 9.5)
+income_b_it <- c(5.6, 5.7, 5.8, 5.7, 5.9, 6.1, 11.0, 11.5)
+income_b_kr <- c(3.6, 3.6, 3.9, 4.0, 3.8, 4.1, 4.8, 5.3)
+income_b_us <- c(7.9, 8.0, 8.1, 8.0, 8.1, 8.1, 10.3, 10.5)
+income_b_ca <- c(11.3, 11.4, 12.1, 11.9, 11.9, 12.0, 12.2, 12.5)
+income_b_oecd <- c(7.9, 8.0, 8.1, 8.0, 8.1, 8.1, 8.0, 8.3)
+income_b_df <- data.frame(Year = year_b,
+                        France = income_b_fr, 
+                        Germany = income_b_de, 
+                        Japan = income_b_jp,
+                        G_Britain = income_b_gb,
+                        Italia = income_b_it,
+                        Korea = income_b_kr,
+                        USA = income_b_us,
+                        Canada = income_b_ca,
+                        OECD = income_b_oecd)
+Country_b_kr <- 
+  c("프랑스", "독일", "일본", "영국", "이탈리아", "대한민국", "미국", "캐나다", "OECD평균")
+pander(income_b_df)
+```
+
+## 소득세 부담 국제비교
+
+```{r, echo = FALSE, fig.width = 16, fig.height = 12}
+par(family = "KoPubWorldDotum Medium")
+par(mar = c(5.1, 4.1, 5.1, 2.1))
+cols <- brewer.pal(10, "Paired")
+plot(year_b, income_b_df[, "Korea"], ylim = c(0, 15), 
+     type = "b", lwd = 5, col = cols[1], ann = FALSE, axes = FALSE)
+lines(year_b, income_b_df[, "France"], type = "b", lwd = 5, col = cols[2])
+lines(year_b, income_b_df[, "Germany"], type = "b", lwd = 5, col = cols[3])
+lines(year_b, income_b_df[, "Japan"], type = "b", lwd = 5, col = cols[4])
+lines(year_b, income_b_df[, "G_Britain"], type = "b", lwd = 5, col = cols[5])
+lines(year_b, income_b_df[, "Italia"], type = "b", lwd = 5, col = cols[6])
+lines(year_b, income_b_df[, "USA"], type = "b", lwd = 5, col = cols[7])
+lines(year_b, income_b_df[, "Canada"], type = "b", lwd = 5, col = cols[8])
+lines(year_b, income_b_df[, "OECD"], type = "b", lwd = 5, col = cols[9])
+axis(side = 1, at = year_b, labels = year_b)
+axis(side = 2, at = c(as.numeric(income_b_df[1, -1])), 
+     labels = format(c(as.numeric(income_b_df[1, -1])), digits = 2, nsmall = 1), las = 1)
+text(x = year_b[1], y = sort(as.numeric(income_b_df[1, -1]), decreasing = TRUE), 
+     labels = Country_b_kr[order(as.numeric(income_b_df[1, -1]), decreasing = TRUE)],
+     pos = c(3, 3, 1, 3, 1, 3, 1, 3, 1))
+text(x = year_b[8], y = c(as.numeric(income_b_df[8, -1])), 
+     labels = format(c(as.numeric(income_b_df[8, -1])), digits = 2, nsmall = 1), 
+     pos = c(3, 4, 4, 4, 4, 4, 3, 4, 4))
+title(main = "소득세 부담 국제 비교", line = 2, cex.main = 2.0, family = "KoPubWorldDotum Bold")
+title(xlab = "연도", ylab = "소득세 부담(%)")
+box()
+dev.copy(png, file = "../pics/income_tax_burden_oecd.png", width = 960, height = 720)
+dev.off()
+```
+
+## 법인세 최고세율 데이터 
+
+```{r, coorporate_tax_rate, echo = FALSE}
+year_c <- 2011:2021
+corporate_fr <- c(36.1, 36.1, 38.0, 38.0, 38.0, 34.4, 44.4, 34.4, 34.4, 32.0, 28.4)
+corporate_de <- rep(15.8, 11)
+corporate_jp <- c(30.0, 30.0, 28.1, 28.1, 23.9, 23.4, 23.4, 23.2, 23.2, 23.2, 23.2)
+corporate_gb <- c(26.0, 24.0, 23.0, 21.0, 20.0, 20.0, 19.0, 19.0, 19.0, 19.0, 19.0)
+corporate_it <- c(rep(27.5, 6), rep(24.0, 5))
+corporate_kr <- c(rep(22.0, 7), rep(25.0, 4))
+corporate_us <- c(rep(35.0, 7), rep(21.0, 4))
+corporate_ca <- c(16.5, rep(15.0, 10))
+corporate_g7 <- c(26.7, 26.2, 26.1, 25.8, 25.0, 24.5, 25.2, 21.8, 21.8, 21.4, 20.9)
+corporate_oecd <- c(23.7, 23.5, 23.7, 23.4, 23.5, 23.3, 23.1, 22.5, 22.2, 21.6, 21.5)
+corporate_df <- data.frame(Year = year_c,
+                        France = corporate_fr, 
+                        Germany = corporate_de, 
+                        Japan = corporate_jp,
+                        G_Britain = corporate_gb,
+                        Italia = corporate_it,
+                        Korea = corporate_kr,
+                        USA = corporate_us,
+                        Canada = corporate_ca,
+                        G7 = corporate_g7,
+                        OECD = corporate_oecd)
+Country_kr <- 
+  c("프랑스", "독일", "일본", "영국", "이탈리아", "대한민국", "미국", "캐나다", "G7평균", "OECD평균")
+pander(corporate_df)
+```
+
+## 법인세율 국제비교
+
+```{r, echo = FALSE, fig.width = 16, fig.height = 12}
+library(RColorBrewer)
+par(family = "KoPubWorldDotum Medium")
+par(mar = c(5.1, 4.1, 5.1, 2.1))
+cols <- brewer.pal(10, "Spectral")
+plot(year_c, corporate_df[, "Korea"], xlim = c(2010.8, 2021), ylim = c(13, 47), 
+     type = "b", lwd = 5, col = cols[1], ann = FALSE, axes = FALSE)
+lines(year_c, corporate_df[, "France"], type = "b", lwd = 5, col = cols[2])
+lines(year_c, corporate_df[, "Germany"], type = "b", lwd = 5, col = cols[3])
+lines(year_c, corporate_df[, "Japan"], type = "b", lwd = 5, col = cols[4])
+lines(year_c, corporate_df[, "G_Britain"], type = "b", lwd = 5, col = cols[5])
+lines(year_c, corporate_df[, "Italia"], type = "b", lwd = 5, col = cols[6])
+lines(year_c, corporate_df[, "USA"], type = "b", lwd = 5, col = cols[7])
+lines(year_c, corporate_df[, "Canada"], type = "b", lwd = 5, col = cols[8])
+lines(year_c, corporate_df[, "G7"], type = "b", lwd = 5, col = cols[9])
+lines(year_c, corporate_df[, "OECD"], type = "b", lwd = 5, col = cols[10])
+axis(side = 1, at = year_c, labels = year_c)
+# axis(side = 2, at = seq(10, 50, by = 5), labels = seq(10, 50, by = 5), las = 1)
+axis(side = 2, at = c(as.numeric(corporate_df[1, -1]), 44.4), 
+     labels = format(c(as.numeric(corporate_df[1, -1]), 44.4), digits = 2, nsmall = 1), las = 1)
+text(x = year_c[1], y = sort(as.numeric(corporate_df[1, -1]), decreasing = TRUE), 
+     labels = Country_kr[order(as.numeric(corporate_df[1, -1]), decreasing = TRUE)],
+     pos = c(3, 1, 3, 3, 2, 1, 1, 1, 3, 1, 3))
+text(x = year_c[11], y = c(as.numeric(corporate_df[11, -1])), 
+     labels = format(c(as.numeric(corporate_df[11, -1])), digits = 2, nsmall = 1), 
+     pos = c(4, 4, 4, 4, 4, 4, 4, 4, 1, 4))
+title(main = "법인세 최고세율 국제 비교", line = 2, cex.main = 2.0, family = "KoPubWorldDotum Bold")
+title(xlab = "연도", ylab = "법인세 최고율(%)")
+box()
+dev.copy(png, file = "../pics/corporate_tax_top_rates_oecd.png", width = 960, height = 720)
+dev.off()
+```
+
+## 법인세 부담 데이터
+
+```{r, coorporate_burden, echo = FALSE}
+year_cb <- 2014:2020
+corporate_b_fr <- c(2.3, 2.1, 2.0, 2.3, 2.1, 2.2, 2.3)
+corporate_b_de <- c(1.7, 1.7, 2.0, 2.0, 2.1, 2.0, 1.7)
+corporate_b_jp <- c(3.9, 3.7, 3.6, 3.7, 4.1, 3.8, 3.1)
+corporate_b_gb <- c(2.4, 2.3, 2.6, 2.6, 2.6, 2.3, 2.3)
+corporate_b_it <- c(2.2, 2.0, 2.1, 2.1, 1.9, 2.0, 2.1)
+corporate_b_kr <- c(3.0, 3.1, 3.4, 3.6, 4.2, 4.3, 3.4)
+corporate_b_us <- c(2.3, 2.1, 2.0, 1.5, 1.3, 1.3, 1.3)
+corporate_b_ca <- c(3.3, 3.4, 3.8, 3.9, 4.1, 4.2, 4.2)
+corporate_b_oecd <- c(2.8, 2.8, 2.9, 3.0, 3.1, 3.0, 2.7)
+corporate_b_df <- data.frame(Year = year_cb,
+                        France = corporate_b_fr, 
+                        Germany = corporate_b_de, 
+                        Japan = corporate_b_jp,
+                        G_Britain = corporate_b_gb,
+                        Italia = corporate_b_it,
+                        Korea = corporate_b_kr,
+                        USA = corporate_b_us,
+                        Canada = corporate_b_ca,
+                        OECD = corporate_b_oecd)
+Country_b_kr <- 
+  c("프랑스", "독일", "일본", "영국", "이탈리아", "대한민국", "미국", "캐나다", "OECD평균")
+pander(corporate_b_df)
+```
+
+## 법인세 부담 국제비교
+
+```{r, echo = FALSE, fig.width = 16, fig.height = 12}
+library(RColorBrewer)
+par(family = "KoPubWorldDotum Medium")
+par(mar = c(5.1, 4.1, 5.1, 2.1))
+cols <- brewer.pal(10, "Spectral")
+plot(year_cb, corporate_b_df[, "Korea"], ylim = c(1, 4.5), 
+     type = "b", lwd = 5, col = cols[1], ann = FALSE, axes = FALSE)
+lines(year_cb, corporate_b_df[, "France"], type = "b", lwd = 5, col = cols[2])
+lines(year_cb, corporate_b_df[, "Germany"], type = "b", lwd = 5, col = cols[3])
+lines(year_cb, corporate_b_df[, "Japan"], type = "b", lwd = 5, col = cols[4])
+lines(year_cb, corporate_b_df[, "G_Britain"], type = "b", lwd = 5, col = cols[5])
+lines(year_cb, corporate_b_df[, "Italia"], type = "b", lwd = 5, col = cols[6])
+lines(year_cb, corporate_b_df[, "USA"], type = "b", lwd = 5, col = cols[7])
+lines(year_cb, corporate_b_df[, "Canada"], type = "b", lwd = 5, col = cols[8])
+lines(year_cb, corporate_b_df[, "OECD"], type = "b", lwd = 5, col = cols[10])
+axis(side = 1, at = year_cb, labels = year_cb)
+# axis(side = 2, at = seq(1, 5, by = 1), labels = seq(1, 5, by = 1), las = 1)
+axis(side = 2, at = c(as.numeric(corporate_b_df[1, -1])), 
+     labels = format(c(as.numeric(corporate_b_df[1, -1])), digits = 2, nsmall = 1), las = 1)
+text(x = year_cb[1], y = sort(as.numeric(corporate_b_df[1, -1]), decreasing = TRUE), 
+     labels = Country_b_kr[order(as.numeric(corporate_b_df[1, -1]), decreasing = TRUE)],
+     pos = c(3, 3, 3, 1, 3, 2, 4, 1, 3))
+text(x = year_cb[7], y = c(as.numeric(corporate_b_df[7, -1])), 
+     labels = format(c(as.numeric(corporate_b_df[7, -1])), digits = 2, nsmall = 1), 
+     pos = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4))
+title(main = "법인세 부담 국제 비교", line = 2, cex.main = 2.0, family = "KoPubWorldDotum Bold")
+title(xlab = "연도", ylab = "법인세 부담(%)")
+box()
+dev.copy(png, file = "../pics/corporate_burden_oecd.png", width = 960, height = 720)
+dev.off()
+```
+
+## 부가가치세율 데이터 
+
+```{r, value_added_tax_rate, echo = FALSE}
+year_v <- 2012:2021
+vat_fr <- c(19.6, 21.0, rep(22.0, 8))
+vat_de <- rep(19.0, 10)
+vat_jp <- c(rep(5.0, 3), rep(8.0, 4), rep(10.0, 3))
+vat_gb <- rep(20.0, 10)
+vat_it <- c(rep(21.0, 2), rep(22.0, 8))
+vat_kr <- c(rep(10.0, 10))
+vat_ca <- c(rep(5.0, 10))
+vat_major <- c(rep(14.2, 2), 14.4, rep(14.9, 5), rep(15.1, 2))
+vat_oecd <- c(18.8, 19.0, 19.1, rep(19.2, 2), rep(19.3, 5))
+vat_df <- data.frame(Year = year_v,
+                        France = vat_fr, 
+                        Germany = vat_de, 
+                        Japan = vat_jp,
+                        G_Britain = vat_gb,
+                        Italia = vat_it,
+                        Korea = vat_kr,
+                        Canada = vat_ca,
+                        Major = vat_major,
+                        OECD = vat_oecd)
+Country_v_kr <- 
+  c("프랑스", "독일", "일본", "영국", "이탈리아", "대한민국", "캐나다", "주요국_평균", "OECD평균")
+pander(vat_df)
+```
+
+## 부가가치세율 국제비교
+
+```{r, echo = FALSE, fig.width = 16, fig.height = 12}
+library(RColorBrewer)
+par(family = "KoPubWorldDotum Medium")
+par(mar = c(5.1, 4.1, 5.1, 2.1))
+cols <- brewer.pal(10, "Spectral")
+plot(year_v, vat_df[, "Korea"], ylim = c(3, 23), 
+     type = "b", lwd = 5, col = cols[1], ann = FALSE, axes = FALSE)
+lines(year_v, vat_df[, "France"], type = "b", lwd = 5, col = cols[2])
+lines(year_v, vat_df[, "Germany"], type = "b", lwd = 5, col = cols[3])
+lines(year_v, vat_df[, "Japan"], type = "b", lwd = 5, col = cols[4])
+lines(year_v, vat_df[, "G_Britain"], type = "b", lwd = 5, col = cols[5])
+lines(year_v, vat_df[, "Italia"], type = "b", lwd = 5, col = cols[6])
+lines(year_v, vat_df[, "Canada"], type = "b", lwd = 5, col = cols[8])
+lines(year_v, vat_df[, "Major"], type = "b", lwd = 5, col = cols[9])
+lines(year_v, vat_df[, "OECD"], type = "b", lwd = 5, col = cols[10])
+axis(side = 1, at = year_v, labels = year_v)
+# axis(side = 2, at = seq(0, 25, by = 5), labels = seq(0, 25, by = 5), las = 1)
+axis(side = 2, at = c(as.numeric(vat_df[1, -1])), 
+     labels = format(c(as.numeric(vat_df[1, -1])), digits = 2, nsmall = 1), las = 1)
+text(x = year_v[1], y = sort(as.numeric(vat_df[1, -1]), decreasing = TRUE), 
+     labels = Country_v_kr[order(as.numeric(vat_df[1, -1]), decreasing = TRUE)],
+     pos = c(3, 3, 4, 2, 1, 3, 3, 3, 1))
+text(x = year_v[10], y = c(as.numeric(vat_df[10, -1])), 
+     labels = format(c(as.numeric(vat_df[10, -1])), digits = 2, nsmall = 1), 
+     pos = c(4, 4, 4, 4, 4, 4, 4, 4, 4, 4))
+title(main = "부가가치세율 국제 비교", line = 2, cex.main = 2.0, family = "KoPubWorldDotum Bold")
+title(xlab = "연도", ylab = "부가가치세율(%)")
+box()
+dev.copy(png, file = "../pics/vat_oecd.png", width = 960, height = 720)
+dev.off()
+```
+
+## 부가가치세 부담 데이터 
+
+```{r, value_added_tax_burden, echo = FALSE}
+year_vb <- 2016:2020
+vat_b_fr <- c(6.9, 7.0, 7.1, 7.2, 7.0)
+vat_b_de <- c(7.0, 6.9, 7.0, 7.1, 6.6)
+vat_b_jp <- c(4.0, 4.0, 4.0, 4.1, 4.6)
+vat_b_gb <- c(6.9, 6.9, 7.0, 7.0, 6.6)
+vat_b_kr <- c(3.9, 4.1, 4.1, 4.3, 4.2)
+vat_b_ca <- c(rep(4.5, 5))
+vat_b_oecd <- c(6.8, rep(6.9, 4))
+vat_b_df <- data.frame(Year = year_vb,
+                        France = vat_b_fr, 
+                        Germany = vat_b_de, 
+                        Japan = vat_b_jp,
+                        G_Britain = vat_b_gb,
+                        Korea = vat_b_kr,
+                        Canada = vat_b_ca,
+                        OECD = vat_b_oecd)
+Country_v_kr <- 
+  c("프랑스", "독일", "일본", "영국", "대한민국", "캐나다", "OECD평균")
+pander(vat_b_df)
+```
+
+## 부가가치세 부담 국제비교
+
+```{r, echo = FALSE, fig.width = 16, fig.height = 12}
+library(RColorBrewer)
+par(family = "KoPubWorldDotum Medium")
+par(mar = c(5.1, 4.1, 5.1, 2.1))
+cols <- brewer.pal(10, "Spectral")
+plot(year_vb, vat_b_df[, "Korea"], ylim = c(3.5, 7.5), 
+     type = "b", lwd = 5, col = cols[1], ann = FALSE, axes = FALSE)
+lines(year_vb, vat_b_df[, "France"], type = "b", lwd = 5, col = cols[2])
+lines(year_vb, vat_b_df[, "Germany"], type = "b", lwd = 5, col = cols[3])
+lines(year_vb, vat_b_df[, "Japan"], type = "b", lwd = 5, col = cols[4])
+lines(year_vb, vat_b_df[, "G_Britain"], type = "b", lwd = 5, col = cols[5])
+lines(year_vb, vat_b_df[, "Canada"], type = "b", lwd = 5, col = cols[8])
+lines(year_vb, vat_b_df[, "OECD"], type = "b", lwd = 5, col = cols[10])
+axis(side = 1, at = year_vb, labels = year_vb)
+# axis(side = 2, at = seq(3, 8, by = 1), labels = seq(3, 8, by = 1), las = 1)
+axis(side = 2, at = c(as.numeric(vat_b_df[1, -1])), 
+      labels = format(c(as.numeric(vat_b_df[1, -1])), digits = 2, nsmall = 1), las = 1)
+text(x = year_vb[1], y = sort(as.numeric(vat_b_df[1, -1]), decreasing = TRUE), 
+     labels = Country_v_kr[order(as.numeric(vat_b_df[1, -1]), decreasing = TRUE)],
+     pos = c(3, 4, 2, 1, 3, 3, 1))
+text(x = year_vb[5], y = c(as.numeric(vat_b_df[5, -1])), 
+     labels = format(c(as.numeric(vat_b_df[5, -1])), digits = 2, nsmall = 1), 
+     pos = c(4, 4, 4, 4, 4, 4, 4))
+title(main = "부가가치세 부담 국제 비교", line = 2, cex.main = 2.0, family = "KoPubWorldDotum Bold")
+title(xlab = "연도", ylab = "부가가치세 부담(%)")
+box()
+dev.copy(png, file = "../pics/vat_b_oecd.png", width = 960, height = 720)
+dev.off()
+```
+
+
+```{r, save, echo = FALSE}
+save.image(file = "tax_oecd.RData")
+```

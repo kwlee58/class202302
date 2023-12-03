@@ -1,0 +1,51 @@
+library(readxl)
+getwd()
+fred <- 
+  read_excel("./data/Mean_Median_Family_Income_US.xlsx",
+             range = "B11:C49", 
+             col_names = TRUE)
+names(fred) <-
+  c("Mean", "Median")
+fred$Year <- 1984:2021
+str(fred)  
+par(family = "KoPubWorldDotum Light")
+plot(Mean ~ Year, 
+     data = fred, 
+     ann = FALSE,
+     axes = FALSE,
+     pch = 18,
+     col = "black",
+     type = "b",
+#     xlim = c(0, 550), 
+     ylim = c(20000, 130000))
+lines(x = fred$Year, 
+      y = fred$Median, 
+      pch = 17, 
+      col = "red", 
+      type = "b")
+axis(side = 1, at = seq(1984, 2021, by = 4), labels = seq(1984, 2021, by = 4), las = 1)
+axis(side = 2, at = seq(20000, 140000, by = 20000), labels = seq(20, 140, by = 20))
+# mtext(side = 1, at = 1984:2021, line = 1, las = 2, text = 1984:2021)
+# abline(h = 504, v = 504, lty = 3)
+# abline(h = 504 * c(0.6, 0.8), v = 504 * c(0.6, 0.8), lty = 3)
+# abline(a = 0, b = 1, lty = 1)
+title(main = "미국 중위가계소득과 평균가계소득의 변화", 
+      xlab = "연도(1월1일 기준)", 
+      ylab = "가구당 소득(단위, 천달러)",
+      cex.main = 2.0)
+legend("topleft", 
+       inset = 0.05, 
+       legend = c("Mean", "Median"), 
+       pch = c(18, 17), 
+       col = c("black", "red"))
+text(x = 1984, 
+     y = fred[fred$Year == 1984, c("Mean", "Median")], 
+     labels = paste0("$", format(as.numeric(fred[fred$Year == 1984, c("Mean", "Median")]), big.mark = ",")), 
+     pos = 3,
+     cex = 0.8)
+text(x = 2021, 
+     y = fred[fred$Year == 2021, c("Mean", "Median")], 
+     labels = paste0("$", format(as.numeric(fred[fred$Year == 2021, c("Mean", "Median")]), big.mark = ",")), 
+     pos = 3,
+     cex = 0.8)
+dev.copy(png, file ="../pics/median_mean_family_income_us.png", width = 960, height = 640)

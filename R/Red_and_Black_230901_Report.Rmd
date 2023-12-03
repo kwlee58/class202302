@@ -1,0 +1,195 @@
+---
+title: "Randomization Report (230901)"
+author: "coop711"
+date: "2023-09-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("pander", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+# library(xlsx)
+library(pander)
+library(knitr)
+library(magrittr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+```
+
+<!--# Data Reading-->
+
+```{r, data, echo = FALSE, results = 'hide'}
+class_roll0822 <- readRDS("./class_roll0822.RDS")
+load("./red_and_black_230901_data.RData")
+str(class_roll)
+```
+
+# Randomization Effects
+
+## 수강신청 변경 기간 중 나간 사람들
+
+```{r, echo = FALSE}
+id_out <- setdiff(class_roll0822$id, class_roll$id)
+id_new <- setdiff(class_roll$id, class_roll0822$id)
+N_new <- length(id_new)
+id_stay <- setdiff(class_roll0822$id, id_out)
+# class_roll0822[class_roll0822$id %in% id_out, c("id", "group")] %>%
+#   pander(row.names = FALSE)
+class_roll0822$group %>%
+  `[`(class_roll0822$id %in% id_out) %>%
+  table %>%
+  pander
+```
+
+<!--
+## 학년
+
+```{r, echo= FALSE}
+tbl0 <- class_roll$year %>%
+  table(class_roll$group, .) 
+tbl0 %>%
+  pander
+tbl0 %>%
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+-->
+
+## 학번
+
+```{r, echo = FALSE}
+class_roll$id_2 <-
+  class_roll$id %>%
+  substr(1, 4) %>%
+  ifelse(. <= 2017, "2017", .)
+tbl1 <- class_roll %$%
+  table(.$group, .$id_2) %>%
+  `colnames<-`(c("2017 이전", 2018:2023)) 
+tbl1 %>%
+  pander
+# tbl1 %>%
+#   chisq.test(simulate.p.value = FALSE) %>%
+#   pander
+```
+
+
+<!--
+### 학번 홀짝
+
+```{r, echo = FALSE}
+tbl2 <- class_roll$id %>%
+  as.numeric %>%
+  `%%`(2) %>%
+  factor(levels = c(1, 0), labels = c("홀", "짝")) %>%
+  table(class_roll$group, .) 
+tbl2 %>%
+  pander
+tbl2 %>%
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+
+### 학적 상태
+
+```{r, echo = FALSE}
+tbl3 <- class_roll$status %>%
+  table(class_roll$group, .) 
+tbl3 %>%
+  pander
+tbl3 %>%
+  chisq.test(simulate.p.value = FALSE) %>%
+pander
+```
+-->
+
+## e-mail 서비스업체
+
+```{r, e_mail, echo = FALSE, eval = TRUE}
+isp <- class_roll$email %>%
+  strsplit("@", fixed = TRUE) %>%
+  sapply("[", 2) %>%
+  strsplit("[.]", fixed = FALSE) %>%
+  sapply("[", 1)
+tbl4 <- isp %>%
+  `%in%`(c("naver", "gmail")) %>%
+  ifelse(isp, "기타서비스") %>%
+  factor(levels = c("naver", "gmail", "기타서비스"),
+         labels = c("네이버", "구글", "기타서비스")) %>%
+  table(class_roll$group, .) 
+tbl4 %>%
+  pander
+# tbl4 %>%
+#   chisq.test(simulate.p.value = FALSE) %>%
+#   pander
+```
+
+## 전화번호 끝 네자리
+
+<!--
+### 분포표
+-->
+
+```{r, echo = FALSE}
+cut_label <- paste(paste0(0:9, "000"), paste0(0:9, "999"), 
+                   sep = "~")
+tbl5 <- class_roll$cell_no %>%
+  substr(start = 8, stop = 11) %>%
+  sapply(as.numeric) %>%
+  cut(labels = cut_label, 
+      breaks = seq(0, 10000, by = 1000)) %>%
+  table(class_roll$group, .) 
+tbl5 %>%
+  pander
+# tbl5 %>%
+#   chisq.test(simulate.p.value = FALSE) %>%
+# pander
+```
+
+<!--### 히스토그램
+
+```{r, echo = FALSE}
+class_roll$cell_no %>%
+  substr(start = 8, stop = 11) %>%
+  sapply(as.numeric) %>% 
+  hist(main = "Cell Phone Number Last 4 Digits")
+# hist(cell_numbers)
+```
+-->
+
+## 5대 성씨분포
+
+```{r, echo = FALSE}
+f_name <- class_roll$name %>%
+  substring(first = 1, last = 1) 
+tbl6 <- f_name %>%
+  `%in%`(c("김", "이", "박", "최", "정")) %>%
+  ifelse(f_name, "기타") %>%
+  factor(levels = c("김", "이", "박", "최", "정", "기타")) %>%
+  table(class_roll$group, .) 
+tbl6 %>%
+  pander
+# tbl6 %>%
+#   chisq.test(simulate.p.value = FALSE) %>%
+# pander
+```
+
+## 단과대학
+
+```{r, echo = FALSE}
+tbl7 <- 
+  class_roll %$%
+  table(.$group, .$college) 
+tbl7 %>%
+  pander
+# tbl7 %>%
+#   chisq.test(simulate.p.value = FALSE) %>%
+# pander
+```
+
+<!--
+```{r, save, echo=FALSE, message=FALSE, results='hide'}
+save.image("./red_and_black_230901_data.RData")
+```
+-->

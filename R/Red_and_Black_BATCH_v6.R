@@ -1,0 +1,7 @@
+library(rmarkdown)
+# Sys.setenv(RSTUDIO_PANDOC="/Applications/RStudio.app/Contents/MacOS/quarto/bin/tools")
+render("./R/Red_and_Black_230307_data_optimum.Rmd")
+render("./R/Red_and_Black_230307_data_optimum_1_2.Rmd")
+render("./R/Red_and_Black_230307_data_optimum_2_3.Rmd")
+render("./R/Red_and_Black_230307_data_optimum_3_4.Rmd")
+render("./R/Red_and_Black_230307_data_optimum_4_5.Rmd")

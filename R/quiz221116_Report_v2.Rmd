@@ -1,0 +1,305 @@
+---
+title: "Quiz 221114 (Framing Effects II)"
+author: "coop711"
+date: "2022-11-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("pander", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+library(readxl)
+library(pander)
+library(knitr)
+library(magrittr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+options(width = 180)
+```
+
+```{r, data, echo = FALSE, results = 'hide', warning = FALSE}
+load("./red_and_black_220909_data.RData")
+quiz <- 
+  read_excel("../data/quiz221114.xlsx",
+             range = "A1:V968")
+names(quiz) <- c("time", "email", "dept", "id", "name", 
+                     paste("Q1", 1:5, sep = "_"), 
+                     paste("Q2", 1:8, sep = "_"), 
+                     "Q3", "group", "Q4_R", "Q4_B")
+class(quiz$id) <- "character"
+quiz <- data.frame(quiz)
+quiz$Q1 <- apply(quiz[paste("Q1", 1:5, sep = "_")], 
+                     MARGIN = 1, paste, collapse = ",")
+quiz$Q2 <- apply(quiz[paste("Q2", 1:8, sep = "_")], 
+                     MARGIN = 1, paste, collapse = ",")
+quiz$Q4 <- ifelse(is.na(quiz$Q4_R), quiz$Q4_B, quiz$Q4_R)
+quiz$Q4 %<>%
+  strsplit(split = "[.]") %>% 
+  sapply(`[`, 1)
+# quiz$Q4 %<>% 
+#   strsplit(split = "[.]") %>% sapply(`[`, 1)
+quiz$dept %<>% 
+  factor
+quiz$group %<>% 
+  factor(levels = c("Red", "Black"))
+BFI_ans <- strsplit("개방성,성실성,외향성,친화성,신경성", split = ",")
+BFI_score <- quiz$Q1 %>% 
+  strsplit(split = ",") %>%
+  sapply(. %>% {`==`(., BFI_ans %>% unlist) %>% ifelse(1, 0)}) %>%
+#  sapply(function(x) ifelse(x == unlist(BFI_ans), 1, 0)) %>%
+  apply(MARGIN = 2, sum) 
+MI_ans <- strsplit("신체운동,음악,공간,자기성찰,자연친화,논리수학,언어,인간친화", split = ",")
+MI_score <- quiz$Q2 %>% 
+  strsplit(split = ",") %>%
+  sapply(. %>% {`==`(., MI_ans %>% unlist) %>% ifelse(1, 0)}) %>%
+#  sapply(function(x) ifelse(x == unlist(MI_ans), 1, 0)) %>%
+  apply(2, sum) 
+quiz$Q3 %<>% 
+  factor(levels = c("언어", "논리수학", "인간친화", "자기성찰", "자연친화"))
+quiz$Q4 %<>% 
+  factor(levels = c("가", "나"),
+         labels = c("실업률10%(취업률90%), 인플레이션 12%", "실업률5%(취업률95%), 인플레이션 17%"))
+#> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
+quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
+quiz$days <- as.numeric(difftime("2022-11-28 09:00:00", quiz$time, units = 'days'))
+quiz$hours <- as.numeric(difftime("2022-11-28 09:00:00", quiz$time, units = 'hours'))
+str(quiz)
+```
+
+## Red, Black을 잘못 표시한 사람들
+
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과를 논하기에는 아주 적은 인원이 관찰되었습니다.  Red를 Black 이라고 한 사람의 수효(3명)만 관찰되었습니다. 굳이 학번까지 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
+
+```{r, wrong group, echo = FALSE}
+quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
+wrong_group <- which(quiz$group != quiz$group2)
+# class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
+#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander
+quiz[wrong_group, c("id", "group2", "group")] %>%
+  `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
+  pander(row.names = FALSE)
+wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
+                   "구글예습퀴즈" = quiz$group)
+wrong_tbl %>%
+  pander(row.names = c("Red(랜덤화출석부)", "Black(랜덤화출석부)"), 
+         col.names = c("Red(구글예습퀴즈)", "Black(구글예습퀴즈)"))
+```
+
+```{r, randomization, echo = FALSE, results = 'hide'}
+pander(summary(quiz))
+```
+
+# 퀴즈 응답
+
+## BFI 줄 긋기
+
+```{r, echo = FALSE, out.width = "67%"}
+include_graphics("../pics/Quiz201116_01.png")
+```
+
+### 몇 개나 맞추나?
+
+```{r, echo = FALSE}
+BFI_tbl_a <- BFI_score %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.)) 
+BFI_tbl_a %>% 
+  pander
+BFI_tbl_a[-3, -6] %>% 
+  chisq.test(simulate.p.value = TRUE) %>% 
+  pander
+```
+
+### 몇 개나 맞추나? (%)
+
+```{r, BFi percentage, echo = FALSE}
+BFI_tbl_a %>% 
+  `[`(3, -6) %>%
+  prop.table %>%
+  `*`(100) %>%
+  c("계" = sum(.)) %>%
+  format(digits = 1, nsmall = 1) %>%
+  pander
+```
+
+맞힌 갯수의 평균과 표준편차는 각각 `r BFI_score %>% mean %>% round(1)`, `r BFI_score %>% sd %>% round(1)`
+으로 완전히 랜덤하게 골랐을 때의 기대값과 표준편차인 1, 1과 매우 어긋난다.
+
+## 다중지능 짝 짓기
+
+```{r, echo = FALSE, out.width = "67%"}
+include_graphics("../pics/Quiz201116_02.png")
+```
+
+### 몇 개나 맞추나?
+
+```{r, MI, echo = FALSE, warning = FALSE}
+MI_tbl_a <- MI_score %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.)) 
+MI_tbl_a %>% 
+  pander
+MI_tbl_a[-3, -9] %>% 
+  chisq.test(simulate.p.value = TRUE) %>% 
+  pander
+```
+
+### 몇 개나 맞추나? (%)
+
+```{r, MI percentage, echo = FALSE}
+MI_tbl_a %>% 
+  `[`(3, -9) %>%
+  prop.table %>%
+  `*`(100) %>%
+  c("계" = sum(.)) %>%
+  format(digits = 1, nsmall = 1) %>%
+  pander
+```
+
+맞힌 갯수의 평균과 표준편차는 각각 `r MI_score %>% mean %>% round(1)`, `r MI_score %>% sd %>% round(1)`
+으로 완전히 랜덤하게 골랐을 때의 기대값과 표준편차인 1, 1과 매우 어긋난다.
+
+## 성공한 사람들의 공통점
+
+```{r, echo = FALSE, out.width = "67%"}
+include_graphics("../pics/Quiz201116_03.png")
+```
+
+### 자기성찰지능의 중요성
+
+```{r, Power of 3, echo = FALSE}
+tbl_q3_a <- quiz$Q3 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.)) 
+tbl_q3_a %>% 
+  pander
+tbl_q3_a %>%
+  `[`(-3, -(6:7)) %>% 
+  chisq.test(simulate.p.value = TRUE, B = 2000) %>%
+  pander
+```
+
+### 자기성찰지능 (%)
+
+```{r, Power of 3 in percentage, echo = FALSE}
+tbl_q3_a %>%
+  `[`(3, -6) %>%
+  prop.table %>%
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Framing Effect
+
+## 실업률과 취업률
+
+```{r, echo = FALSE, out.width = "75%"}
+include_graphics("../pics/Quiz201116_04_Red.png")
+```
+
+
+```{r, echo = FALSE, out.width = "75%"}
+include_graphics("../pics/Quiz201116_04_Black.png")
+```
+
+실업률이 10%인 것과 취업률이 90%인 것은 같은 내용임에도 인플레이션과 연계하였울 때 반응이 다르게 나타날 것으로 기대하였는데, 모처럼 기대한 대로 통계적으로 유의한 차이가 관찰되었습니다.  실업률 프레임에서는 실업률이 낮은 쪽에, 취업률 프레임에서는 인플레이션이 낮은 쪽을 고르는 경향이 있다고 알려져 있는 대로 관찰값이 나왔습니다.
+
+### 집계결과
+
+```{r, Framing Effect, echo = FALSE}
+tbl_q4_a <- quiz$Q4 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.)) 
+rownames(tbl_q4_a) <- c("실업률 프레임", "취업률 프레임", "계")
+tbl_q4_a %>% 
+  pander
+tbl_q4_a %>%
+  `[`(-3, -3) %>%
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+
+### % 비교.  
+
+```{r, Framing effects in percentage, echo = FALSE}
+tbl_q4_a %>% 
+  `[`(-3, -3) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+### Mosaic Plot
+
+```{r, mosaic plot1, echo = FALSE, fig.width = 7, fig.height = 5}
+library(ggplot2)
+source("./mosaic_gg.R")
+m_list <- quiz$Q4 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  t %>%
+  mosaic_gg
+m <- m_list$m
+df <- m_list$df
+p_df <- m_list$p_df
+names(df)[1] <- "Var1"
+names(p_df)[1] <- "Var1"
+df$Var2 %<>% 
+  factor(labels = c("Red(이득 게임)", "Black(손실 게임)"))
+p_df$Var2 %<>% 
+  factor(labels = c("Red(실업률 프레임)", "Black(취업률 프레임)"))
+m + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = df[, 2]) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "Framing Effects II", x = "Red or Black(누적 %)", y = "인원(%, 명)") +
+  scale_fill_brewer(name = "응답", 
+                    labels = c("실업률10%, 인플레12%", "취업률95%, 인플레 17%"),
+                    type = "qual", 
+                    palette = "Set2", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("../pics/Quiz221114_Q4_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+```
+
+## 일 단위 마감 시간으로부터 제출 시간의 분포
+
+```{r, echo = FALSE}
+par(family = "KoPubWorldDotum Medium")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+#  cbind("계" = rowSums(.)) %>%
+#  rbind("계" = colSums(.)) %>%
+  pander(caption = "일 단위")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+  chisq.test %>%
+  pander
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table %>%
+  rev %>%
+  barplot(space = 0, 
+          names.arg = rep(c("월", "화", "수", "목", "금", "토", "일"), 2), 
+          col = c(rep("white", 13), "pink"))
+title(main = "일 단위 퀴즈 제출 횟수")
+```
+
+```{r, save, echo = FALSE}
+saveRDS(quiz, file = "quiz221114.RDS")
+save.image("../R/quiz221114.RData")
+```

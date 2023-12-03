@@ -1,0 +1,621 @@
+---
+title: "Quiz 221003"
+author: "coop711"
+date: "2022-10-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("pander", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+library(readxl)
+library(pander)
+library(knitr)
+library(magrittr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+options(width=180)
+```
+
+```{r, data, echo = FALSE, results = 'hide', message = FALSE}
+load("./red_and_black_220909_data.RData")
+quiz <- 
+  read_excel("../data/quiz221003.xlsx",
+             range = "A2:P990",
+             col_names = FALSE)
+names(quiz) <- c("time", "email", "dept", "id", "name", paste0("Q", 1:6),  "group", "Q7_R", "Q8_R", "Q7_B", "Q8_B")
+class(quiz$id) <- "character"
+str(quiz)
+quiz$Q7 <- ifelse(is.na(quiz$Q7_R), quiz$Q7_B, quiz$Q7_R)
+quiz$Q8 <- ifelse(is.na(quiz$Q8_R), quiz$Q8_B, quiz$Q8_R)
+quiz %>%
+  `[`(., c("Q7", "Q8", "group"))
+#> 응답 결과를 정답과 오답으로 나누어 변환할 변수 설정
+quiz$Q7_2 <- quiz$Q7
+#> Red, Black 논리 벡터 설정
+Red <- quiz$group %>%
+  `==` ("Red")
+Black <- quiz$group %>%
+  `==` ("Black")
+#> 무응답을 포함하여 정답 이외의 응답은 오답으로 간주
+quiz$Q7_2[Red] <- quiz$Q7 %>%
+  `[`(Red) %>%
+  `==`("A,3") %>%
+  ifelse("Right", "Wrong")
+quiz$Q7_2[Black] <- quiz$Q7 %>%
+  `[`(Black) %>%
+  `==`("Beer,17") %>%
+  ifelse("Right", "Wrong")
+quiz[c("Q7", "Q7_2", "group")]
+quiz$Q8_2 <- quiz$Q8
+quiz$Q8_2[Red] <- quiz$Q8 %>%
+  `[`(Red) %>%
+  `==`("Beer,17") %>%
+  ifelse("Right", "Wrong")
+quiz$Q8_2[Black] <- quiz$Q8 %>%
+  `[`(Black) %>%
+  `==`("A,3") %>%
+  ifelse("Right", "Wrong")
+quiz[c("Q8", "Q8_2", "group")]
+str(quiz)
+quiz$dept %<>% 
+  factor
+quiz$group %<>% 
+  factor(levels = c("Red", "Black"))
+quiz$Q1 %<>%
+  factor(levels = c("공평", "무난", "철저", "균일"))
+quiz$Q2 %<>% 
+  factor(levels = c("Selection Bias", "Response Bias", "Non-response Bias", "Panel Bias"))
+quiz$Q3 %<>% 
+  factor(levels = c("다단계 집락 추출방법", "할당법", "단순 랜덤추출방법", "RDD"))
+quiz$Q4 <- factor(quiz$Q4, 
+                      levels = c("확률적 표본추출방법이 도입되었다.", 
+                                 "할당법이 도입되었다.", 
+                                 "유선전화번호부를 활용하게 되었다.", 
+                                 "Random Digit Dialling이 전면적으로 도입되었다."),
+                      labels = c("확률적 표본추출", 
+                                 "할당법", 
+                                 "유선전화번호부", 
+                                 "RDD도입"))
+quiz$Q5 <- factor(quiz$Q5, 
+                      levels = c("2배로 늘린다.", 
+                                 "4배로 늘린다.",  
+                                 "1/2로 줄인다.", 
+                                 "1/4로 줄인다."), 
+                      labels = c("2배로", 
+                                 "4배로", 
+                                 "1/2로", 
+                                 "1/4로"))
+quiz$Q6 <- factor(quiz$Q6, 
+                      levels = c("국민 전체", 
+                                 "18세 이상 국민 전체",  
+                                 "등록된 유권자 전체", 
+                                 "선거 당일 투표하는 유권자 전체"))
+#> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
+quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
+quiz$days <- as.numeric(difftime("2022-10-17 09:00:00", quiz$time, units = 'days'))
+quiz$hours <- as.numeric(difftime("2022-10-17 09:00:00", quiz$time, units = 'hours'))
+str(quiz)
+```
+
+```{r, randomization, echo = FALSE, results = 'hide'}
+pander(summary(quiz))
+```
+
+## Red, Black을 잘못 표시한 사람들
+
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과는 여기서도 작동하고 있는 걸 알 수 있습니다. Red를 Black 이라고 한 사람의 수효(3명)과 Black을 Red 라고 한 사람의 수효(4명)이 비슷합니다 group 을 잘못 기억하고 있는 사람들의 수효조차 Red, Black 에 비슷하게 나뉘었습니다. 굳이 학번까지 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
+다
+
+```{r, wrong group, echo = FALSE}
+quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
+wrong_group <- which(quiz$group != quiz$group2)
+# class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
+#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander
+quiz[wrong_group, c("id", "group2", "group")] %>%
+  `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
+  pander
+wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
+                   "구글예습퀴즈" = quiz$group)
+wrong_tbl %>%
+  pander(row.names = c("Red(랜덤화출석부)", "Black(랜덤화출석부)"), col.names = c("Red(구글예습퀴즈)", "Black(구글예습퀴즈)"))
+```
+
+# 퀴즈 응답 비교
+
+## Q1. 통계학의 기본원리
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210406_Q1.png")
+```
+
+### 공평하게 추출하면 ...
+
+```{r, fairness, echo = FALSE}
+tbl_q1_a <- quiz$Q1 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q1_a %>% 
+  pander 
+tbl_q1_a %>% 
+  `[`(-3, -5) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### 공평하게 추출하면 ... (%)
+
+```{r, fairness in percentage, echo = FALSE}
+tbl_q1_a %>% 
+  `[`(3, -5) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q2. 리터러리 다이제스트의 실패
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210406_Q2.png")
+```
+
+### Selection Bias
+
+```{r, Selection Bias, echo = FALSE}
+tbl_q2_a <- quiz$Q2 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q2_a %>% pander 
+tbl_q2_a %>% 
+  `[`(-3, -5) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### Selection Bias (%)
+
+```{r, Selection Bias in percentage, echo = FALSE}
+tbl_q2_a %>% 
+  `[`(3, -5) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q3. 1948년, 여론조사가 듀이를 당선시킨 해
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210406_Q3.png")
+```
+
+### 할당법의 문제점
+
+```{r, quota sampling, echo = FALSE}
+tbl_q3_a <- quiz$Q3 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q3_a %>% 
+  pander 
+tbl_q3_a %>%
+  `[`(-3, -5) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### 할당법의 문제점(%)
+
+```{r, quota sampling in percentage, echo = FALSE}
+tbl_q3_a %>% 
+  `[`(3, -5) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q4. 1948 미 대선 이후
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210406_Q4.png")
+```
+
+### 확률적 표본추출방법 도입
+
+```{r, echo = FALSE}
+tbl_q4_a <- quiz$Q4 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q4_a %>% 
+  pander
+tbl_q4_a %>%
+  `[`(-3, -5) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### 확률적 표본추출방법 도입 ... (%)
+
+```{r, echo = FALSE}
+tbl_q4_a %>% 
+  `[`(3, -5) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q5. 표본오차를 반으로 줄이려면?
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210406_Q5.png")
+```
+
+### 4배로 늘려야
+
+```{r, echo = FALSE}
+tbl_q5_a <- quiz$Q5 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q5_a %>% pander 
+tbl_q5_a %>% 
+  `[`(-3, -5) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### 4배로 눌려야 (%)
+
+```{r, echo = FALSE}
+tbl_q5_a %>% 
+  `[`(3, -5) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q6. 대선 여론조사의 목표모집단?
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210406_Q6.png")
+```
+
+### 선거당일 투표하는 유권자 전체
+
+```{r, echo = FALSE}
+tbl_q6_a <- quiz$Q6 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q6_a %>% 
+  pander 
+tbl_q6_a %>%
+  `[`(-3, -5) %>%
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### 선거당일 투표하는 유권자 전체(%)
+
+```{r, echo = FALSE}
+tbl_q6_a %>% 
+  `[`(3, -5) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 1, nsmall = 1) %>%
+  pander
+```
+
+# Wason Selection
+
+
+## 추상적 표현과 구체적 표현?
+
+같은 내용의 문제를 추상적으로 물어볼 때와 구체적으로 사례를 들어서 물어볼 때의 정답률에 큰 차이가 있음에 유의. Red 집단에게는 추상적 질문을 먼저 던지고, 구체적 사례를 든 질문을 나중에 던졌으며 Black 집단에게는 구체적 사례를 든 질문을 먼저 던지고, 추상적 질문을 나중에 던졌다. 추상적인 질문에 대해서는 매우 낮은 정답률을 보이지만 구체적인 질문에 대해서는 정답률이 훨씬 올라가는 것을 관찰할 수 있다. 추상적인 질문에 쩔쩔매는 것이 정상이다. 
+
+## Q7. Red에 추상적 문제, Black에 구체적 문제
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210406_Q7_Red.png")
+include_graphics("../pics/Quiz210406_Q7_Black.png")
+```
+
+### 집계
+
+```{r, Wason Selection 1 in Red, echo = FALSE}
+tbl_q7_a <- quiz$Q7_2 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+colnames(tbl_q7_a) <- c("정답", "오답", "계")
+rownames(tbl_q7_a) <- c("Red(추상적 질문)", "Black(구체적 질문)", "계") 
+pander(tbl_q7_a, caption = "Wason Selection 1 in Red")
+```
+
+### % 비교  
+
+```{r, Wason Selection 1 in Red in percentage, echo = FALSE}
+tbl_q7_a %>% 
+  `[`(-3, -3) %>%
+  prop.table(margin = 1) %>% 
+  cbind("계" = rowSums(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+### Mosaic Plot
+
+```{r, mosaic plot1, echo = FALSE, fig.width = 7, fig.height = 5}
+library(ggplot2)
+source("./mosaic_gg.R")
+m_list <- quiz$Q7_2 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  t %>%
+  mosaic_gg
+m <- m_list$m
+df <- m_list$df
+p_df <- m_list$p_df
+names(df)[1] <- "Var1"
+names(p_df)[1] <- "Var1"
+df$Var2 %<>% factor(labels = c("Red(추상적 질문)", "Black(구체적 질문)"))
+p_df$Var2 %<>% factor(labels = c("Red(추상적 질문)", "Black(구체적 질문)"))
+m + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = df[, 2]) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "Wason Selection", x = "Red or Black(누적 %)", y = "인원(%, 명)") +
+  scale_fill_brewer(name = "응답", 
+                    labels = c("정답", "오답"),
+                    type = "qual", 
+                    palette = "Set2", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("../pics/Quiz221003_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+```
+
+## Q8. Red에 구체적 문제, Black에 추상적 문제
+
+```{r, echo = FALSE, out.width = "75%", fig.align = "left"}
+include_graphics("../pics/Quiz210406_Q8_Red.png")
+include_graphics("../pics/Quiz210406_Q8_Black.png")
+```
+
+### 집계
+
+```{r, Wason Selection 1 in Black, echo = FALSE}
+tbl_q8_a <- quiz$Q8_2 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+colnames(tbl_q8_a) <- c("정답", "오답", "계")
+rownames(tbl_q8_a) <- c("Red(구체적 질문)", "Black(추상적 질문)", "계") 
+pander(tbl_q8_a, caption = "Wason Selection 1 in Black")
+```
+
+### % 비교.  
+
+```{r, Wason Selection 1 in Black in percentage, echo = FALSE}
+tbl_q8_a %>% 
+  `[`(-3, -3) %>%
+  prop.table(margin = 1) %>% 
+  cbind("계" = rowSums(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+### Mosaic Plot
+
+```{r, mosaic plot2, echo = FALSE, fig.width = 7, fig.height = 5}
+m_list <- quiz$Q8_2 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  t %>%
+  mosaic_gg
+m <- m_list$m
+df <- m_list$df
+p_df <- m_list$p_df
+names(df)[1] <- "Var1"
+names(p_df)[1] <- "Var1"
+df$Var2 %<>% factor(labels = c("Red(구체적 질문)", "Black(추상적 질문)"))
+p_df$Var2 %<>% factor(labels = c("Red(구체적 질문)", "Black(추상적 질문)"))
+m + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = df[, 2]) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "Wason Selection", x = "Red or Black(누적 %)", y = "인원(%, 명)") +
+  scale_fill_brewer(name = "응답", 
+                    labels = c("정답", "오답"),
+                    type = "qual", 
+                    palette = "Set2", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("../pics/Quiz221003_Q8_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+```
+
+
+<!--
+### 정답율 비교
+
+```{r, echo = FALSE}
+cbind(tbl_q7_a[, 1], tbl_q8_a[, 1]) %>%
+  chisq.test %>%
+  pander
+prop.test(x = c(tbl_q7_a[3, 1], tbl_q8_a[3, 1]), 
+          n = c(tbl_q7_a[3, 3], tbl_q8_a[3, 3])) %>%
+  pander
+```
+-->
+
+## 학습 순서의 영향
+
+### 집계표
+
+구체적 질문을 먼저 학습하고 추상적 질문을 학습하는 것과 추상적 질문을 먼저 학습하고 구체적 질문을 학습하는 방식 중에 어느 것이 더 나은지 비교하였으나 정답 인원이 매우 닮았을 뿐 아니라  통계적으로 유의한 차이는 관찰되지 않았습니다. 
+
+```{r, Wason Selection, echo = FALSE, results = 'hide'}
+#> Red (추상적 질문 먼저) 집계
+wason_1 <- c(tbl_q7_a[1, 1], tbl_q8_a[1, 1])
+#> Black (구체적 질문 먼저) 집계
+wason_2 <- c(tbl_q8_a[2, 1], tbl_q7_a[2, 1])
+#> 한 개의 테이블로
+wason_tbl <- rbind(wason_1, wason_2) %>%
+  as.table 
+#> 행이름 설정
+wason_tbl %<>%
+  `rownames<-`(c("Red(추상적 질문 먼저)", "Black(구체적 질문 먼저)"))
+wason_tbl %<>%
+  `colnames<-`(c("추상적 질문 정답", "구체적 질문 정답"))
+```
+
+```{r, echo = FALSE}
+wason_tbl %>%
+  cbind("계" = rowSums(.)) %>%
+  pander(caption = "Wason Selection")
+wason_tbl %>%
+  chisq.test %>%
+  pander
+```
+
+### % 비교
+
+이 표는 추상적 질문에 대한 Red, Black 간 정답률 차이와 구체적 질문에 대한 Red, Black 간 정답률 차이를 비교하는 것입니다. 1번효과라기 보다는 학습 순서가 정답률에 영향을 미치는 지 알아보려는 것인데, 관찰된 숫자 상으로는 약간의 차이가 있어 보이지만 p-value 가 얘기해 주듯이 통계적으로 유의한 수준은 아닙니다.   
+
+```{r, Wason Selection in percentage, echo = FALSE}
+wason_tbl %>% 
+  prop.table(margin = 2) %>% 
+  rbind("계" = colSums(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander(caption = "Wason Selection")
+```
+
+```{r, mosaic plot3, echo = FALSE, fig.width = 7, fig.height = 5}
+m_list <- wason_tbl %>%
+#  t  %>%
+  mosaic_gg
+m <- m_list$m
+df <- m_list$df
+p_df <- m_list$p_df
+names(df)[1] <- "Var1"
+names(p_df)[1] <- "Var1"
+df$Var2 %<>% factor(labels = c("추상적 질문 정답", "구체적 질문 정답"))
+p_df$Var2 %<>% factor(labels = c("추상적 질문 정답", "구체적 질문 정답"))
+m + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = df[, 2]) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "Wason Selection", x = "질문 순서(누적 %)", y = "인원(%, 명)") +
+  scale_fill_brewer(name = "응답", 
+                    labels = c("추상적 질문 먼저", "구체적 질문 먼저"),
+                    type = "qual", 
+                    palette = "Set3", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("../pics/Quiz221003_Wason_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+```
+
+## 합산
+
+### 집계표
+
+실험에 참여한 어느 누구나 추상적 문제와 구체적 문제를 한 번씩 풀게 됩니다.학습 순서의 영향은 없는 것으로 파악되었으니까 추상적 문제의 정답률과 구체적 문제의 정답률을 합쳐서 비교하는 것이 합리적입니다.
+
+```{r, echo = FALSE}
+wason <- 
+  rbind(tbl_q7_a[1, ] + tbl_q8_a[2, ], 
+        tbl_q7_a[2, ] + tbl_q8_a[1, ]) %>%
+  `rownames<-`(c("추상적 문제", "구체적 문제")) 
+wason %>%
+  pander
+```
+
+### % 비교
+
+```{r, echo = FALSE}
+wason[, -3] %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+### Barplot
+
+```{r, echo = FALSE}
+source("./barplot_gg.R")
+b_fill <-
+  wason[, -3] %>%
+  t %>%
+  as.table %>%
+  as.data.frame %>%
+  barplot_gg(position = "fill")
+b_fill + 
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "Wason Selection", x = "문제 유형", y = "집계(%, 명)") +
+  scale_fill_brewer(name = "응답", 
+                    labels = c("정답", "오답"),
+                    type = "qual", 
+                    palette = "Set2", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("../pics/Quiz221003_Wason_Result.png", dpi = 120, width = 960, height = 840, units = "px")
+```
+
+
+<P style = "page-break-before:always">
+
+### 일 단위 마감 시간으로부터 제출 시간의 분포
+
+```{r, echo = FALSE}
+par(family = "KoPubWorldDotum Medium")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+#  cbind("계" = rowSums(.)) %>%
+#  rbind("계" = colSums(.)) %>%
+  pander(caption = "일 단위")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+  chisq.test %>%
+  pander
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table %>%
+  rev %>%
+  barplot(space = 0, 
+          names.arg = rep(c("월", "화", "수", "목", "금", "토", "일"), 2), 
+          col = c(rep("white", 13), "pink"))
+title(main = "일 단위 퀴즈 제출 횟수")
+```
+
+```{r, save, echo = FALSE}
+saveRDS(quiz, file = "quiz221003.RDS")
+save.image("../R/quiz221003.RData")
+```

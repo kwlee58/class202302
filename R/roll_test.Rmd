@@ -1,0 +1,17 @@
+---
+title: "Untitled"
+output: html_document
+date: "2023-04-04"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(pander)
+```
+
+
+```{r cars}
+roll <- readRDS("./R/Randomized_roll230307.RDS")
+pander(roll)
+```
+

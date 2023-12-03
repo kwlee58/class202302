@@ -1,0 +1,46 @@
+
+R version 4.3.1 (2023-06-16) -- "Beagle Scouts"
+Copyright (C) 2023 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> library(rmarkdown)
+> # Sys.setenv(RSTUDIO_PANDOC="/Applications/RStudio.app/Contents/MacOS/quarto/bin/tools")
+> # render("./Red_and_Black_optimum_230901_prototype_v5.Rmd")
+> # render("./Red_and_Black_optimum_230901_prototype_v5_1_2.Rmd")
+> # render("./Red_and_Black_optimum_230901_prototype_v5_2_3.Rmd")
+> # render("./Red_and_Black_optimum_230901_prototype_v5_3_4.Rmd")
+> # render("./Red_and_Black_optimum_230901_prototype_v5_4_5.Rmd")
+> render("./Red_and_Black_optimum_230901_prototype_v5_5_6.Rmd")
+
+
+processing file: Red_and_Black_optimum_230901_prototype_v5_5_6.Rmd
+  |                                                            |                                                    |   0%  |                                                            |..                                                  |   3%                    |                                                            |...                                                 |   6% (setup)            |                                                            |.....                                               |   9%                    |                                                            |......                                              |  12% (data)             |                                                            |........                                            |  15%                    |                                                            |.........                                           |  18% (unnamed-chunk-1)  |                                                            |...........                                         |  21%                    |                                                            |.............                                       |  24% (summary)          |                                                            |..............                                      |  27%                    |                                                            |................                                    |  30% (unnamed-chunk-2)  |                                                            |.................                                   |  33%                    |                                                            |...................                                 |  36% (randomization)    |                                                            |....................                                |  39%                    |                                                            |......................                              |  42% (year)             |                                                            |........................                            |  45%                    |                                                            |.........................                           |  48% (id)               |                                                            |...........................                         |  52%                    |                                                            |............................                        |  55% (odd or even)      |                                                            |..............................                      |  58%                    |                                                            |................................                    |  61% (status)           |                                                            |.................................                   |  64%                    |                                                            |...................................                 |  67% (e_mail)           |                                                            |....................................                |  70%                    |                                                            |......................................              |  73% (cell_no)          |                                                            |.......................................             |  76%                    |                                                            |.........................................           |  79% (name)             |                                                            |...........................................         |  82%                    |                                                            |............................................        |  85% (college)          |                                                            |..............................................      |  88%                    |                                                            |...............................................     |  91% (unnamed-chunk-3)  |                                                            |.................................................   |  94%                    |                                                            |..................................................  |  97% (save)             |                                                            |....................................................| 100%                                                                                                                              
+output file: Red_and_Black_optimum_230901_prototype_v5_5_6.knit.md
+
+/Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/pandoc +RTS -K512m -RTS Red_and_Black_optimum_230901_prototype_v5_5_6.knit.md --to html4 --from markdown+autolink_bare_uris+tex_math_single_backslash --output Red_and_Black_optimum_230901_prototype_v5_5_6.html --lua-filter /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/rmarkdown/rmarkdown/lua/pagebreak.lua --lua-filter /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/rmarkdown/rmarkdown/lua/latex-div.lua --embed-resources --standalone --variable bs3=TRUE --section-divs --template /Library/Frameworks/R.framework/Versions/4.3-arm64/Resources/library/rmarkdown/rmd/h/default.html --no-highlight --variable highlightjs=1 --variable theme=bootstrap --mathjax --variable 'mathjax-url=https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML' --include-in-header /var/folders/gv/fjggfg611b5cwd9p5h4v5tjh0000gn/T//RtmpvFkjLd/rmarkdown-str32c23bf6956e.html 
+
+Output created: Red_and_Black_optimum_230901_prototype_v5_5_6.html
+> # render("./Red_and_Black_optimum_230901_prototype_v5_6_7.Rmd")
+> # render("./Red_and_Black_optimum_230901_prototype_v5_7_8.Rmd")
+> # render("./Red_and_Black_optimum_230901_prototype_v5_8_9.Rmd")
+> # render("./Red_and_Black_optimum_230901_prototype_v5_9_10.Rmd")
+> 
+> proc.time()
+    user   system  elapsed 
+3910.391   28.956 4124.979 

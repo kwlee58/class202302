@@ -1,0 +1,290 @@
+---
+title: "Quiz 221107 (Framing Effects)"
+author: "coop711"
+date: "2022-11-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(magrittr)
+library(pander)
+library(knitr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+options(width = 180)
+```
+
+```{r, data, echo = FALSE, results = 'hide', message = FALSE}
+load("./red_and_black_220909_data.RData")
+quiz <- 
+  read_excel("../data/quiz221107.xlsx",
+             range = "A2:K984")
+names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "group", "Q4_R", "Q4_B")
+class(quiz$id) <- "character"
+quiz <- data.frame(quiz)
+quiz$Q4 <- ifelse(is.na(quiz$Q4_R), quiz$Q4_B, quiz$Q4_R)
+# quiz$Q4 %<>% 
+#   strsplit(split = "[.]") %>% sapply(`[`, 1)
+quiz$dept %<>% 
+  factor
+quiz$group %<>% 
+  factor(levels = c("Red", "Black"))
+quiz[paste0("Q", 1:4)] %<>%
+  sapply(FUN = {. %>% strsplit(split = "[.]") %>% sapply(`[`, 1)})
+quiz$Q1 %<>%
+  factor(levels = c("가", "나", "다", "라"), 
+         labels = c("열에 한명", 
+                    "열에 세명", 
+                    "열에 다섯명", 
+                    "열에 여덟명"))
+quiz$Q2 %<>% 
+  factor(levels = c("가", "나", "다", "라"), 
+         labels = c("15%", "25%", "45%", "65%"))
+quiz$Q3 %<>% 
+  factor(levels = c("가", "나", "다", "라"), 
+         labels = c("1명", "2명", "3명", "4명"))
+quiz$Q4 %<>% 
+  factor(levels = c("가", "나"),
+         labels = c("확실히", "확률적으로"))
+#> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
+quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
+quiz$days <- as.numeric(difftime("2022-11-21 09:00:00", quiz$time, units = 'days'))
+quiz$hours <- as.numeric(difftime("2022-11-21 09:00:00", quiz$time, units = 'hours'))
+str(quiz)
+```
+
+## Red, Black을 잘못 표시한 사람들
+
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과를 논하기에는 아주 적은 인원이 관찰되었습니다.  Red를 Black 이라고 한 사람의 수효(2명)과 Black을 Red 라고 한 사람의 수효(1명)이 비슷합니다. 굳이 학번까지 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
+
+```{r, wrong group, echo = FALSE}
+quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
+wrong_group <- which(quiz$group != quiz$group2)
+# class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
+#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander
+quiz[wrong_group, c("id", "group2", "group")] %>%
+  `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
+  pander(row.names = FALSE)
+wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
+                   "구글예습퀴즈" = quiz$group)
+wrong_tbl %>%
+  pander(row.names = c("Red(랜덤화출석부)", "Black(랜덤화출석부)"), 
+         col.names = c("Red(구글예습퀴즈)", "Black(구글예습퀴즈)"))
+```
+
+```{r, randomization, echo = FALSE, results = 'hide'}
+quiz %>% 
+  summary %>% 
+  pander
+```
+
+# 퀴즈 응답 비교
+
+## Q1. Latane and Darley
+
+```{r, echo = FALSE, out.width = "90%"}
+include_graphics("../pics/Quiz201109_01.png")
+```
+
+### 방관자 효과
+
+```{r, bystander, echo = FALSE}
+tbl_q1_a <- quiz$Q1 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q1_a %>% 
+  pander 
+tbl_q1_a[-3, -5] %>% 
+  chisq.test(simulate.p.value = FALSE) %>% 
+  pander
+```
+
+### 방관자 효과(%)
+
+```{r, bystander in percentage, echo = FALSE}
+tbl_q1_a %>% 
+  `[`(3, -5) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q2. Stanley Milgram
+
+```{r, echo = FALSE, out.width = "90%"}
+include_graphics("../pics/Quiz201109_02.png")
+```
+
+### 450V까지 누르는 사람
+
+```{r, obedience, echo = FALSE}
+tbl_q2_a <- quiz$Q2 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q2_a %>% 
+  pander 
+tbl_q2_a %>%
+  `[`(-3, -5) %>% 
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+
+### 450V까지 누르는 사람 (%)
+
+```{r, obedience in percentage, echo = FALSE}
+tbl_q2_a %>%
+  `[`(3, -5) %>%
+  prop.table %>%
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q3. Solomon Asch
+
+```{r, echo = FALSE, out.width = "90%"}
+include_graphics("../pics/Quiz201109_03.png")
+```
+
+### Power of 3
+
+```{r, Power of 3, echo = FALSE}
+tbl_q3_a <- quiz$Q3 %>%
+  table(quiz$group, ., useNA = "ifany")  %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q3_a %>% 
+  pander
+tbl_q3_a %>%
+  `[`(-3, -5) %>% 
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+
+### Power of 3 (%)
+
+```{r, Power of 3 in percentage, echo = FALSE}
+tbl_q3_a %>%
+  `[`(3, -5) %>%
+  prop.table %>%
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+# Framing Effect
+
+## Q4. 삶과 죽음
+
+```{r, echo = FALSE, out.width = "90%"}
+include_graphics("../pics/Quiz201109_04_Red.png")
+```
+
+```{r, echo = FALSE, out.width = "90%"}
+include_graphics("../pics/Quiz201109_04_Black.png")
+```
+
+600명 중 200명이 사는 거나 400명이 죽는 것, 모두 살리는 거나 모두 죽지 않는 것이나 같은 내용임에도 반응이 다르게 나타남에 유의. 손실회피 경향과 같은 현상을 관찰할 수 있음.
+
+### 집계
+
+```{r, Framing Effect, echo = FALSE}
+tbl_q4_a <- quiz$Q4 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+rownames(tbl_q4_a) <- c("생존 프레임", "사망 프레임", "계")
+tbl_q4_a %>% 
+  pander
+tbl_q4_a %>%
+  `[`(-3, -3) %>%
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+
+### % 비교.  
+
+```{r, Framing effects in percentage, echo = FALSE}
+tbl_q4_a %>% 
+  `[`(-3, -3) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+### Mosaic Plot
+
+```{r, mosaic plot1, echo = FALSE, fig.width = 7, fig.height = 5}
+library(ggplot2)
+source("./mosaic_gg.R")
+m_list <- quiz$Q4 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  t %>%
+  mosaic_gg
+m <- m_list$m
+df <- m_list$df
+p_df <- m_list$p_df
+names(df)[1] <- "Var1"
+names(p_df)[1] <- "Var1"
+df$Var2 %<>% 
+  factor(labels = c("Red(생존 프레임)", "Black(사망 프레임)"))
+p_df$Var2 %<>% 
+  factor(labels = c("Red(생존 프래암)", "Black(사망 프레임)"))
+m + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = df[, 2]) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "Prospect Theory", x = "Red or Black(누적 %)", y = "인원(%, 명)") +
+  scale_fill_brewer(name = "응답", 
+                    labels = c("확실히", "확률적으로"),
+                    type = "qual", 
+                    palette = "Set2", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("../pics/Quiz221109_Q4_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+```
+
+
+## 일 단위 마감 시간으로부터 제출 시간의 분포
+
+```{r, echo = FALSE}
+par(family = "KoPubWorldDotum Medium")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+#  cbind("계" = rowSums(.)) %>%
+#  rbind("계" = colSums(.)) %>%
+  pander(caption = "일 단위")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+  chisq.test %>%
+  pander
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table %>%
+  rev %>%
+  barplot(space = 0, 
+          names.arg = rep(c("월", "화", "수", "목", "금", "토", "일"), 2), 
+          col = c(rep("white", 13), "pink"))
+title(main = "일 단위 퀴즈 제출 횟수")
+```
+
+```{r, save, echo = FALSE}
+saveRDS(quiz, file = "quiz221107.RDS")
+save.image("../R/quiz221107.RData")
+```

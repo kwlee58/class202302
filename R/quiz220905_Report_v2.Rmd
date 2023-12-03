@@ -1,0 +1,328 @@
+---
+title: "Quiz 220905"
+author: "coop711"
+date: "2022-09-05"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install.packages("pander", repos = "https://cran.rstudio.com")
+# install.packages("xlsx", repos = "https://cran.rstudio.com")
+# library(xlsx)
+library(readxl)
+library(pander)
+library(knitr)
+library(magrittr)
+panderOptions('table.split.table', Inf)
+panderOptions('table.alignment.rownames', 'left')
+panderOptions('table.alignment.default', 'right')
+options(width=180)
+```
+
+```{r message=FALSE, data, echo=FALSE, results='hide'}
+load("./red_and_black_220909_data.RData")
+quiz <- 
+  read_excel("../data/quiz220905.xlsx",
+             range = "A2:K1028",
+             col_names = FALSE)
+names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "group", "Q4_R", "Q4_B")
+str(quiz)
+names(quiz) <- c("time", "email", "dept", "id", "name", "Q1", "Q2", "Q3", "group", "Q4_R", "Q4_B")
+quiz$Q4 <- ifelse(is.na(quiz$Q4_R), quiz$Q4_B, quiz$Q4_R)
+quiz$dept <- factor(quiz$dept)
+quiz$group <- factor(quiz$group, 
+                         levels = c("Red", "Black"))
+table(quiz$Q1, useNA = "ifany")
+quiz$Q1 <- factor(quiz$Q1, 
+                      levels = c("공자", "맹자", "관자", "노자", "장자"))
+quiz$Q2 <- factor(quiz$Q2, 
+                      levels = c("절대로 중요하지 않다", 
+                                 "거의 중요하지 않다", 
+                                 "보통이다", 
+                                 "상당히 중요하다", 
+                                 "절대적으로 중요하다"))
+quiz$Q3 <- factor(quiz$Q3, 
+                      levels = c("2012", "2017", "2022", "2027"))
+quiz$Q4 <- factor(quiz$Q4, 
+                  levels = c("잘했다는 응답이 압도적으로 많다",
+                             "잘했다는 응답이 잘못했다는 응답보다 다소 많다",
+                             "모름/응답거절"),
+                  labels = c("압도적으로 많다", 
+                             "다소 많다", 
+                             "모름/응답거절"))
+#> 학번 잘못 써서 고생시키는 녀석들 찾아내는 코드
+quiz[quiz$id %in% setdiff(quiz$id, class_roll$id), c("id", "name", "dept")]
+quiz$days <- as.numeric(difftime("2022-09-19 09:00:00", quiz$time, units = 'days'))
+quiz$hours <- as.numeric(difftime("2022-09-19 09:00:00", quiz$time, units = 'hours'))
+str(quiz)
+```
+
+```{r, randomization, echo = FALSE, results = 'hide'}
+pander(summary(quiz))
+```
+
+## Red, Black을 잘못 표시한 사람들
+
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 여전히 다른 사람들이 있어서 파악해 보았습니다. 이번에는 인원이 워낙 적어서 랜덤화 효과 얘기가 적절치 않습니다.  Red를 Black 이라고 한 사람의 수효(2명)와 Black을 Red 라고 한 사람의 수효(7명)에 차이가 많이 나는 것처럼 보이지만 9명이 동전을 던져서 2명 이하가 앞면이 나올 확률은 0.09입니다. 양쪽 꼬리를 감안하면 18%이니까 p-value가 0.05를 훨씬 넘습니다. 인원이 너무 적기 때문에 나타나는 현상입니다. 굳이 학번까지 올린 이유는 그 다음 구글예습퀴즈부터라도 제대로 올려주길 바라서입니다.
+
+```{r, wrong group, echo = FALSE}
+quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
+wrong_group <- which(quiz$group != quiz$group2)
+# class_roll[wrong_group, c("id", "name", "group", "group2")] %>%
+#   `colnames<-`(c("학번", "이름", "랜덤화출석부", "구글예습퀴즈")) %>%
+#   pander
+quiz[wrong_group, c("id", "group2", "group")] %>%
+  `colnames<-`(c("학번", "랜덤화출석부", "구글예습퀴즈")) %>%
+  pander
+wrong_tbl <- table("랜덤화출석부" = quiz$group2, 
+                   "구글예습퀴즈" = quiz$group)
+wrong_tbl %>%
+  pander(row.names = c("Red(랜덤화출석부)", "Black(랜덤화출석부)"), col.names = c("Red(구글예습퀴즈)", "Black(구글예습퀴즈)"))
+```
+
+# 퀴즈 응답 비교
+
+## Q1. 춘추전국시대에 국가통계관리의 중요성 강조
+
+```{r, echo = FALSE, out.width = "75%", align = "left"}
+include_graphics("../pics/Quiz210309_01.png")
+```
+
+### 관자(집계표)
+
+```{r, Kwanzi, echo = FALSE}
+tbl_q1_a <- quiz$Q1 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q1_a %>% 
+  pander 
+tbl_q1_a[-3, -(6:7)] %>% 
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### 관자(%)
+
+```{r, Kwanzi in percentage, echo = FALSE}
+tbl_q1_a %>% 
+  `[`(3, -(6:7)) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q2. 국가정책을 수립하는 데 통계의 역할
+
+```{r, echo = FALSE, out.width = "75%", align = "left"}
+include_graphics("../pics/Quiz210309_02.png")
+```
+
+### 통계의 중요성(집계표)
+
+```{r, state arithmetic, echo = FALSE}
+tbl_q2_a <- quiz$Q2 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q2_a %>% 
+  pander 
+tbl_q2_a[-3, -c(1:2, 6)] %>% 
+  chisq.test(simulate.p.value = TRUE) %>%
+  pander
+```
+
+### 통계의 중요성(%)
+
+```{r, state arithmetic in percentage, echo = FALSE}
+tbl_q2_a %>% 
+  `[`(3, -6) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## Q3. 우리나라 생산가능인구 감소 시기
+
+```{r, echo = FALSE, out.width = "75%", align = "left"}
+include_graphics("../pics/Quiz210309_03.png")
+```
+
+### 생산가능인구 감소 시기(집계표)
+
+```{r, labour force, echo = FALSE}
+tbl_q3_a <- quiz$Q3 %>% 
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+# colnames(tbl_q3_a)[5] %<>% `<-`(., "결석")
+tbl_q3_a %>% pander 
+tbl_q3_a[-3, -5] %>% 
+  chisq.test(simulate.p.value = FALSE) %>%
+  pander
+```
+
+### 생산가능인구 감소 시기(%)
+
+```{r, labour force in percentage, echo = FALSE}
+tbl_q3_a %>% 
+  `[`(3, -5) %>%
+  prop.table %>% 
+  c("계" = sum(.)) %>%
+  `*`(100) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+# Cheating Charts
+
+## Q4. 눈속임 그래프
+
+지난 학기까지 앞에 나오는 선지를 고르기 쉽다는 1번효과에 대한 질문을 만들어서 테스트해 왔지만 효과를 검증하기 어려워 문제를 바꿔 보았습니다. 언론방송에서 가끔 원형그래프나 막대그래프를 제시하면서 숫자와 그림이 맞지 않는 경우를 볼 수 있습니다. 여러분들은 그런 경우에 어떻게 인식하는  지 Red 에는 눈속임 그래프, Black 에는 제대로 된 그래프를 보여주면서 다른 응답을 기대했지만 1번효과 와 마찬가지로 통계적으로 유의하지 않은 결과를 얻었습니다. Red 와 같은 엉터리 그래프를 보고도 대부분 제대로 판단을 하고 있었고, Black 에 대해서 다소 많다고 응답한 사람들이나 모름/응답없음에 답한 사람들은 왜 그렇게 응답한 건지 궁금해 집니다. 
+
+### Red
+
+```{r, echo = FALSE, out.width = "50%", align = "left"}
+include_graphics("../pics/Quiz220905_Q4_Red.png")
+```
+
+### Black
+
+```{r, echo = FALSE, out.width = "50%", align = "left"}
+include_graphics("../pics/Quiz220905_Q4_Black.png")
+```
+
+### 집계표
+
+```{r, anti-terror law, echo = FALSE}
+tbl_q4_a <- quiz$Q4 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  cbind("계" = rowSums(.)) %>%
+  rbind("계" = colSums(.))
+tbl_q4_a %>% 
+  pander
+tbl_q4_a[-3, -4] %>% 
+  chisq.test %>%
+  pander
+```
+
+### % 비교  
+
+```{r, anti-terror law in percentage, echo = FALSE}
+tbl_q4_a %>% 
+  `[`(-3, -4) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+## 합산
+
+Red 와 Black의 응답에 유의한 차이가 관찰되지 않았기 때문에 두 집단을 합쳐 보는 것이 타당합니다. 두 집단을 합해서 집계해 보면
+
+### 집계
+
+```{r, echo = FALSE}
+tbl_q4_a %>% 
+  `[`(3, -4, drop = FALSE) %>%
+  cbind("계" = rowSums(.)) %>%
+  pander
+```
+
+### %
+
+```{r, echo = FALSE}
+tbl_q4_a %>% 
+  `[`(3, -4, drop = FALSE) %>%
+  prop.table(margin = 1) %>%
+  `*`(100) %>%
+  cbind("계" = rowSums(.)) %>%
+  format(digits = 2, nsmall = 1) %>%
+  pander
+```
+
+### Mosaic Plot
+
+```{r, mosaic plot, echo = FALSE, fig.width = 7, fig.height = 5, eval = TRUE}
+library(ggplot2)
+source("./mosaic_gg.R")
+m_list <- quiz$Q4 %>%
+  table(quiz$group, ., useNA = "ifany") %>%
+  t %>%
+  mosaic_gg
+m <- m_list$m
+df <- m_list$df
+p_df <- m_list$p_df
+names(df)[1] <- "Var1"
+names(p_df)[1] <- "Var1"
+# df$Var1 %<>% factor(labels = c("반이나 남았네", "반밖에 안 남았네", "모름/무응답"))
+df$Var2 %<>% factor(labels = c("눈속임 그래프를 본 집단", "정상적인 그래프를 본 집단"))
+# p_df$Var1 %<>% factor(labels = c("반이나 남았네", "반밖에 안 남았네", "모름/무응답"))
+p_df$Var2 %<>% factor(labels = c("눈속임 그래프를 본 집단", "정상적인 그래프를 본 집단"))
+m + geom_text(aes(x = center, y = 1.05), 
+              family = "KoPubWorldDotum Medium",
+              label = df[, 2]) +
+  theme_bw(base_family = "KoPubWorldDotum Medium") +
+  labs(title = "눈속임그래프의 인식", x = "Red or Black(누적 %)", y = "인원(%, 명)") +
+  scale_fill_brewer(name = "응답", 
+                    labels = c("압도적으로 많다", "다소 많다", "모름/응답거절"),
+                    type = "qual", 
+                    palette = "Set2", 
+                    direction = 1) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 18, 
+                                  family = "KoPubWorldDotum Bold")) 
+ggsave("../pics/Quiz220905_Q7_RnB.png", dpi = 120, width = 960, height = 840, units = "px")
+```
+
+# 제출 시간의 분포
+
+과제 제출이 제출 기간 마지막 날에 몰린다는 것을 시각적으로 보여주고 싶어서 하나 추가하였습니다. 아직은 학기초라 덜 한데, 중반 이후가 되면 마지막 날, 그것도 오후2시부터 몰리는 현상을 관찰할 수 있습니다. 여기서조차 랜덤화 효과를 관찰할 수 있네요. p-value 에 유의해 주세요. 제출시간과 관련한 두 가지 현상에 대해서도 여러분의 생각을 들어보고 싶습니다. 첫째, 랜덤화 효과. 둘쨰, 마감날에 몰리는 현상.
+
+<!--
+### 시간 단위 기초통계량
+
+```{r, echo = FALSE}
+summary(quiz$hours)
+stem(quiz$hours)
+max(quiz$hours, na.rm = TRUE)
+```
+-->
+
+<P style = "page-break-before:always">
+
+### 일 단위 마감 시간으로부터 제출 시간의 분포
+
+```{r, echo = FALSE}
+par(family = "KoPubWorldDotum Medium")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+#  cbind("계" = rowSums(.)) %>%
+#  rbind("계" = colSums(.)) %>%
+  pander(caption = "일 단위")
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table(quiz$group, .) %>%
+  chisq.test %>%
+  pander
+quiz$days %>%
+  cut(breaks = c(0:14), include.lowest = TRUE) %>%
+  table %>%
+  rev %>%
+  barplot(space = 0, names.arg = rep(c("월", "화", "수", "목", "금", "토", "일"), 2))
+title(main = "일 단위 퀴즈 제출 횟수")
+```
+
+
+```{r, save, echo = FALSE}
+saveRDS(quiz, file = "./quiz220905.RDS")
+save.image("../R/quiz220905.RData")
+```
