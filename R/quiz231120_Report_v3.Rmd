@@ -220,7 +220,11 @@ str(quiz)
 
 ## Red, Black을 잘못 표시한 사람들
 
+<<<<<<< HEAD
 랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과를 논하기에는 아주 적은 인원이 관찰되었습니다.  Red를 Black 이라고 한 사람이 2명, Black 을 Red 라고 한 사람이 1명 관찰되었습니다. 
+=======
+랜덤화출석부에 있는 Red, Black 과 실제 구글예습퀴즈에 올린 Red, Black 이 다른 사람들이 있어서 파악해 보았습니다. 랜덤화 효과를 논하기에는 아주 적은 인원이 관찰되었습니다.  Red를 Black 이라고 한 사람이 4명, Black 을 Red 라고 한 사람이 1명 관찰되었습니다. 
+>>>>>>> 6eaa71569a6cb514b4d8048a6aca600dfa38f06c
 
 ```{r, wrong group, echo = FALSE}
 quiz$group2 <- class_roll$group[match(quiz$id, class_roll$id)]
