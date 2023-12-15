@@ -52,7 +52,7 @@ att$oxford <- ifelse(att$id %in% readRDS("./oxford231016.RDS")$id, 1, 0)
 # att$reading <- ifelse(att$id %in% readRDS("./reading190925.RDS")$id, 1, 0)
 # att$world <- ifelse(att$id %in% readRDS("./which_world200430.RDS")$id, 1, 0)
 att$MW <- ifelse(att$id %in% readRDS("./MW231113.RDS")$id, 1, 0)
-att$total <- apply(att[, -(1:2)], MARGIN = 1, sum, na.rm = TRUE) * 100 / 20
+att$total <- apply(att[, -(1:2)], MARGIN = 1, sum, na.rm = TRUE) * 10 / 20
 # str(att)                  
 pander(att[order(att$id, att$name), -2], row.names = FALSE)
 # pander(att[order(att$name, att$id), c("id", "name", "total")], row.names = FALSE)
