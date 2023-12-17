@@ -29,7 +29,7 @@ panderOptions("table.split.table", Inf)
 # names(class_roll_final) <- c("ID", "Name")
 class_roll <- readRDS("./class_roll231127.RDS")
 total <-
-  read_excel(path = "./data/Final_Records_2302_1216.xlsx",
+  read_excel(path = "./data/Final_Records_2302_1217.xlsx",
              range = "A1:L911",
              col_types = c(rep("text", 6), rep("numeric", 6)))
 
@@ -55,7 +55,7 @@ total <- total[total$ID %in% setdiff(total$ID, army_ID), ]
 ## 군휴학생 성적부
 
 ```{r, echo = FALSE}
-pander(army_records, row.names = FALSE)
+pander(army_records[order(army_records$ID), ], row.names = FALSE)
 ```
 
 <!--
@@ -270,10 +270,10 @@ my_grade <- function(name){
   kable(total_kr[total$Name %in% name, -1], 
         row.names = FALSE)
 }
-my_grade(c("이장호"))
-my_grade(c("장현우"))
-my_grade(c("오병우"))
-my_grade(c("이상민"))
+# my_grade(c("이장호"))
+# my_grade(c("장현우"))
+# my_grade(c("오병우"))
+# my_grade(c("이상민"))
 ```
 <!--
 ```{r, eval = FALSE, echo = FALSE}
