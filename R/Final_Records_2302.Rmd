@@ -270,7 +270,7 @@ my_grade <- function(name){
   kable(total_kr[total$Name %in% name, -1], 
         row.names = FALSE)
 }
-# my_grade(c("이장호"))
+# my_grade(c("황예찬"))
 # my_grade(c("장현우"))
 # my_grade(c("오병우"))
 # my_grade(c("이상민"))
